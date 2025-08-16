@@ -8,81 +8,211 @@
 </head>
 <body class="admin-body">
   <h1>Panel de Administración</h1>
-  <form id="postForm">
-    <label for="title">Título</label>
-    <input type="text" id="title" required />
-    <label for="date">Fecha</label>
-    <input type="date" id="date" required />
-    <label for="body">Texto</label>
-    <textarea id="body" rows="5" required></textarea>
-    <label for="images">Imágenes</label>
-    <input type="file" id="images" accept="image/*" multiple />
-    <button type="submit">Guardar entrada</button>
-  </form>
 
-  <h2>Entradas guardadas</h2>
-  <div id="postList"></div>
+  <section class="admin-panel">
+    <h2>Nueva entrada</h2>
+    <form id="postForm">
+      <label for="title">Título</label>
+      <input type="text" id="title" required />
+
+      <label for="date">Fecha</label>
+      <input type="date" id="date" required />
+
+      <label for="body">Texto</label>
+      <textarea id="body" rows="5" required></textarea>
+
+      <label for="image">Imagen (ruta/URL — ej: <code>assets/captura1.jpg</code>)</label>
+      <input type="text" id="image" placeholder="assets/captura1.jpg" required />
+
+      <button type="submit">Agregar a la lista</button>
+    </form>
+  </section>
+
+  <section class="admin-panel">
+    <h2>Entradas en borrador</h2>
+    <div id="postList"></div>
+    <div class="admin-actions">
+      <button id="downloadJson">Descargar slides.json</button>
+      <button id="clearAll" class="danger">Vaciar lista</button>
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <h2>Publicar al repositorio (GitHub Actions)</h2>
+    <p>Este método dispara un <code>repository_dispatch</code> que actualiza <code>slides.json</code> en tu rama. Introduce los datos del repo y un token personal (PAT) con permisos para despachar eventos.</p>
+    <form id="publishForm">
+      <div class="grid">
+        <div>
+          <label>Owner/Org</label>
+          <input type="text" id="ghOwner" placeholder="tu-usuario" required>
+        </div>
+        <div>
+          <label>Repositorio</label>
+          <input type="text" id="ghRepo" placeholder="tu-repo" required>
+        </div>
+        <div>
+          <label>Rama destino</label>
+          <input type="text" id="ghBranch" value="main" required>
+        </div>
+      </div>
+
+      <label>Mensaje de commit</label>
+      <input type="text" id="commitMsg" value="Actualiza slides.json (admin)" required>
+
+      <label>Token Personal de GitHub (PAT) <small>(se guarda en tu navegador)</small></label>
+      <input type="password" id="ghToken" placeholder="ghp_..." required>
+
+      <div class="admin-actions">
+        <button type="submit">Publicar vía GitHub Actions</button>
+      </div>
+      <p class="muted small">
+        Nota: el PAT se guarda en <code>localStorage</code> de tu navegador bajo la clave <code>ecd_pat</code> para reutilizarlo. No se sube al repo.
+      </p>
+    </form>
+  </section>
 
   <script>
+    // --- Estado de slides en memoria ---
+    let slides = [];
+
+    // Cargar slides.json del repo (si existe)
+    fetch('slides.json', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { if(Array.isArray(data)) slides = data; renderPosts(); })
+      .catch(()=> { slides = []; renderPosts(); });
+
+    // --- CRUD local (no sube imágenes) ---
     const postForm = document.getElementById("postForm");
     const postList = document.getElementById("postList");
+    const downloadBtn = document.getElementById("downloadJson");
+    const clearBtn = document.getElementById("clearAll");
 
-    function loadPosts(){
-      return JSON.parse(localStorage.getItem("ecd_posts")||"[]");
-    }
-    function savePosts(posts){
-      localStorage.setItem("ecd_posts", JSON.stringify(posts));
-    }
+    postForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const date  = document.getElementById("date").value;
+      const body  = document.getElementById("body").value.trim();
+      const image = document.getElementById("image").value.trim();
+
+      const entry = {
+        id: Date.now(),
+        title, date, body,
+        images: image ? [image] : []
+      };
+      slides.push(entry);
+      postForm.reset();
+      renderPosts();
+    });
+
     function renderPosts(){
-      const posts = loadPosts();
       postList.innerHTML = "";
-      posts.forEach((p,i)=>{
-        const div=document.createElement("div");
-        div.className="post-item";
-        div.innerHTML=`<h3>${p.title} (${p.date})</h3><p>${p.body}</p>
-          <div>${p.images.map(img=>`<img class="thumb" src="${img}"/>`).join("")}</div>
-          <button onclick="deletePost(${i})">Borrar</button>`;
+      if(slides.length === 0){
+        postList.innerHTML = `<div class="post-item muted">No hay entradas aún.</div>`;
+        return;
+      }
+      slides.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "post-item";
+        div.innerHTML = `
+          <h3>${escapeHtml(p.title)} <small>(${escapeHtml(p.date || '')})</small></h3>
+          <p>${escapeHtml(p.body || '')}</p>
+          <div>${(p.images||[]).map(src => `<img class="thumb" src="${src}" alt="">`).join("")}</div>
+          <div class="admin-actions">
+            <button onclick="moveUp(${i})">↑</button>
+            <button onclick="moveDown(${i})">↓</button>
+            <button class="danger" onclick="deletePost(${i})">Borrar</button>
+          </div>
+        `;
         postList.appendChild(div);
       });
     }
-    function deletePost(i){
-      const posts=loadPosts();
-      posts.splice(i,1);
-      savePosts(posts);
-      renderPosts();
-    }
 
-    postForm.addEventListener("submit", async e=>{
-      e.preventDefault();
-      const title=document.getElementById("title").value;
-      const date=document.getElementById("date").value;
-      const body=document.getElementById("body").value;
-      const files=document.getElementById("images").files;
+    function moveUp(i){ if(i>0){ [slides[i-1],slides[i]] = [slides[i],slides[i-1]]; renderPosts(); } }
+    function moveDown(i){ if(i<slides.length-1){ [slides[i+1],slides[i]] = [slides[i],slides[i+1]]; renderPosts(); } }
+    function deletePost(i){ slides.splice(i,1); renderPosts(); }
 
-      const images=[];
-      for(let f of files){
-        const reader=new FileReader();
-        images.push(await new Promise(res=>{
-          reader.onload=e=>res(e.target.result);
-          reader.readAsDataURL(f);
-        }));
-      }
-
-      const posts=loadPosts();
-      posts.push({id:Date.now(), title, date, body, images});
-      savePosts(posts);
-      postForm.reset();
-      renderPosts();
-
-      // exportar a slides.json (solo cliente local)
-      const blob=new Blob([JSON.stringify(posts,null,2)], {type:"application/json"});
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(blob);
-      a.download="slides.json";
+    // Descargar JSON local
+    downloadBtn.addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(slides, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "slides.json";
       a.click();
+      URL.revokeObjectURL(url);
     });
 
-    renderPosts();
+    // Vaciar
+    clearBtn.addEventListener("click", () => {
+      if (confirm("¿Seguro que quieres vaciar la lista de entradas (local)?")) {
+        slides = [];
+        renderPosts();
+      }
+    });
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,"&#39;");
+    }
+
+    // --- Publicar vía GitHub Actions (repository_dispatch) ---
+    const publishForm = document.getElementById("publishForm");
+    const LS_PAT_KEY = "ecd_pat";
+    // Prefill PAT si lo guardaste antes
+    const savedPat = localStorage.getItem(LS_PAT_KEY);
+    if(savedPat){ document.getElementById("ghToken").value = savedPat; }
+
+    publishForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const owner  = document.getElementById("ghOwner").value.trim();
+      const repo   = document.getElementById("ghRepo").value.trim();
+      const branch = document.getElementById("ghBranch").value.trim() || "main";
+      const token  = document.getElementById("ghToken").value.trim();
+      const message= document.getElementById("commitMsg").value.trim() || "Actualiza slides.json (admin)";
+
+      if(!owner || !repo || !token){
+        alert("Owner, repositorio y token son obligatorios.");
+        return;
+      }
+
+      // Guardar PAT localmente para reutilizar
+      localStorage.setItem(LS_PAT_KEY, token);
+
+      // Construimos payload: pasamos slides como base64 para evitar problemas de comillas
+      const slidesStr = JSON.stringify(slides);
+      const slidesB64 = btoa(unescape(encodeURIComponent(slidesStr))); // UTF-8 safe
+
+      try{
+        const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
+          method: "POST",
+          headers: {
+            "Accept": "application/vnd.github+json",
+            "Authorization": `token ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            event_type: "update-slides",
+            client_payload: {
+              slides_b64: slidesB64,
+              message,
+              path: "slides.json",
+              branch
+            }
+          })
+        });
+
+        if(!resp.ok){
+          const t = await resp.text();
+          alert("Error al despachar evento:\n" + t);
+          return;
+        }
+        alert("Evento enviado. Revisa la pestaña Actions del repo para ver el job ejecutar el commit.");
+      }catch(err){
+        alert("Error de red: " + err.message);
+      }
+    });
   </script>
 </body>
 </html>
