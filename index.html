@@ -22,29 +22,32 @@
   </header>
 
   <main class="wrap">
-    <!-- Slideshow principal -->
+    <!-- Slideshow -->
     <section class="slideshow" id="slideshow">
       <div id="slides" class="slides" aria-live="polite"></div>
+
+      <!-- Controles dentro del área de imagen para no tapar el texto -->
       <div class="controls">
         <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
         <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
       </div>
+
       <div class="dots" id="dots" role="tablist"></div>
     </section>
 
-    <!-- Accesos a secciones -->
+    <!-- Accesos -->
     <section class="sections">
       <article class="section-card">
         <h4>Mapas</h4>
-        <p>Galería y planos: aquí se mostrarán los mapas de la campaña. (Página: <code>/mapas.html</code>).</p>
+        <p>Galería y planos de la campaña. (Página: <code>/mapas.html</code>).</p>
       </article>
       <article class="section-card">
         <h4>Recursos</h4>
-        <p>Objetos, referencias, handouts y material descargable. (Página: <code>/recursos.html</code>).</p>
+        <p>Objetos, handouts y material descargable. (Página: <code>/recursos.html</code>).</p>
       </article>
       <article class="section-card">
         <h4>Notas</h4>
-        <p>Zona de anotaciones públicas y privadas para jugadores. (Página: <code>/notas.html</code>).</p>
+        <p>Zona de anotaciones y registros de los jugadores. (Página: <code>/notas.html</code>).</p>
       </article>
     </section>
   </main>
@@ -52,15 +55,17 @@
   <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
 
   <script>
+    // --- Slideshow (lee slides.json) ---
     let posts = [];
     let current = 0, timer = null;
     const interval = 6000;
 
     async function loadSlides(){
       try {
-        const res = await fetch("slides.json");
+        const res = await fetch("slides.json", { cache: "no-store" });
         posts = await res.json();
       } catch(e) {
+        console.warn("No se pudo cargar slides.json", e);
         posts = [];
       }
       buildSlides();
@@ -74,28 +79,48 @@
       container.innerHTML = "";
       dots.innerHTML = "";
 
-      if(posts.length===0){
-        container.innerHTML = `<div class="slide">
-          <div class="slide-media"><img src="assets/placeholder.jpg" alt="placeholder"></div>
-          <div class="slide-meta"><h3>Bienvenido</h3><p>No hay entradas todavía.</p></div>
-        </div>`;
-        dots.innerHTML = `<div class="dot active"></div>`;
+      if(!Array.isArray(posts) || posts.length===0){
+        container.innerHTML = `
+          <section class="slide">
+            <div class="slide-media">
+              <img src="assets/placeholder.jpg" alt="placeholder">
+            </div>
+            <div class="slide-meta">
+              <h3>Bienvenido</h3>
+              <div class="date">—</div>
+              <p>No hay entradas todavía. Usa <code>admin.html</code> para crear <code>slides.json</code>.</p>
+            </div>
+          </section>`;
+        const dot = document.createElement("div"); dot.className = "dot active"; dots.appendChild(dot);
         return;
       }
 
-      posts.forEach((p,idx)=>{
-        const slide = document.createElement("section");
-        slide.className = "slide";
-        slide.innerHTML = `
-          <div class="slide-media"><img src="${p.images[0]}" alt="${p.title}"></div>
-          <div class="slide-meta"><h3>${p.title}</h3><div class="date">${p.date}</div><p>${p.body}</p></div>`;
-        container.appendChild(slide);
+      posts
+        .slice()
+        .sort((a,b)=> new Date(b.date) - new Date(a.date))
+        .forEach((p,idx)=>{
+          const slide = document.createElement("section");
+          slide.className = "slide";
 
-        const dot = document.createElement("div");
-        dot.className = "dot";
-        dot.addEventListener("click", ()=> goTo(idx));
-        dots.appendChild(dot);
-      });
+          const imgSrc = (p.images && p.images[0]) ? p.images[0] : "assets/placeholder.jpg";
+          slide.innerHTML = `
+            <div class="slide-media">
+              <img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}">
+            </div>
+            <div class="slide-meta">
+              <h3>${escapeHtml(p.title || 'Sin título')}</h3>
+              <div class="date">${escapeHtml(p.date || '')}</div>
+              <p>${escapeHtml(p.body || '')}</p>
+            </div>`;
+
+          container.appendChild(slide);
+
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          dot.addEventListener("click", ()=> goTo(idx));
+          dots.appendChild(dot);
+        });
+
       updateDots(0);
     }
 
@@ -119,6 +144,18 @@
 
     document.getElementById("next").addEventListener("click", ()=>{ next(); resetTimer(); });
     document.getElementById("prev").addEventListener("click", ()=>{ prev(); resetTimer(); });
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,"&#39;");
+    }
+
+    // Pausa en hover
+    const slideshow = document.getElementById('slideshow');
+    slideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
+    slideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
 
     loadSlides();
   </script>
