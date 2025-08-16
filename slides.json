@@ -1,12 +1,16 @@
 [
   {
-    "title": "El inicio de la campaña",
-    "text": "Los héroes llegan al pueblo bajo la sombra del Círculo Eterno.",
-    "image": "images/inicio.jpg"
+    "id": 1,
+    "title": "La llamada del círculo",
+    "date": "2025-08-15",
+    "body": "Los aventureros escucharon la voz en las ruinas...",
+    "images": ["assets/sample1.jpg"]
   },
   {
-    "title": "Encuentro en las ruinas",
-    "text": "Los ecos del pasado resuenan mientras exploran la antigua fortaleza.",
-    "image": "images/ruinas.jpg"
+    "id": 2,
+    "title": "Sombras en el bosque",
+    "date": "2025-08-16",
+    "body": "El grupo se adentró en el bosque de las sombras...",
+    "images": ["assets/sample2.jpg"]
   }
 ]
