@@ -43,5 +43,32 @@
     "images": [
       "assets/TS_1755378106.png"
     ]
+  },
+  {
+    "id": 1755380483850,
+    "title": "La manada de lobos",
+    "date": "2025-08-16",
+    "body": "El duo se abre paso entre las cavernas, se encuentran con un pequeño grupo de goblins que parecían haberse quedado atrapados entre las ratas y los lobos y los derrotan y dan, en una de las cámaras de las cuevas, con el cadáver del aventurero abatido por lobos. Gracias a algunas de sus pertencias y algunas cartas, Adler consigue sacarle a Isadora que en realidad ellos son parte de la banda de contrabandistas que están saqueando el granero de la ciudad. Pero ella no es más que un peón, una aprendiz de mago que se unió recientemente para hacer algunas monedas gracias a sus poderes arcanos. No sabe demasiado y no quería que muriera un chico inocente. Le asegura al crérigo que más adelante puede encontrar documentos importantes que delaten la conspiración de los aventureros, aunque... tienen que vencer a los lobos. Aunque la confianza es cada vez más escasa, avanzan, usando los cadáveres de las ratas para activar las trampas que se encuentran en el camino y llegan al cubil de la manada.",
+    "images": [
+      "assets/Isadora y Adler contra los lobos.png"
+    ]
+  },
+  {
+    "id": 1755383763932,
+    "title": "Un encuentro inesperado...",
+    "date": "2025-08-16",
+    "body": "El encuentro con los lobos fue todo un desafío, una tarea sangrienta que Adler e Isadora consiguen superar por poco. En el lugar se encuentran con cajas y barriles de suministros destrozados por las fieras y un montón de papeles diseminados por el lugar. Se trata de cartas e inventarios que reflejan un flujo de contrabando que es extraído del granero de Valverde del Río y enviado a través de las cuevas hacia embarcaciones que se hacen pasar por cargueros de madera hacia un campamento cercano. Los \"aventureros\" son agentes de los contrabandistas que desvían la atención de los guardias mientras envían los elementos robados hacia un campamento de mercenarios contratados por el Reino del Sur para socavar el poder del gobierno local y ponerlo en una desventaja defensiva. Además, dan con el cadáver de la esposa del capataz de los leñadores, que llegó a las cuevas buscando a su hijo y fue devorada por los lobos. Al parecer, más adelante hay un centro de operaciones de esta banda donde podrían encontrar más respuestas, pero Isadora y Adler necesitan descansar y reponerse, así que deciden volver, hablar con el leñador y prepararse para un enfrentamiento más desafiante.",
+    "images": [
+      "assets/Adler descubriendo la trama.png"
+    ]
+  },
+  {
+    "id": 1755384829232,
+    "title": "Un mago con una hernia",
+    "date": "2025-08-16",
+    "body": "Adler e Isadora abandonan las cuevas para hablar con el capataz de los leñadores, sin embargo, la joven hechicera tiene que rendir cuentas a sus compañeros. Adler, con sus dotes diplomáticas, los convence de que la dejen acompañarlos antes de dar su reporte y los mercenarios acceden a regañadientes. De camino hacia el campamento de los leñadores se encuentran con un mago de voz flautada y aspecto excéntrico. Es otro forastero y parece tener mucho interés en lo que están haciendo el elfo y la hechicera, lo que despierta suspicacias. Entonces Delerion ─como se presenta─ le pide a Adler que lo ayude con una hernia que lo ha estado molestando desde hace algún tiempo y el clérigo accede. Tras compartir un poco más de sus historias ambos se unen para desentrañar la trama detrás de los contrabandistas, esperando que unir fuerzas sea un una manera de avanzar más rápido en la compleja conspiración que parece tejerse debajo de la calma que domina Valverde del Río.",
+    "images": [
+      "assets/TS_1755384755.png"
+    ]
   }
 ]
