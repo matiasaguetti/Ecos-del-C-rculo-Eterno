@@ -7,6 +7,93 @@
   <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Estilos adicionales para el modal y ajuste de texto del slideshow.
+       Si prefieres mantener todo en style.css, copia este bloque al final de style.css. -->
+  <style>
+    /* Ajustes de texto en slide: se limita visualmente y se adapta a mobile */
+    .slide-meta p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      -webkit-line-clamp: 6; /* líneas en desktop */
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    @media (max-width:900px) {
+      .slide-meta p { -webkit-line-clamp: 4; }
+    }
+
+    /* Botón 'Seguir leyendo' */
+    .read-more {
+      background: linear-gradient(90deg, rgba(138,91,58,0.95), rgba(91,122,123,0.95));
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .read-more:hover { filter: brightness(1.05); }
+
+    /* Modal (overlay) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,2,3,0.7);
+      display: none; /* show/hide with JS */
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      padding: 20px;
+    }
+    .modal {
+      background: #0b0b0c;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 90vh;
+      border-radius: 12px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .modal .modal-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
+    .modal .modal-body {
+      padding: 18px;
+      overflow: auto;
+    }
+    .modal .modal-body h3 { margin-top: 0; font-family: 'Cinzel', serif; }
+    .modal .modal-body .date { color: var(--muted); margin-bottom: 8px; display:block; }
+    .modal .modal-body p { color: var(--muted); line-height:1.6; white-space:pre-wrap; }
+
+    .modal .close-btn {
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      background: rgba(255,255,255,0.04);
+      border: none;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    /* Responsive modal layout */
+    @media (max-width: 980px) {
+      .modal { grid-template-columns: 1fr; max-height: 92vh; }
+      .modal .modal-media { max-height: 50vh; }
+    }
+  </style>
 </head>
 <body>
   <header class="banner">
@@ -15,7 +102,9 @@
       <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
     </div>
     <nav aria-label="navegación principal">
+      <!-- Mantengo las rutas /mapas.html, /recursos.html, /notas.html; agrego /lore.html -->
       <a class="navlink" href="/mapas.html">Mapas</a>
+      <a class="navlink" href="/lore.html">Lore</a>
       <a class="navlink" href="/recursos.html">Recursos</a>
       <a class="navlink" href="/notas.html">Notas</a>
     </nav>
@@ -23,10 +112,10 @@
 
   <main class="wrap">
     <!-- Slideshow -->
-    <section class="slideshow" id="slideshow">
+    <section class="slideshow" id="slideshow" aria-label="Slideshow de la campaña">
       <div id="slides" class="slides" aria-live="polite"></div>
 
-      <!-- Controles dentro del área de imagen para no tapar el texto -->
+      <!-- Controles dentro del área de imagen -->
       <div class="controls">
         <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
         <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
@@ -36,10 +125,14 @@
     </section>
 
     <!-- Accesos -->
-    <section class="sections">
+    <section class="sections" aria-label="Accesos rápido">
       <article class="section-card">
         <h4>Mapas</h4>
         <p>Galería y planos de la campaña. (Página: <code>/mapas.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Lore</h4>
+        <p>Contexto, mitos y trasfondo de la campaña. (Página: <code>/lore.html</code>).</p>
       </article>
       <article class="section-card">
         <h4>Recursos</h4>
@@ -53,6 +146,21 @@
   </main>
 
   <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
+
+  <!-- Modal overlay (oculto por defecto) -->
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <button id="modalClose" class="close-btn" aria-label="Cerrar">Cerrar ✕</button>
+      <div class="modal-media">
+        <img id="modalImage" src="" alt="Imagen ampliada">
+      </div>
+      <div class="modal-body">
+        <h3 id="modalTitle"></h3>
+        <span class="date" id="modalDate"></span>
+        <p id="modalText"></p>
+      </div>
+    </div>
+  </div>
 
   <script>
     // --- Slideshow (lee slides.json) ---
@@ -71,6 +179,15 @@
       buildSlides();
       show(0);
       startTimer();
+    }
+
+    function excerpt(text, max = 420){
+      if(!text) return '';
+      if(text.length <= max) return text;
+      // corta por último espacio antes del límite
+      const cut = text.slice(0, max);
+      const lastSpace = cut.lastIndexOf(' ');
+      return cut.slice(0, lastSpace > 40 ? lastSpace : max) + '…';
     }
 
     function buildSlides(){
@@ -103,14 +220,15 @@
           slide.className = "slide";
 
           const imgSrc = (p.images && p.images[0]) ? p.images[0] : "assets/placeholder.jpg";
+          const short = excerpt(p.body || '', 300); // excerpt para mostrar en slide
+
           slide.innerHTML = `
-            <div class="slide-media">
-              <img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}">
-            </div>
+            <div class="slide-media"><img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}"></div>
             <div class="slide-meta">
               <h3>${escapeHtml(p.title || 'Sin título')}</h3>
               <div class="date">${escapeHtml(p.date || '')}</div>
-              <p>${escapeHtml(p.body || '')}</p>
+              <p>${escapeHtml(short)}</p>
+              <button class="read-more" data-idx="${idx}">Seguir leyendo</button>
             </div>`;
 
           container.appendChild(slide);
@@ -156,6 +274,52 @@
     const slideshow = document.getElementById('slideshow');
     slideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
     slideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
+
+    // Delegación para 'Seguir leyendo' — abre modal
+    document.getElementById('slides').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.read-more');
+      if(!btn) return;
+      const idx = Number(btn.dataset.idx);
+      openModal(idx);
+    });
+
+    // Modal logic
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDate = document.getElementById('modalDate');
+    const modalText = document.getElementById('modalText');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(idx){
+      const p = posts.slice().sort((a,b)=> new Date(b.date)-new Date(a.date))[idx];
+      if(!p) return;
+      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
+      modalImage.src = imgSrc;
+      modalImage.alt = p.title || 'imagen';
+      modalTitle.textContent = p.title || '';
+      modalDate.textContent = p.date || '';
+      modalText.textContent = p.body || '';
+
+      modalOverlay.style.display = 'flex';
+      modalOverlay.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      modalOverlay.style.display = 'none';
+      modalOverlay.setAttribute('aria-hidden','true');
+      modalImage.src = '';
+      document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (ev) => {
+      if(ev.target === modalOverlay) closeModal();
+    });
+    window.addEventListener('keydown', (ev) => {
+      if(ev.key === 'Escape') closeModal();
+    });
 
     loadSlides();
   </script>
