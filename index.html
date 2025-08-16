@@ -1,157 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ecos del Círculo eterno — Diario de campaña</title>
-  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    :root{ --bg:#070708; --panel:#0f1112; --muted:#9aa3a8; --accent:#8a5b3a; --glass: rgba(255,255,255,0.03); color-scheme: dark; font-family:'Inter',system-ui,Arial }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#040405 0%,#0d0d0e 60%);color:#e6eef1}
-    .banner{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.03)}
-    .camp-name{font-family:'Cinzel',serif;font-size:30px}
-    .camp-sub{color:var(--muted);font-size:13px}
-    nav{display:flex;gap:10px}
-    .navlink{background:var(--glass);padding:8px 12px;border-radius:10px;text-decoration:none;color:inherit;font-weight:600;border:1px solid rgba(255,255,255,0.02)}
-    .wrap{max-width:1100px;margin:28px auto;padding:0 20px}
-
-    /* Slideshow */
-    .slideshow{position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
-    .slides{display:flex;transition:transform .5s ease}
-    .slide{min-width:100%;display:grid;grid-template-columns: 56% 44%;gap:18px;align-items:center;padding:22px}
-    .slide-media{position:relative;height:320px;border-radius:10px;overflow:hidden;background:#050506;display:flex;align-items:center;justify-content:center}
-    .slide-media img{width:100%;height:100%;object-fit:cover}
-    .slide-meta h3{margin:0 0 6px;font-family:'Cinzel',serif;font-size:22px}
-    .slide-meta .date{color:var(--muted);font-size:13px;margin-bottom:10px}
-    .slide-meta p{color:var(--muted);line-height:1.5}
-
-    /* Controles: ahora dentro del área de imagen */
-    .controls{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;padding:0 12px;transform:translateY(-50%);pointer-events:none}
-    .ctrl-btn{pointer-events:auto;background:rgba(0,0,0,0.4);border:none;padding:10px;border-radius:50%;backdrop-filter:blur(2px);color:#fff;cursor:pointer}
-
-    .dots{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;display:flex;gap:6px}
-    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.08);cursor:pointer}
-    .dot.active{background:var(--accent)}
-
-    /* Sections preview grid */
-    .sections{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
-    .section-card{background:var(--panel);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
-    .section-card h4{margin:0 0 8px}
-    .section-card p{color:var(--muted);font-size:14px}
-
-    @media (max-width:900px){
-      .slide{grid-template-columns:1fr;}
-      .slide-media{height:220px}
-      .sections{grid-template-columns:1fr}
-      .controls{top:40%;} /* ajusta en móvil */
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecos del Círculo Eterno</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="banner">
-    <div>
-      <div class="camp-name">Ecos del Círculo eterno</div>
-      <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
-    </div>
-    <nav aria-label="navegación principal">
-      <a class="navlink" href="/mapas.html">Mapas</a>
-      <a class="navlink" href="/recursos.html">Recursos</a>
-      <a class="navlink" href="/notas.html">Notas</a>
+  <header>
+    <h1>Ecos del Círculo Eterno</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="mapas.html">Mapas</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+        <li><a href="notas.html">Notas</a></li>
+      </ul>
     </nav>
   </header>
 
-  <main class="wrap">
-    <!-- Slideshow principal -->
-    <section class="slideshow" id="slideshow">
-      <div id="slides" class="slides" aria-live="polite">
-        <!-- Slides creadas por JS a partir de localStorage 'ecd_posts' -->
-      </div>
-
-      <div class="controls">
-        <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
-        <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
-      </div>
-
-      <div class="dots" id="dots" role="tablist"></div>
-    </section>
-
-    <!-- Accesos a secciones -->
-    <section class="sections">
-      <article class="section-card">
-        <h4>Mapas</h4>
-        <p>Galería y planos: aquí se mostrarán los mapas de la campaña, bocetos y versiones finales. (Página: <code>/mapas.html</code>).</p>
-      </article>
-
-      <article class="section-card">
-        <h4>Recursos</h4>
-        <p>Objetos, referencias, handouts y material descargable. Los jugadores podrán aportar mediante Pull Requests. (Página: <code>/recursos.html</code>).</p>
-      </article>
-
-      <article class="section-card">
-        <h4>Notas</h4>
-        <p>Zona de anotaciones públicas y privadas para jugadores: fichas, apuntes y registros. (Página: <code>/notas.html</code>).</p>
-      </article>
-    </section>
-
-    <section style="margin-top:18px;color:var(--muted);font-size:13px">
-      <p>Cómo funciona el slideshow: toma las entradas almacenadas localmente en <code>localStorage</code> bajo la clave <code>ecd_posts</code>. Cada entrada debe contener: <code>{id,title,date,body,images:[dataURL,...]}</code>. Puedes añadir entradas desde una página de administración que luego podremos integrar o importarlas desde JSON.</p>
-    </section>
-  </main>
-
-  <footer style="margin:40px 0 80px;text-align:center;color:var(--muted)">Creado para la campaña «Ecos del Círculo eterno» — index.html (slideshow)</footer>
+  <!-- Slideshow -->
+  <section class="slideshow">
+    <div class="slides" id="slides-container"></div>
+    <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+    <button class="next" onclick="moveSlide(1)">&#10095;</button>
+  </section>
 
   <script>
-    const LS_KEY = 'ecd_posts';
-    function loadPosts(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]') }catch(e){console.warn('loadPosts',e); return [] } }
+    let slidesData = [];
+    let currentSlide = 0;
 
-    function buildSlides(){
-      const container = document.getElementById('slides'); container.innerHTML='';
-      const dots = document.getElementById('dots'); dots.innerHTML='';
-      const posts = loadPosts().slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+    // Cargar slides.json
+    fetch('slides.json')
+      .then(response => response.json())
+      .then(data => {
+        slidesData = data;
+        renderSlides();
+        showSlide(0);
+      });
 
-      if(posts.length===0){
-        const el = document.createElement('div'); el.className='slide';
-        el.innerHTML = `<div class="slide-media"><img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='700'><rect width='100%' height='100%' fill='%23050606'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23aab2b6' font-size='28'>Añade registros desde la sección Partidas para verlos aquí</text></svg>`+`</div><div class='slide-meta'><h3>Bienvenido a Ecos del Círculo eterno</h3><div class='date'>—</div><p class='excerpt'>Este slideshow mostrará los eventos de la campaña con capturas de Talespire. Usa la página de administración para añadir o importar sesiones.</p></div>`;
-        container.appendChild(el);
-        const dot = document.createElement('div'); dot.className='dot active'; dots.appendChild(dot);
-        return;
-      }
+    function renderSlides() {
+      const container = document.getElementById('slides-container');
+      container.innerHTML = '';
+      slidesData.forEach(slide => {
+        const slideDiv = document.createElement('div');
+        slideDiv.classList.add('slide');
 
-      posts.forEach((p,idx)=>{
-        const slide = document.createElement('section'); slide.className='slide';
-        const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#050506"/></svg>';
-        const media = `<div class="slide-media"><img alt="${escapeHtml(p.title||'captura')}" src="${imgSrc}"></div>`;
-        const meta = `<div class="slide-meta"><h3>${escapeHtml(p.title||'Sin título')}</h3><div class="date">${escapeHtml(p.date||'')}</div><p>${escapeHtml((p.body||'').slice(0,420))}</p></div>`;
-        slide.innerHTML = media + meta;
-        container.appendChild(slide);
-
-        const dot = document.createElement('div'); dot.className='dot'; dot.dataset.index = idx; dot.addEventListener('click', ()=> goTo(idx)); dots.appendChild(dot);
-      })
-      updateDots(0);
+        slideDiv.innerHTML = `
+          <img src="${slide.image}" alt="${slide.title}">
+          <div class="caption">
+            <h2>${slide.title}</h2>
+            <p>${slide.text}</p>
+          </div>
+        `;
+        container.appendChild(slideDiv);
+      });
     }
 
-    let current = 0; let timer = null; const interval = 6000;
-    function show(index){ const slides = document.getElementById('slides'); const n = slides.children.length; if(n===0) return; current = ((index % n)+n)%n; slides.style.transform = `translateX(${ -current * 100 }%)`; updateDots(current); }
-    function next(){ show(current+1) }
-    function prev(){ show(current-1) }
-    function goTo(i){ show(i); resetTimer(); }
-    function updateDots(active){ const dots = document.querySelectorAll('#dots .dot'); dots.forEach((d,i)=> d.classList.toggle('active', i===active)) }
-    function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval) }
-    function resetTimer(){ startTimer(); }
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      if (slides.length === 0) return;
 
-    document.getElementById('next').addEventListener('click', ()=>{ next(); resetTimer(); });
-    document.getElementById('prev').addEventListener('click', ()=>{ prev(); resetTimer(); });
+      if (index >= slides.length) currentSlide = 0;
+      else if (index < 0) currentSlide = slides.length - 1;
+      else currentSlide = index;
 
-    const slideshow = document.getElementById('slideshow');
-    slideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
-    slideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
+      slides.forEach((slide, i) => {
+        slide.style.display = i === currentSlide ? 'block' : 'none';
+      });
+    }
 
-    function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;"); }
-
-    buildSlides(); show(0); startTimer();
-    window.addEventListener('storage', (e)=>{ if(e.key===LS_KEY) { buildSlides(); show(0); } });
+    function moveSlide(n) {
+      showSlide(currentSlide + n);
+    }
   </script>
 </body>
 </html>
