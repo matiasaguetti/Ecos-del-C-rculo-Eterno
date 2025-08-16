@@ -1,78 +1,126 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ecos del Círculo Eterno</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ecos del Círculo eterno — Diario de campaña</title>
+  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Ecos del Círculo Eterno</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="mapas.html">Mapas</a></li>
-        <li><a href="recursos.html">Recursos</a></li>
-        <li><a href="notas.html">Notas</a></li>
-      </ul>
+  <header class="banner">
+    <div>
+      <div class="camp-name">Ecos del Círculo eterno</div>
+      <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
+    </div>
+    <nav aria-label="navegación principal">
+      <a class="navlink" href="/mapas.html">Mapas</a>
+      <a class="navlink" href="/recursos.html">Recursos</a>
+      <a class="navlink" href="/notas.html">Notas</a>
     </nav>
   </header>
 
-  <!-- Slideshow -->
-  <section class="slideshow">
-    <div class="slides" id="slides-container"></div>
-    <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
-    <button class="next" onclick="moveSlide(1)">&#10095;</button>
-  </section>
+  <main class="wrap">
+    <!-- Slideshow principal -->
+    <section class="slideshow" id="slideshow">
+      <div id="slides" class="slides" aria-live="polite"></div>
+      <div class="controls">
+        <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
+        <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
+      </div>
+      <div class="dots" id="dots" role="tablist"></div>
+    </section>
+
+    <!-- Accesos a secciones -->
+    <section class="sections">
+      <article class="section-card">
+        <h4>Mapas</h4>
+        <p>Galería y planos: aquí se mostrarán los mapas de la campaña. (Página: <code>/mapas.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Recursos</h4>
+        <p>Objetos, referencias, handouts y material descargable. (Página: <code>/recursos.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Notas</h4>
+        <p>Zona de anotaciones públicas y privadas para jugadores. (Página: <code>/notas.html</code>).</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
 
   <script>
-    let slidesData = [];
-    let currentSlide = 0;
+    let posts = [];
+    let current = 0, timer = null;
+    const interval = 6000;
 
-    // Cargar slides.json
-    fetch('slides.json')
-      .then(response => response.json())
-      .then(data => {
-        slidesData = data;
-        renderSlides();
-        showSlide(0);
-      });
-
-    function renderSlides() {
-      const container = document.getElementById('slides-container');
-      container.innerHTML = '';
-      slidesData.forEach(slide => {
-        const slideDiv = document.createElement('div');
-        slideDiv.classList.add('slide');
-
-        slideDiv.innerHTML = `
-          <img src="${slide.image}" alt="${slide.title}">
-          <div class="caption">
-            <h2>${slide.title}</h2>
-            <p>${slide.text}</p>
-          </div>
-        `;
-        container.appendChild(slideDiv);
-      });
+    async function loadSlides(){
+      try {
+        const res = await fetch("slides.json");
+        posts = await res.json();
+      } catch(e) {
+        posts = [];
+      }
+      buildSlides();
+      show(0);
+      startTimer();
     }
 
-    function showSlide(index) {
-      const slides = document.querySelectorAll('.slide');
-      if (slides.length === 0) return;
+    function buildSlides(){
+      const container = document.getElementById('slides');
+      const dots = document.getElementById('dots');
+      container.innerHTML = "";
+      dots.innerHTML = "";
 
-      if (index >= slides.length) currentSlide = 0;
-      else if (index < 0) currentSlide = slides.length - 1;
-      else currentSlide = index;
+      if(posts.length===0){
+        container.innerHTML = `<div class="slide">
+          <div class="slide-media"><img src="assets/placeholder.jpg" alt="placeholder"></div>
+          <div class="slide-meta"><h3>Bienvenido</h3><p>No hay entradas todavía.</p></div>
+        </div>`;
+        dots.innerHTML = `<div class="dot active"></div>`;
+        return;
+      }
 
-      slides.forEach((slide, i) => {
-        slide.style.display = i === currentSlide ? 'block' : 'none';
+      posts.forEach((p,idx)=>{
+        const slide = document.createElement("section");
+        slide.className = "slide";
+        slide.innerHTML = `
+          <div class="slide-media"><img src="${p.images[0]}" alt="${p.title}"></div>
+          <div class="slide-meta"><h3>${p.title}</h3><div class="date">${p.date}</div><p>${p.body}</p></div>`;
+        container.appendChild(slide);
+
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        dot.addEventListener("click", ()=> goTo(idx));
+        dots.appendChild(dot);
       });
+      updateDots(0);
     }
 
-    function moveSlide(n) {
-      showSlide(currentSlide + n);
+    function show(index){
+      const slides = document.getElementById("slides");
+      const n = slides.children.length;
+      if(n===0) return;
+      current = ((index % n)+n)%n;
+      slides.style.transform = `translateX(${-current * 100}%)`;
+      updateDots(current);
     }
+    function next(){ show(current+1) }
+    function prev(){ show(current-1) }
+    function goTo(i){ show(i); resetTimer(); }
+    function updateDots(active){
+      document.querySelectorAll("#dots .dot").forEach((d,i)=>
+        d.classList.toggle("active", i===active));
+    }
+    function startTimer(){ if(timer) clearInterval(timer); timer=setInterval(()=> next(), interval); }
+    function resetTimer(){ startTimer(); }
+
+    document.getElementById("next").addEventListener("click", ()=>{ next(); resetTimer(); });
+    document.getElementById("prev").addEventListener("click", ()=>{ prev(); resetTimer(); });
+
+    loadSlides();
   </script>
 </body>
 </html>
