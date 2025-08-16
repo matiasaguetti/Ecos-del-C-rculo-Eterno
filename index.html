@@ -1,17 +1,14 @@
 <!--
   Archivo: index.html
-  Sitio single-file (SPA) para GitHub Pages: "Ecos del Círculo eterno"
-  --- Instrucciones de uso ---
-  1) Copiar este archivo como /index.html en el root de tu repositorio GitHub.
-  2) Subir (commit & push) y activar GitHub Pages desde Settings > Pages (deploy from branch/root). Más info en https://docs.github.com/en/pages/quickstart
-  3) El sitio funciona como SPA: accesos a #partidas, #mapas, #jugadores. Las imágenes que subas en el navegador se guardan en localStorage (limitado, ver notas técnicas abajo).
-  4) Para colaboración real (subir imágenes/archivos desde varios usuarios), recomendamos usar PRs al repositorio o Git LFS para archivos pesados (ver notas técnicas abajo).
+  Versión actualizada: slideshow en la portada + navegación a páginas externas (mapas, recursos, notas).
+  Instrucciones:
+   - Reemplaza el /index.html en la raíz del repo por este archivo.
+   - Crea las páginas vacías /mapas.html, /recursos.html y /notas.html (puedo generarlas si quieres).
+   - El slideshow usa los posts guardados en localStorage bajo la clave 'ecd_posts'. Cada post es un objeto {id,title,date,body,images:[dataURL,...]} que puede añadirse con la sección Partidas (o importando JSON).
 
-  --- Notas técnicas rápidas (están comentadas también dentro del código) ---
-  - Almacenamiento local: usa localStorage bajo las claves 'ecd_posts','ecd_maps','ecd_notes'. Esto es persistente pero sujeto a límites de navegador (~5 MiB por origen). (MDN Web Storage API).
-  - Las imágenes se convierten a Data URLs (base64) — ten en cuenta que base64 añade ~33% de overhead.
-  - Recomendación: para material definitivo (capturas de Talespire, mapas finales), subir las imágenes a la rama /assets del repositorio o usar Git LFS para archivos grandes.
-  - Exportar/Importar: el UI incluye botones para exportar JSON de todo lo almacenado y para importar.
+  Limitaciones & recomendaciones técnicas:
+   - localStorage suele ofrecer ~5 MiB por origen. Las imágenes en Data URL consumen espacio y aumentan ~33% con respecto al binario. Para conservar material definitivo, sube imágenes a /assets/ y referencia sus URLs.
+   - Para colaboración multiusuario recomendamos Pull Requests con assets en /assets/ o habilitar Git LFS para archivos grandes.
 -->
 
 <!doctype html>
@@ -19,304 +16,153 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ecos del Círculo eterno — Registro de campaña</title>
-  <meta name="description" content="Registro y recursos de la campaña de D&D 5e 'Ecos del Círculo eterno'. Partidas, mapas, anotaciones de jugadores y galería de Talespire."/>
-
-  <!-- Google Fonts (cinzel para título + inter para texto) -->
+  <title>Ecos del Círculo eterno — Diario de campaña</title>
+  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
   <style>
-    :root{
-      --bg:#0b0b0c;
-      --panel:#0f1112;
-      --muted:#9aa3a8;
-      --accent:#8a5b3a; /* cobre oscuro */
-      --accent-2:#5b7a7b;
-      --glass: rgba(255,255,255,0.03);
-      color-scheme: dark;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
+    :root{ --bg:#070708; --panel:#0f1112; --muted:#9aa3a8; --accent:#8a5b3a; --glass: rgba(255,255,255,0.03); color-scheme: dark; font-family:'Inter',system-ui,Arial }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#060607 0%, #0d0d0e 60%);color:#e6eef1}
-
-    /* Banner */
-    .banner{display:grid;grid-template-columns:1fr auto;align-items:center;padding:28px 36px;border-bottom:1px solid rgba(255,255,255,0.04);gap:18px}
-    .camp-name{font-family:'Cinzel', serif;font-size:34px;letter-spacing:1px;text-shadow:0 6px 24px rgba(138,91,58,0.06)}
-    .camp-sub{color:var(--muted);font-size:14px}
-
-    /* Nav */
-    nav{display:flex;gap:12px;align-items:center}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#040405 0%,#0d0d0e 60%);color:#e6eef1}
+    .banner{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .camp-name{font-family:'Cinzel',serif;font-size:30px}
+    .camp-sub{color:var(--muted);font-size:13px}
+    nav{display:flex;gap:10px}
     .navlink{background:var(--glass);padding:8px 12px;border-radius:10px;text-decoration:none;color:inherit;font-weight:600;border:1px solid rgba(255,255,255,0.02)}
-    .navlink:hover{transform:translateY(-2px)}
-
-    /* Layout */
     .wrap{max-width:1100px;margin:28px auto;padding:0 20px}
-    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
 
-    /* Preview content */
-    h2{margin:6px 0 12px}
-    .excerpt{color:var(--muted);line-height:1.5}
+    /* Slideshow */
+    .slideshow{position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .slides{display:flex;transition:transform .5s ease}
+    .slide{min-width:100%;display:grid;grid-template-columns: 56% 44%;gap:18px;align-items:center;padding:22px}
+    .slide-media{height:320px;border-radius:10px;overflow:hidden;background:#050506;display:flex;align-items:center;justify-content:center}
+    .slide-media img{width:100%;height:100%;object-fit:cover}
+    .slide-meta h3{margin:0 0 6px;font-family:'Cinzel',serif;font-size:22px}
+    .slide-meta .date{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .slide-meta p{color:var(--muted);line-height:1.5}
 
-    /* Grid for previews */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-    .preview{height:160px;border-radius:10px;overflow:hidden;background:#050506;display:flex;flex-direction:column}
-    .preview img{width:100%;height:110px;object-fit:cover}
-    .preview .meta{padding:10px;font-size:13px}
+    .controls{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none}
+    .ctrl-btn{pointer-events:auto;background:rgba(0,0,0,0.4);border:none;padding:10px;border-radius:50%;backdrop-filter:blur(2px);color:#fff}
+    .dots{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;display:flex;gap:6px}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.08);cursor:pointer}
+    .dot.active{background:var(--accent)}
 
-    /* Players area */
-    .notes-list{max-height:380px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:8px}
-    .note{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+    /* Sections preview grid */
+    .sections{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .section-card{background:var(--panel);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .section-card h4{margin:0 0 8px}
+    .section-card p{color:var(--muted);font-size:14px}
 
-    footer{margin:40px 0 80px;color:var(--muted);text-align:center}
-
-    /* Responsive */
-    @media (max-width:920px){.hero{grid-template-columns:1fr}}
+    @media (max-width:900px){ .slide{grid-template-columns:1fr; } .slide-media{height:220px} .sections{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
   <header class="banner">
     <div>
       <div class="camp-name">Ecos del Círculo eterno</div>
-      <div class="camp-sub">Crónicas, mapas y recursos de la campaña (D&amp;D 5e) — Registro de la mesa</div>
+      <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
     </div>
-
     <nav aria-label="navegación principal">
-      <a class="navlink" href="#home">Inicio</a>
-      <a class="navlink" href="#partidas">Partidas</a>
-      <a class="navlink" href="#mapas">Mapas</a>
-      <a class="navlink" href="#jugadores">Jugadores</a>
-      <a class="navlink" href="#acerca">Acerca</a>
+      <a class="navlink" href="/mapas.html">Mapas</a>
+      <a class="navlink" href="/recursos.html">Recursos</a>
+      <a class="navlink" href="/notas.html">Notas</a>
     </nav>
   </header>
 
-  <main class="wrap" id="app">
-    <!-- HOME / PREVIEW -->
-    <section id="home" class="hero">
-      <div class="card">
-        <h2>Últimos eventos</h2>
-        <p class="excerpt">Aquí aparecerá el registro cronológico de sesiones: título, fecha, texto resumen y capturas subidas desde Talespire. Usa la sección <strong>Partidas</strong> para ver el desarrollo completo.</p>
-
-        <div class="grid" id="recentGrid">
-          <!-- previews añadidas vía JS -->
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-          <button id="btn-new-post" class="navlink">Nuevo registro (local)</button>
-          <button id="btn-export" class="navlink">Exportar todo (JSON)</button>
-          <button id="btn-import" class="navlink">Importar JSON</button>
-          <input id="file-import" type="file" accept="application/json" style="display:none" />
-        </div>
+  <main class="wrap">
+    <!-- Slideshow principal -->
+    <section class="slideshow" id="slideshow">
+      <div id="slides" class="slides" aria-live="polite">
+        <!-- Slides creadas por JS a partir de localStorage 'ecd_posts' -->
       </div>
 
-      <aside class="card">
-        <h3>Accesos rápidos</h3>
-        <p class="excerpt">Atajos para navegar entre secciones, descargar y respaldar la información local. Recomendado: subir imágenes finales a <code>/assets/images/</code> en el repo y referenciarlas desde los posts.</p>
-
-        <hr style="border:none;height:1px;background:rgba(255,255,255,0.02);margin:12px 0">
-        <h4>Estado técnico</h4>
-        <ul style="color:var(--muted);font-size:13px">
-          <li>La web es estática: sin servidor.</li>
-          <li>Los datos temporales se guardan en <code>localStorage</code> del navegador.</li>
-          <li>Máximo práctico por origen: ~5 MiB; si necesitas más, usa Git LFS o sube imágenes al repo.</li>
-        </ul>
-      </aside>
-    </section>
-
-    <!-- PARTIDAS -->
-    <section id="partidas" style="margin-top:26px">
-      <div class="card">
-        <h2>Partidas — Cronología</h2>
-        <p class="excerpt">Agrega entradas con título, fecha, texto y capturas. Las imágenes se pueden arrastrar al campo de imágenes (client-side). Cada entrada puede exportarse como JSON individual.</p>
-
-        <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
-          <input id="postTitle" placeholder="Título de la sesión" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit">
-          <input id="postDate" type="date" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit">
-        </div>
-
-        <textarea id="postBody" placeholder="Resumen / notas..." style="margin-top:10px;width:100%;min-height:120px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit"></textarea>
-
-        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-          <label class="navlink" for="postImage">Añadir captura (arrastrar/seleccionar)</label>
-          <input type="file" id="postImage" accept="image/*" style="display:none">
-          <button id="savePost" class="navlink">Guardar entrada</button>
-        </div>
-
-        <div id="postsList" style="margin-top:14px;display:grid;gap:10px"></div>
+      <div class="controls">
+        <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
+        <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
       </div>
+
+      <div class="dots" id="dots" role="tablist"></div>
     </section>
 
-    <!-- MAPAS -->
-    <section id="mapas" style="margin-top:26px">
-      <div class="card">
-        <h2>Mapas</h2>
-        <p class="excerpt">Galería de mapas de la campaña. Se pueden añadir mapas desde el equipo. Para mapas grandes se recomienda subir el archivo a la rama <code>/assets/maps/</code> o usar Git LFS.</p>
+    <!-- Accesos a secciones: enlaces a páginas que se desarrollarán después -->
+    <section class="sections">
+      <article class="section-card">
+        <h4>Mapas</h4>
+        <p>Galería y planos: aquí se mostrarán los mapas de la campaña, bocetos y versiones finales. (Página: <code>/mapas.html</code>).</p>
+      </article>
 
-        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-          <label class="navlink" for="mapImage">Añadir mapa</label>
-          <input type="file" id="mapImage" accept="image/*" style="display:none">
-        </div>
+      <article class="section-card">
+        <h4>Recursos</h4>
+        <p>Objetos, referencias, handouts y material descargable. Los jugadores podrán aportar mediante Pull Requests. (Página: <code>/recursos.html</code>).</p>
+      </article>
 
-        <div id="mapsGrid" class="grid" style="margin-top:12px"></div>
-      </div>
+      <article class="section-card">
+        <h4>Notas</h4>
+        <p>Zona de anotaciones públicas y privadas para jugadores: fichas, apuntes y registros. (Página: <code>/notas.html</code>).</p>
+      </article>
     </section>
 
-    <!-- JUGADORES -->
-    <section id="jugadores" style="margin-top:26px">
-      <div class="card">
-        <h2>Zona de jugadores</h2>
-        <p class="excerpt">Los jugadores pueden añadir anotaciones públicas, objetos, imágenes o links. Todo se guarda localmente en su navegador. Para colaboración real, los jugadores pueden enviar Pull Requests al repositorio con sus recursos.</p>
-
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="noteAuthor" placeholder="Nombre (jugador)" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit">
-          <input id="noteTitle" placeholder="Título nota / objeto" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit">
-        </div>
-        <textarea id="noteBody" placeholder="Descripción, características, enlaces..." style="margin-top:10px;width:100%;min-height:100px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="saveNote" class="navlink">Guardar nota</button>
-          <button id="clearAll" class="navlink">Borrar notas locales</button>
-        </div>
-
-        <div class="notes-list" id="notesList" style="margin-top:12px"></div>
-      </div>
+    <section style="margin-top:18px;color:var(--muted);font-size:13px">
+      <p>Cómo funciona el slideshow: toma las entradas almacenadas localmente en <code>localStorage</code> bajo la clave <code>ecd_posts</code>. Cada entrada debe contener: <code>{id,title,date,body,images:[dataURL,...]}</code>. Puedes añadir entradas desde una página de administración que luego podremos integrar o importarlas desde JSON.</p>
     </section>
-
-    <!-- ACERCA -->
-    <section id="acerca" style="margin-top:26px">
-      <div class="card">
-        <h2>Acerca y flujo de trabajo</h2>
-        <p class="excerpt">Este sitio es un frontend estático pensado como diario de campaña. Datos y capturas agregadas desde el navegador se guardan en localStorage. Para convertir esto en un sitio colaborativo con archivos compartidos, opciones recomendadas:</p>
-        <ul style="color:var(--muted);font-size:13px">
-          <li>Los jugadores hacen fork y pull request añadiendo sus recursos en <code>/assets/</code>.</li>
-          <li>Usar GitHub Issues para propuestas rápidas o discusión (permite comentarios y archivos adjuntos cuando se usan links al repo).</li>
-          <li>Para archivos>50MB (mapas grandes), habilitar Git LFS. (Git LFS admin docs.)</li>
-        </ul>
-      </div>
-    </section>
-
   </main>
 
-  <footer>
-    Creado para la campaña «Ecos del Círculo eterno». Archivo: <code>index.html</code>. Para despliegue: subir a GitHub y activar Pages. Última actualización: 2025.
-  </footer>
+  <footer style="margin:40px 0 80px;text-align:center;color:var(--muted)">Creado para la campaña «Ecos del Círculo eterno» — index.html (slideshow)</footer>
 
   <script>
-    /* --------------------------- Utilidades de almacenamiento --------------------------- */
-    const LS_KEYS = { posts: 'ecd_posts', maps: 'ecd_maps', notes: 'ecd_notes' };
+    // Slideshow: carga posts desde localStorage y crea slides.
+    const LS_KEY = 'ecd_posts';
+    function loadPosts(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]') }catch(e){console.warn('loadPosts',e); return [] } }
 
-    function load(key){ try { return JSON.parse(localStorage.getItem(key) || '[]') } catch(e){console.warn('JSON load failed',e); return []} }
-    function save(key,arr){ localStorage.setItem(key, JSON.stringify(arr)) }
+    function buildSlides(){
+      const container = document.getElementById('slides'); container.innerHTML='';
+      const dots = document.getElementById('dots'); dots.innerHTML='';
+      const posts = loadPosts().slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
 
-    /* --------------------------- Renderers --------------------------- */
-    function renderRecent(){
-      const grid = document.getElementById('recentGrid'); grid.innerHTML = '';
-      const posts = load(LS_KEYS.posts).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
-      posts.slice(0,6).forEach(p=>{
-        const div = document.createElement('div'); div.className='preview card';
-        const img = document.createElement('img'); img.alt = p.title || 'captura'; img.src = p.images && p.images[0] ? p.images[0] : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="100%" height="100%" fill="#050506"/></svg>';
-        const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `<strong>${p.title||'Sin título'}</strong><div style="color:var(--muted);font-size:12px">${p.date||''}</div>`;
-        div.appendChild(img); div.appendChild(meta); grid.appendChild(div);
-      })
-    }
+      if(posts.length===0){ // placeholder slide
+        const el = document.createElement('div'); el.className='slide';
+        el.innerHTML = `<div class="slide-media"><img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='700'><rect width='100%' height='100%' fill='%23050606'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23aab2b6' font-size='28'>Añade registros desde la sección Partidas para verlos aquí</text></svg>`+`</div><div class='slide-meta'><h3>Bienvenido a Ecos del Círculo eterno</h3><div class='date'>—</div><p class='excerpt'>Este slideshow mostrará los eventos de la campaña con capturas de Talespire. Usa la página de administración para añadir o importar sesiones.</p></div>`;
+        container.appendChild(el);
+        const dot = document.createElement('div'); dot.className='dot active'; dots.appendChild(dot);
+        return;
+      }
 
-    function renderPosts(){
-      const list = document.getElementById('postsList'); list.innerHTML = '';
-      const posts = load(LS_KEYS.posts).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
       posts.forEach((p,idx)=>{
-        const el = document.createElement('div'); el.className='card';
-        el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${p.title||'Sin título'}</strong><div style="color:var(--muted);font-size:13px">${p.date||''}</div></div><div><button data-idx="${idx}" class="navlink exportPost">Exportar</button> <button data-idx="${idx}" class="navlink deletePost">Borrar</button></div></div><p style="margin-top:8px;color:var(--muted)">${(p.body||'').slice(0,420)}</p>`;
-        if(p.images && p.images.length){
-          const g = document.createElement('div'); g.className='grid'; g.style.marginTop='10px'; p.images.forEach(src=>{ const i=document.createElement('img'); i.src=src; i.style.width='120px'; i.style.height='90px'; i.style.objectFit='cover'; i.style.borderRadius='8px'; g.appendChild(i)}); el.appendChild(g);
-        }
-        list.appendChild(el);
+        const slide = document.createElement('section'); slide.className='slide';
+        const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#050506"/></svg>';
+        const media = `<div class="slide-media"><img alt="${escapeHtml(p.title||'captura')}" src="${imgSrc}"></div>`;
+        const meta = `<div class="slide-meta"><h3>${escapeHtml(p.title||'Sin título')}</h3><div class="date">${escapeHtml(p.date||'')}</div><p>${escapeHtml((p.body||'').slice(0,420))}</p></div>`;
+        slide.innerHTML = media + meta;
+        container.appendChild(slide);
+
+        const dot = document.createElement('div'); dot.className='dot'; dot.dataset.index = idx; dot.addEventListener('click', ()=> goTo(idx)); dots.appendChild(dot);
       })
+      updateDots(0);
     }
 
-    function renderMaps(){
-      const grid = document.getElementById('mapsGrid'); grid.innerHTML='';
-      const maps = load(LS_KEYS.maps).slice().reverse();
-      maps.forEach((m,idx)=>{ const d=document.createElement('div'); d.className='preview card'; const img=document.createElement('img'); img.src=m.data; img.alt=m.title||'mapa'; const meta=document.createElement('div'); meta.className='meta'; meta.innerHTML=`<strong>${m.title||'Mapa'}</strong><div style="color:var(--muted);font-size:12px">${m.note||''}</div>`; d.appendChild(img); d.appendChild(meta); grid.appendChild(d) })
-    }
+    // slideshow behavior
+    let current = 0; let timer = null; const interval = 6000; // 6s
+    function show(index){ const slides = document.getElementById('slides'); const n = slides.children.length; if(n===0) return; current = ((index % n)+n)%n; slides.style.transform = `translateX(${ -current * 100 }%)`; updateDots(current); }
+    function next(){ show(current+1) }
+    function prev(){ show(current-1) }
+    function goTo(i){ show(i); resetTimer(); }
+    function updateDots(active){ const dots = document.querySelectorAll('#dots .dot'); dots.forEach((d,i)=> d.classList.toggle('active', i===active)) }
+    function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval) }
+    function resetTimer(){ startTimer(); }
 
-    function renderNotes(){
-      const list = document.getElementById('notesList'); list.innerHTML='';
-      const notes = load(LS_KEYS.notes).slice().reverse();
-      notes.forEach((n,idx)=>{ const el=document.createElement('div'); el.className='note'; el.innerHTML=`<strong>${n.title||'Sin título'}</strong> — <em style="color:var(--muted)">${n.author||'Anónimo'}</em><div style="color:var(--muted);margin-top:6px">${n.body||''}</div>`; list.appendChild(el) })
-    }
+    document.getElementById('next').addEventListener('click', ()=>{ next(); resetTimer(); });
+    document.getElementById('prev').addEventListener('click', ()=>{ prev(); resetTimer(); });
 
-    /* --------------------------- Handlers --------------------------- */
-    document.getElementById('btn-new-post').addEventListener('click',()=>{ location.hash='#partidas'; document.getElementById('postTitle').focus() })
+    // pause on hover
+    const slideshow = document.getElementById('slideshow'); slideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); }); slideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
 
-    document.getElementById('postImage').addEventListener('change',async (e)=>{
-      const f = e.target.files[0]; if(!f) return; const data = await fileToDataURL(f); tmpImage = data; alert('Captura lista para agregar. Ahora pulsa Guardar entrada. (Esta captura se guarda como data URL en localStorage)')
-    })
-
-    let tmpImage = null;
-    document.getElementById('savePost').addEventListener('click', async ()=>{
-      const title = document.getElementById('postTitle').value.trim();
-      const date = document.getElementById('postDate').value || new Date().toISOString().slice(0,10);
-      const body = document.getElementById('postBody').value.trim();
-      const posts = load(LS_KEYS.posts);
-      const images = [];
-      if(tmpImage) images.push(tmpImage);
-      // create compact object
-      posts.push({ id: Date.now(), title, date, body, images });
-      try{ save(LS_KEYS.posts, posts); tmpImage=null; document.getElementById('postTitle').value=''; document.getElementById('postBody').value=''; document.getElementById('postDate').value=''; renderPosts(); renderRecent(); alert('Entrada guardada localmente.') } catch(e){ alert('Error al guardar: cupo de almacenamiento alcanzado. Guarda fuera las imágenes y sube al repo /assets.'); console.error(e) }
-    })
-
-    document.getElementById('mapImage').addEventListener('change', async (e)=>{
-      const f = e.target.files[0]; if(!f) return; const data = await fileToDataURL(f);
-      const maps = load(LS_KEYS.maps); maps.push({ id: Date.now(), title: f.name, note:'', data });
-      try{ save(LS_KEYS.maps,maps); renderMaps(); alert('Mapa guardado localmente. Para uso compartido, sube a /assets/maps/ en el repo o usa Git LFS.') }catch(e){ alert('Error: límite de almacenamiento local alcanzado.'); console.error(e)}
-    })
-
-    document.getElementById('saveNote').addEventListener('click', ()=>{
-      const author = document.getElementById('noteAuthor').value.trim();
-      const title = document.getElementById('noteTitle').value.trim();
-      const body = document.getElementById('noteBody').value.trim();
-      const notes = load(LS_KEYS.notes); notes.push({ id: Date.now(), author, title, body });
-      save(LS_KEYS.notes, notes); renderNotes(); document.getElementById('noteAuthor').value=''; document.getElementById('noteTitle').value=''; document.getElementById('noteBody').value='';
-    })
-
-    document.getElementById('clearAll').addEventListener('click', ()=>{ if(confirm('Borrar TODAS las notas almacenadas en TU navegador?')){ localStorage.removeItem(LS_KEYS.notes); renderNotes(); } })
-
-    // export/import
-    document.getElementById('btn-export').addEventListener('click', ()=>{
-      const payload = { posts: load(LS_KEYS.posts), maps: load(LS_KEYS.maps), notes: load(LS_KEYS.notes) };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='ecos_circulo_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    })
-
-    document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file-import').click())
-    document.getElementById('file-import').addEventListener('change', async (e)=>{
-      const f = e.target.files[0]; if(!f) return; try{ const t = await f.text(); const obj = JSON.parse(t); if(obj.posts) save(LS_KEYS.posts,obj.posts); if(obj.maps) save(LS_KEYS.maps,obj.maps); if(obj.notes) save(LS_KEYS.notes,obj.notes); renderAll(); alert('Importado OK. Ten en cuenta límites de almacenamiento local.'); }catch(err){ alert('Archivo inválido o error al importar'); console.error(err)}
-    })
-
-    // delegates for export/delete post
-    document.addEventListener('click', (ev)=>{
-      if(ev.target.matches('.exportPost')){
-        const idx = ev.target.getAttribute('data-idx'); const posts = load(LS_KEYS.posts); const p = posts[idx]; const blob = new Blob([JSON.stringify(p,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(p.title||'post')+'.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      }
-      if(ev.target.matches('.deletePost')){
-        if(!confirm('Borrar esta entrada localmente?')) return; const idx=ev.target.getAttribute('data-idx'); const posts=load(LS_KEYS.posts); posts.splice(idx,1); save(LS_KEYS.posts,posts); renderPosts(); renderRecent();
-      }
-    })
-
-    /* --------------------------- Helpers --------------------------- */
-    function fileToDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }) }
-
-    function renderAll(){ renderRecent(); renderPosts(); renderMaps(); renderNotes(); }
+    // escape helper
+    function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;"); }
 
     // init
-    renderAll();
+    buildSlides(); show(0); startTimer();
 
-    // simple SPA navigation: scroll to sections
-    window.addEventListener('hashchange', ()=>{ const id = location.hash.replace('#','') || 'home'; const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); })
-
-    // initial hash
-    if(location.hash) window.dispatchEvent(new HashChangeEvent('hashchange'));
-
-    /* --------------------------- Fin script --------------------------- */
+    // re-render if localStorage cambia en otra pestaña (manual sync)
+    window.addEventListener('storage', (e)=>{ if(e.key===LS_KEY) { buildSlides(); show(0); } });
   </script>
 </body>
 </html>
