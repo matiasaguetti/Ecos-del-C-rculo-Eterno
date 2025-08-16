@@ -1,16 +1,11 @@
 [
   {
-    "id": 1,
-    "title": "La llamada del círculo",
-    "date": "2025-08-15",
-    "body": "Los aventureros escucharon la voz en las ruinas...",
-    "images": ["assets/sample1.jpg"]
-  },
-  {
-    "id": 2,
-    "title": "Sombras en el bosque",
+    "id": 1755372695356,
+    "title": "Adler llega a Valverde del Río",
     "date": "2025-08-16",
-    "body": "El grupo se adentró en el bosque de las sombras...",
-    "images": ["assets/sample2.jpg"]
+    "body": "Alder, un clérigo del templo de Deneir, ha llegado a Valverde del Río con la intención de pedir a don Alarico Belmonte, gobernador local, que le conceda permiso para establecer un templo en honor al dios del conocimiento en sus tierras. Esta es la última tarea encargada por el Gran Escriba Adario para completar su formación como Sacerdote del Saber.",
+    "images": [
+      "assets/TS_1755360327.png"
+    ]
   }
 ]
