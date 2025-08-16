@@ -1,0 +1,44 @@
+name: Update slides.json via repository_dispatch
+
+on:
+  repository_dispatch:
+    types: [update-slides]
+
+permissions:
+  contents: write
+
+jobs:
+  update-slides:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Write slides.json from payload (base64)
+        env:
+          SLIDES_B64: ${{ github.event.client_payload.slides_b64 }}
+          PATH_FILE: ${{ github.event.client_payload.path }}
+        run: |
+          set -e
+          FILEPATH="${PATH_FILE:-slides.json}"
+          echo "$SLIDES_B64" | base64 -d > "$FILEPATH"
+          echo "Escrito $FILEPATH"
+
+      - name: Commit & push
+        env:
+          COMMIT_MESSAGE: ${{ github.event.client_payload.message }}
+          BRANCH: ${{ github.event.client_payload.branch }}
+        run: |
+          set -e
+          DEST_BRANCH="${BRANCH:-main}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios para commitear."
+            exit 0
+          fi
+          git commit -m "${COMMIT_MESSAGE:-Update slides.json via repository_dispatch}"
+          git push origin HEAD:"$DEST_BRANCH"
