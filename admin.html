@@ -1,60 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin - Ecos del Círculo Eterno</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>Panel de administración</h1>
-  <form id="slideForm">
-    <label>Título: <input type="text" id="title" required></label><br>
-    <label>Texto: <textarea id="text" required></textarea></label><br>
-    <label>Imagen (ruta dentro de /images): <input type="text" id="image" required></label><br>
-    <button type="submit">Agregar slide</button>
+<body class="admin-body">
+  <h1>Panel de Administración</h1>
+  <form id="postForm">
+    <label for="title">Título</label>
+    <input type="text" id="title" required />
+    <label for="date">Fecha</label>
+    <input type="date" id="date" required />
+    <label for="body">Texto</label>
+    <textarea id="body" rows="5" required></textarea>
+    <label for="images">Imágenes</label>
+    <input type="file" id="images" accept="image/*" multiple />
+    <button type="submit">Guardar entrada</button>
   </form>
 
-  <h2>Slides actuales</h2>
-  <pre id="jsonPreview"></pre>
-  <button id="downloadJson">Descargar JSON</button>
+  <h2>Entradas guardadas</h2>
+  <div id="postList"></div>
 
   <script>
-    let slides = [];
+    const postForm = document.getElementById("postForm");
+    const postList = document.getElementById("postList");
 
-    // Cargar JSON existente
-    fetch('slides.json')
-      .then(response => response.json())
-      .then(data => {
-        slides = data;
-        renderPreview();
+    function loadPosts(){
+      return JSON.parse(localStorage.getItem("ecd_posts")||"[]");
+    }
+    function savePosts(posts){
+      localStorage.setItem("ecd_posts", JSON.stringify(posts));
+    }
+    function renderPosts(){
+      const posts = loadPosts();
+      postList.innerHTML = "";
+      posts.forEach((p,i)=>{
+        const div=document.createElement("div");
+        div.className="post-item";
+        div.innerHTML=`<h3>${p.title} (${p.date})</h3><p>${p.body}</p>
+          <div>${p.images.map(img=>`<img class="thumb" src="${img}"/>`).join("")}</div>
+          <button onclick="deletePost(${i})">Borrar</button>`;
+        postList.appendChild(div);
       });
-
-    document.getElementById('slideForm').addEventListener('submit', e => {
-      e.preventDefault();
-
-      const title = document.getElementById('title').value;
-      const text = document.getElementById('text').value;
-      const image = document.getElementById('image').value;
-
-      slides.push({ title, text, image });
-      renderPreview();
-
-      document.getElementById('slideForm').reset();
-    });
-
-    function renderPreview() {
-      document.getElementById('jsonPreview').textContent = JSON.stringify(slides, null, 2);
+    }
+    function deletePost(i){
+      const posts=loadPosts();
+      posts.splice(i,1);
+      savePosts(posts);
+      renderPosts();
     }
 
-    document.getElementById('downloadJson').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(slides, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'slides.json';
+    postForm.addEventListener("submit", async e=>{
+      e.preventDefault();
+      const title=document.getElementById("title").value;
+      const date=document.getElementById("date").value;
+      const body=document.getElementById("body").value;
+      const files=document.getElementById("images").files;
+
+      const images=[];
+      for(let f of files){
+        const reader=new FileReader();
+        images.push(await new Promise(res=>{
+          reader.onload=e=>res(e.target.result);
+          reader.readAsDataURL(f);
+        }));
+      }
+
+      const posts=loadPosts();
+      posts.push({id:Date.now(), title, date, body, images});
+      savePosts(posts);
+      postForm.reset();
+      renderPosts();
+
+      // exportar a slides.json (solo cliente local)
+      const blob=new Blob([JSON.stringify(posts,null,2)], {type:"application/json"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download="slides.json";
       a.click();
-      URL.revokeObjectURL(url);
     });
+
+    renderPosts();
   </script>
 </body>
 </html>
