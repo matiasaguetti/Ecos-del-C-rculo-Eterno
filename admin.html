@@ -1,98 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Ecos del Círculo Eterno</title>
-  <style>
-    body { font-family: 'Cinzel', serif; background: #111; color: #eee; margin: 0; padding: 2rem; }
-    h1 { text-align: center; }
-    form { background: #222; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
-    label { display: block; margin: 0.5rem 0 0.2rem; }
-    input, textarea { width: 100%; padding: 0.5rem; border-radius: 8px; border: none; margin-bottom: 1rem; }
-    input[type="file"] { background: #333; color: #eee; }
-    button { background: #444; color: #fff; padding: 0.7rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; }
-    button:hover { background: #666; }
-    .post-list { margin-top: 2rem; }
-    .post-item { background: #222; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; }
-    img.thumb { width: 100px; border-radius: 6px; margin: 5px; }
-  </style>
 </head>
 <body>
-  <h1>Panel de Administración</h1>
-
-  <form id="postForm">
-    <label for="title">Título</label>
-    <input type="text" id="title" required />
-
-    <label for="date">Fecha</label>
-    <input type="date" id="date" required />
-
-    <label for="body">Texto</label>
-    <textarea id="body" rows="5" required></textarea>
-
-    <label for="images">Imágenes (puedes seleccionar varias)</label>
-    <input type="file" id="images" accept="image/*" multiple />
-
-    <button type="submit">Guardar entrada</button>
+  <h1>Panel de administración</h1>
+  <form id="slideForm">
+    <label>Título: <input type="text" id="title" required></label><br>
+    <label>Texto: <textarea id="text" required></textarea></label><br>
+    <label>Imagen (ruta dentro de /images): <input type="text" id="image" required></label><br>
+    <button type="submit">Agregar slide</button>
   </form>
 
-  <h2>Entradas guardadas</h2>
-  <div class="post-list" id="postList"></div>
+  <h2>Slides actuales</h2>
+  <pre id="jsonPreview"></pre>
+  <button id="downloadJson">Descargar JSON</button>
 
   <script>
-    const postForm = document.getElementById("postForm");
-    const postList = document.getElementById("postList");
+    let slides = [];
 
-    function loadPosts() {
-      const posts = JSON.parse(localStorage.getItem("ecd_posts") || "[]");
-      postList.innerHTML = "";
-      posts.forEach((p, i) => {
-        const div = document.createElement("div");
-        div.className = "post-item";
-        div.innerHTML = `
-          <h3>${p.title} <small>(${p.date})</small></h3>
-          <p>${p.body}</p>
-          <div>${p.images.map(img => `<img class="thumb" src="${img}"/>`).join("")}</div>
-          <button onclick="deletePost(${i})">Borrar</button>
-        `;
-        postList.appendChild(div);
+    // Cargar JSON existente
+    fetch('slides.json')
+      .then(response => response.json())
+      .then(data => {
+        slides = data;
+        renderPreview();
       });
-    }
 
-    function deletePost(index) {
-      const posts = JSON.parse(localStorage.getItem("ecd_posts") || "[]");
-      posts.splice(index, 1);
-      localStorage.setItem("ecd_posts", JSON.stringify(posts));
-      loadPosts();
-    }
-
-    postForm.addEventListener("submit", async e => {
+    document.getElementById('slideForm').addEventListener('submit', e => {
       e.preventDefault();
-      const title = document.getElementById("title").value;
-      const date = document.getElementById("date").value;
-      const body = document.getElementById("body").value;
-      const files = document.getElementById("images").files;
 
-      // Procesar imágenes como dataURL
-      const images = [];
-      for (let file of files) {
-        const reader = new FileReader();
-        images.push(await new Promise(res => {
-          reader.onload = e => res(e.target.result);
-          reader.readAsDataURL(file);
-        }));
-      }
+      const title = document.getElementById('title').value;
+      const text = document.getElementById('text').value;
+      const image = document.getElementById('image').value;
 
-      const posts = JSON.parse(localStorage.getItem("ecd_posts") || "[]");
-      posts.push({ id: Date.now(), title, date, body, images });
-      localStorage.setItem("ecd_posts", JSON.stringify(posts));
+      slides.push({ title, text, image });
+      renderPreview();
 
-      postForm.reset();
-      loadPosts();
+      document.getElementById('slideForm').reset();
     });
 
-    loadPosts();
+    function renderPreview() {
+      document.getElementById('jsonPreview').textContent = JSON.stringify(slides, null, 2);
+    }
+
+    document.getElementById('downloadJson').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(slides, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'slides.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   </script>
 </body>
 </html>
