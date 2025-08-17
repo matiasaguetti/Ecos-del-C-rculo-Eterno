@@ -3,11 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - Ecos del Círculo Eterno</title>
+  <title>Admin - Ecos del Círculo Eterno (Capítulos)</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Pequeños estilos extra para el admin (si no los quieres aquí, muévelos a style.css) */
+    .inline { display:flex; gap:8px; align-items:center; }
+    .small { font-size:0.9rem; color:var(--muted); }
+    .chapter-item { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+    .chapter-list { margin:10px 0 0 0  }
+    .danger { background:#7a2b2b; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    .btn { background:#3a3c40; color:#fff; border:none; padding:8px 10px; border-radius:6px; cursor:pointer; }
+    .muted { color: #9aa3a8; }
+    label { display:block; margin-top:8px; }
+    input[type="text"], input[type="date"], select, textarea { width:100%; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background: #0f1112; color:#e6eef1 }
+    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+  </style>
 </head>
 <body class="admin-body">
-  <h1>Panel de Administración</h1>
+  <h1>Panel de Administración — Capítulos</h1>
 
   <section class="admin-panel">
     <h2>Nueva entrada</h2>
@@ -21,27 +34,53 @@
       <label for="body">Texto</label>
       <textarea id="body" rows="5" required></textarea>
 
-      <label for="image">Imagen (ruta/URL — ej: <code>assets/captura1.jpg</code>)</label>
-      <input type="text" id="image" placeholder="assets/captura1.jpg" required />
+      <label for="image">Imagen (ruta/URL — ej: <code>assets/captura1.png</code>)</label>
+      <input type="text" id="image" placeholder="assets/captura1.png" required />
 
-      <button type="submit">Agregar a la lista</button>
+      <label for="chapterSelect">Capítulo</label>
+      <div class="inline">
+        <select id="chapterSelect"></select>
+        <button type="button" id="newChapterBtn" class="btn">Crear capítulo</button>
+      </div>
+
+      <div id="newChapterArea" style="display:none;margin-top:8px">
+        <div class="grid-2">
+          <input type="text" id="newChapterId" placeholder="Id (ej: 03)" />
+          <input type="text" id="newChapterTitle" placeholder="Título del capítulo (ej: 'Tercera noche')" />
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button type="button" id="addChapterBtn" class="btn">Añadir capítulo</button>
+          <button type="button" id="cancelChapterBtn" class="btn">Cancelar</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button type="submit" class="btn">Agregar a la lista</button>
+      </div>
     </form>
   </section>
 
   <section class="admin-panel">
     <h2>Entradas en borrador</h2>
     <div id="postList"></div>
-    <div class="admin-actions">
-      <button id="downloadJson">Descargar slides.json</button>
+    <div class="admin-actions" style="margin-top:8px">
+      <button id="downloadSlides" class="btn">Descargar slides.json</button>
+      <button id="downloadChapters" class="btn">Descargar chapters.json</button>
       <button id="clearAll" class="danger">Vaciar lista</button>
     </div>
   </section>
 
   <section class="admin-panel">
+    <h2>Capítulos (administrar)</h2>
+    <div id="chaptersList" class="chapter-list muted"></div>
+  </section>
+
+  <section class="admin-panel">
     <h2>Publicar al repositorio (GitHub Actions)</h2>
-    <p>Este método dispara un <code>repository_dispatch</code> que actualiza <code>slides.json</code> en tu rama. Introduce los datos del repo y un token personal (PAT) con permisos para despachar eventos.</p>
+    <p class="small">Despacha evento para que el workflow actualice <code>slides.json</code> y <code>chapters.json</code> en tu rama. Necesitas un PAT con permisos de repo (o public_repo si el repo es público).</p>
+
     <form id="publishForm">
-      <div class="grid">
+      <div class="grid-2">
         <div>
           <label>Owner/Org</label>
           <input type="text" id="ghOwner" placeholder="tu-usuario" required>
@@ -50,169 +89,260 @@
           <label>Repositorio</label>
           <input type="text" id="ghRepo" placeholder="tu-repo" required>
         </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:8px">
         <div>
           <label>Rama destino</label>
           <input type="text" id="ghBranch" value="main" required>
         </div>
+        <div>
+          <label>Mensaje de commit</label>
+          <input type="text" id="commitMsg" value="Actualiza slides & chapters (admin)" required>
+        </div>
       </div>
 
-      <label>Mensaje de commit</label>
-      <input type="text" id="commitMsg" value="Actualiza slides.json (admin)" required>
-
-      <label>Token Personal de GitHub (PAT) <small>(se guarda en tu navegador)</small></label>
+      <label>Token Personal de GitHub (PAT) <small class="muted">(se guarda en el navegador)</small></label>
       <input type="password" id="ghToken" placeholder="ghp_..." required>
 
-      <div class="admin-actions">
-        <button type="submit">Publicar vía GitHub Actions</button>
+      <div class="admin-actions" style="margin-top:10px">
+        <button type="submit" class="btn">Publicar vía GitHub Actions</button>
       </div>
-      <p class="muted small">
-        Nota: el PAT se guarda en <code>localStorage</code> de tu navegador bajo la clave <code>ecd_pat</code> para reutilizarlo. No se sube al repo.
-      </p>
     </form>
   </section>
 
   <script>
-    // --- Estado de slides en memoria ---
-    let slides = [];
+    // --- Estado en memoria ---
+    let slides = [];   // array de posts (igual estructura que antes)
+    let chapters = []; // array de { id: "01", title: "Valverde del Río" }
 
-    // Cargar slides.json del repo (si existe)
-    fetch('slides.json', { cache: 'no-store' })
-      .then(r => r.ok ? r.json() : [])
-      .then(data => { if(Array.isArray(data)) slides = data; renderPosts(); })
-      .catch(()=> { slides = []; renderPosts(); });
+    // Elementos
+    const postForm = document.getElementById('postForm');
+    const postList = document.getElementById('postList');
+    const chapterSelect = document.getElementById('chapterSelect');
+    const newChapterBtn = document.getElementById('newChapterBtn');
+    const newChapterArea = document.getElementById('newChapterArea');
+    const addChapterBtn = document.getElementById('addChapterBtn');
+    const cancelChapterBtn = document.getElementById('cancelChapterBtn');
+    const newChapterId = document.getElementById('newChapterId');
+    const newChapterTitle = document.getElementById('newChapterTitle');
+    const chaptersList = document.getElementById('chaptersList');
+    const downloadSlides = document.getElementById('downloadSlides');
+    const downloadChapters = document.getElementById('downloadChapters');
+    const clearAllBtn = document.getElementById('clearAll');
 
-    // --- CRUD local (no sube imágenes) ---
-    const postForm = document.getElementById("postForm");
-    const postList = document.getElementById("postList");
-    const downloadBtn = document.getElementById("downloadJson");
-    const clearBtn = document.getElementById("clearAll");
+    // Cargar slides.json y chapters.json si existen en el repo (fetch)
+    async function loadFromRepo(){
+      try {
+        const r1 = await fetch('slides.json', { cache: 'no-store' });
+        if(r1.ok){ slides = await r1.json(); } else { slides = []; }
+      } catch(e){ slides = []; }
 
-    postForm.addEventListener("submit", e => {
-      e.preventDefault();
-      const title = document.getElementById("title").value.trim();
-      const date  = document.getElementById("date").value;
-      const body  = document.getElementById("body").value.trim();
-      const image = document.getElementById("image").value.trim();
+      try {
+        const r2 = await fetch('chapters.json', { cache: 'no-store' });
+        if(r2.ok){ chapters = await r2.json(); } else { chapters = []; }
+      } catch(e){ chapters = []; }
 
-      const entry = {
-        id: Date.now(),
-        title, date, body,
-        images: image ? [image] : []
-      };
-      slides.push(entry);
-      postForm.reset();
+      // Si no hay chapters en chapters.json, derivar de slides (legacy)
+      if(!Array.isArray(chapters) || chapters.length === 0){
+        const ids = new Set();
+        slides.forEach(s => { if(s.chapter) ids.add(String(s.chapter)); });
+        if(ids.size > 0){
+          chapters = Array.from(ids).sort().map(id => ({ id, title: `Capítulo ${id}` }));
+        } else {
+          // default initial chapters if none present
+          chapters = [ { id: "01", title: "Valverde del Río" }, { id: "02", title: "La Conspiración de los Contrabandistas" } ];
+        }
+      }
+
+      renderChaptersUI();
       renderPosts();
-    });
+    }
+
+    // RENDER UI
+    function renderChaptersUI(){
+      // populate select
+      chapterSelect.innerHTML = '';
+      chapters.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.id} — ${c.title}`;
+        chapterSelect.appendChild(opt);
+      });
+      // render list
+      chaptersList.innerHTML = '';
+      chapters.forEach((c, i) => {
+        const div = document.createElement('div');
+        div.className = 'chapter-item';
+        div.innerHTML = `<strong>${escapeHtml(c.id)}</strong> — <span>${escapeHtml(c.title)}</span>
+          <div style="margin-left:auto"><button onclick="removeChapter(${i})" class="danger">Eliminar</button></div>`;
+        chaptersList.appendChild(div);
+      });
+    }
 
     function renderPosts(){
-      postList.innerHTML = "";
+      postList.innerHTML = '';
       if(slides.length === 0){
         postList.innerHTML = `<div class="post-item muted">No hay entradas aún.</div>`;
         return;
       }
       slides.forEach((p, i) => {
-        const div = document.createElement("div");
-        div.className = "post-item";
-        div.innerHTML = `
-          <h3>${escapeHtml(p.title)} <small>(${escapeHtml(p.date || '')})</small></h3>
-          <p>${escapeHtml(p.body || '')}</p>
-          <div>${(p.images||[]).map(src => `<img class="thumb" src="${src}" alt="">`).join("")}</div>
-          <div class="admin-actions">
-            <button onclick="moveUp(${i})">↑</button>
-            <button onclick="moveDown(${i})">↓</button>
-            <button class="danger" onclick="deletePost(${i})">Borrar</button>
-          </div>
-        `;
+        const div = document.createElement('div');
+        div.className = 'post-item';
+        const chapLabel = p.chapter ? `Cap ${escapeHtml(p.chapter)}` : 'Cap 01 (por defecto)';
+        div.innerHTML = `<h3>${escapeHtml(p.title)} <small>(${escapeHtml(p.date || '')})</small></h3>
+          <div class="small muted">${escapeHtml(chapLabel)}</div>
+          <p>${escapeHtml((p.body||'').slice(0,280))}${(p.body && p.body.length>280)?'…':''}</p>
+          <div>${(p.images||[]).map(src=>`<img class="thumb" src="${src}" alt="">`).join('')}</div>
+          <div class="admin-actions" style="margin-top:8px">
+            <button onclick="moveUp(${i})" class="btn">↑</button>
+            <button onclick="moveDown(${i})" class="btn">↓</button>
+            <button onclick="editPost(${i})" class="btn">Editar</button>
+            <button onclick="deletePost(${i})" class="danger">Borrar</button>
+          </div>`;
         postList.appendChild(div);
       });
     }
 
-    function moveUp(i){ if(i>0){ [slides[i-1],slides[i]] = [slides[i],slides[i-1]]; renderPosts(); } }
-    function moveDown(i){ if(i<slides.length-1){ [slides[i+1],slides[i]] = [slides[i],slides[i+1]]; renderPosts(); } }
-    function deletePost(i){ slides.splice(i,1); renderPosts(); }
-
-    // Descargar JSON local
-    downloadBtn.addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(slides, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "slides.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // Vaciar
-    clearBtn.addEventListener("click", () => {
-      if (confirm("¿Seguro que quieres vaciar la lista de entradas (local)?")) {
-        slides = [];
-        renderPosts();
-      }
-    });
-
-    function escapeHtml(str){
-      return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-        .replace(/'/g,"&#39;");
+    // CRUD posts
+    function moveUp(i){ if(i>0){ [slides[i-1],slides[i]]=[slides[i],slides[i-1]]; renderPosts(); } }
+    function moveDown(i){ if(i<slides.length-1){ [slides[i+1],slides[i]]=[slides[i],slides[i+1]]; renderPosts(); } }
+    function deletePost(i){ if(confirm('Eliminar esta entrada?')){ slides.splice(i,1); renderPosts(); } }
+    function editPost(i){
+      const p = slides[i];
+      document.getElementById('title').value = p.title || '';
+      document.getElementById('date').value = p.date || '';
+      document.getElementById('body').value = p.body || '';
+      document.getElementById('image').value = (p.images && p.images[0]) ? p.images[0] : '';
+      document.getElementById('chapterSelect').value = p.chapter || (chapters[0] && chapters[0].id) || '';
+      // remove old and let user save to append (simple UX)
+      slides.splice(i,1);
+      renderPosts();
     }
 
-    // --- Publicar vía GitHub Actions (repository_dispatch) ---
-    const publishForm = document.getElementById("publishForm");
-    const LS_PAT_KEY = "ecd_pat";
-    // Prefill PAT si lo guardaste antes
-    const savedPat = localStorage.getItem(LS_PAT_KEY);
-    if(savedPat){ document.getElementById("ghToken").value = savedPat; }
+    // Chapters management
+    newChapterBtn.addEventListener('click', ()=> { newChapterArea.style.display='block'; newChapterId.focus(); });
+    cancelChapterBtn.addEventListener('click', ()=> { newChapterArea.style.display='none'; newChapterId.value=''; newChapterTitle.value=''; });
 
-    publishForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const owner  = document.getElementById("ghOwner").value.trim();
-      const repo   = document.getElementById("ghRepo").value.trim();
-      const branch = document.getElementById("ghBranch").value.trim() || "main";
-      const token  = document.getElementById("ghToken").value.trim();
-      const message= document.getElementById("commitMsg").value.trim() || "Actualiza slides.json (admin)";
+    addChapterBtn.addEventListener('click', ()=> {
+      const id = newChapterId.value.trim();
+      const title = newChapterTitle.value.trim() || `Capítulo ${id}`;
+      if(!id){ alert('Introduce un id para el capítulo (ej: 03)'); return; }
+      if(chapters.some(c=> c.id === id)){ alert('Ese id de capítulo ya existe'); return; }
+      chapters.push({ id, title });
+      // sort by id (string) for UI consistency
+      chapters.sort((a,b)=> a.id.localeCompare(b.id, undefined, {numeric:true}));
+      renderChaptersUI();
+      newChapterArea.style.display='none';
+      newChapterId.value=''; newChapterTitle.value='';
+    });
 
-      if(!owner || !repo || !token){
-        alert("Owner, repositorio y token son obligatorios.");
-        return;
+    // remove chapter (only if no slides assigned or confirm)
+    window.removeChapter = function(i){
+      const ch = chapters[i];
+      const used = slides.some(s => String(s.chapter||'') === String(ch.id));
+      if(used){
+        if(!confirm(`El capítulo ${ch.id} está asignado a entradas. Eliminarlo quitará la asignación (se mantendrán las entradas con chapter vacío). Continuar?`)) return;
+        // remove assignment from slides
+        slides.forEach(s => { if(String(s.chapter) === String(ch.id)) delete s.chapter; });
       }
+      chapters.splice(i,1);
+      renderChaptersUI();
+      renderPosts();
+    };
 
-      // Guardar PAT localmente para reutilizar
+    // Submit new post
+    postForm.addEventListener('submit', (e)=> {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const date = document.getElementById('date').value;
+      const body = document.getElementById('body').value.trim();
+      const image = document.getElementById('image').value.trim();
+      const chapter = document.getElementById('chapterSelect').value || (chapters[0] && chapters[0].id) || '01';
+
+      const entry = { id: Date.now(), title, date, body, images: image ? [image] : [], chapter };
+      slides.push(entry);
+      postForm.reset();
+      renderPosts();
+    });
+
+    // Download helpers
+    downloadSlides.addEventListener('click', ()=> {
+      const blob = new Blob([JSON.stringify(slides, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'slides.json'; a.click(); URL.revokeObjectURL(url);
+    });
+    downloadChapters.addEventListener('click', ()=> {
+      const blob = new Blob([JSON.stringify(chapters, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'chapters.json'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    clearAllBtn.addEventListener('click', ()=> {
+      if(confirm('Vaciar slides en memoria (no afecta archivos en repo) ?')){
+        slides = []; renderPosts();
+      }
+    });
+
+    function escapeHtml(str){ return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;"); }
+
+    // --- Publicar vía repository_dispatch (envía slides.json + chapters.json en base64) ---
+    const publishForm = document.getElementById('publishForm');
+    const LS_PAT_KEY = 'ecd_pat';
+    const savedPat = localStorage.getItem(LS_PAT_KEY);
+    if(savedPat) document.getElementById('ghToken').value = savedPat;
+
+    publishForm.addEventListener('submit', async (e)=> {
+      e.preventDefault();
+      const owner = document.getElementById('ghOwner').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+      const branch = document.getElementById('ghBranch').value.trim() || 'main';
+      const token = document.getElementById('ghToken').value.trim();
+      const message = document.getElementById('commitMsg').value.trim() || 'Actualiza slides & chapters (admin)';
+
+      if(!owner || !repo || !token){ alert('Owner, repo y token son obligatorios'); return; }
+
       localStorage.setItem(LS_PAT_KEY, token);
 
-      // Construimos payload: pasamos slides como base64 para evitar problemas de comillas
-      const slidesStr = JSON.stringify(slides);
-      const slidesB64 = btoa(unescape(encodeURIComponent(slidesStr))); // UTF-8 safe
+      // Prepare base64 payloads (UTF-8 safe)
+      const slidesStr = JSON.stringify(slides, null, 2);
+      const chaptersStr = JSON.stringify(chapters, null, 2);
+      const slidesB64 = btoa(unescape(encodeURIComponent(slidesStr)));
+      const chaptersB64 = btoa(unescape(encodeURIComponent(chaptersStr)));
 
-      try{
+      try {
         const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": `token ${token}`,
-            "Content-Type": "application/json"
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            event_type: "update-slides",
+            event_type: 'update-slides',
             client_payload: {
               slides_b64: slidesB64,
+              chapters_b64: chaptersB64,
               message,
-              path: "slides.json",
+              slides_path: 'slides.json',
+              chapters_path: 'chapters.json',
               branch
             }
           })
         });
-
         if(!resp.ok){
-          const t = await resp.text();
-          alert("Error al despachar evento:\n" + t);
+          const txt = await resp.text();
+          alert('Error al despachar evento:\n' + txt);
           return;
         }
-        alert("Evento enviado. Revisa la pestaña Actions del repo para ver el job ejecutar el commit.");
-      }catch(err){
-        alert("Error de red: " + err.message);
+        alert('Evento enviado correctamente. Revisa Actions en el repo para ver progreso.');
+      } catch(err){
+        alert('Error de red: ' + err.message);
       }
     });
+
+    // Inicializar
+    loadFromRepo();
   </script>
 </body>
 </html>
