@@ -4,95 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ecos del Círculo eterno — Diario de campaña</title>
-  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
+  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <!-- Estilos adicionales para el modal y ajuste de texto del slideshow.
-       Si prefieres mantener todo en style.css, copia este bloque al final de style.css. -->
   <style>
-    /* Ajustes de texto en slide: se limita visualmente y se adapta a mobile */
-    .slide-meta p {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      -webkit-line-clamp: 6; /* líneas en desktop */
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-    @media (max-width:900px) {
-      .slide-meta p { -webkit-line-clamp: 4; }
-    }
+    /* Ajustes puntuales para los dos slideshows y modal (añadir al final de style.css si prefieres) */
+    .chapter-title { font-family: 'Cinzel', serif; font-size:20px; margin:18px 0 8px; color: #e6e6e6; }
+    .slideshow-wrapper { margin-bottom: 28px; }
+    /* adapte excerpt en slide */
+    .slide-meta p{ display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; -webkit-line-clamp:6; line-height:1.5; margin-bottom:10px; }
+    @media (max-width:900px){ .slide-meta p{ -webkit-line-clamp:4 } }
 
-    /* Botón 'Seguir leyendo' */
-    .read-more {
-      background: linear-gradient(90deg, rgba(138,91,58,0.95), rgba(91,122,123,0.95));
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 6px;
-    }
-    .read-more:hover { filter: brightness(1.05); }
+    .read-more { background:linear-gradient(90deg, rgba(138,91,58,0.95), rgba(91,122,123,0.95)); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; margin-top:6px; }
+    .read-more:hover{ filter:brightness(1.05) }
 
-    /* Modal (overlay) */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2,2,3,0.7);
-      display: none; /* show/hide with JS */
-      align-items: center;
-      justify-content: center;
-      z-index: 1200;
-      padding: 20px;
-    }
-    .modal {
-      background: #0b0b0c;
-      max-width: 1100px;
-      width: 100%;
-      max-height: 90vh;
-      border-radius: 12px;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 0;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-    .modal .modal-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-      display: block;
-    }
-    .modal .modal-body {
-      padding: 18px;
-      overflow: auto;
-    }
-    .modal .modal-body h3 { margin-top: 0; font-family: 'Cinzel', serif; }
-    .modal .modal-body .date { color: var(--muted); margin-bottom: 8px; display:block; }
-    .modal .modal-body p { color: var(--muted); line-height:1.6; white-space:pre-wrap; }
+    .modal-overlay{ position:fixed; inset:0; background:rgba(2,2,3,0.7); display:none; align-items:center; justify-content:center; z-index:1200; padding:20px; }
+    .modal{ background:#0b0b0c; max-width:1100px; width:100%; max-height:90vh; border-radius:12px; overflow:hidden; display:grid; grid-template-columns:1fr 420px; gap:0; box-shadow:0 8px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); }
+    .modal .modal-media img{ width:100%; height:100%; object-fit:contain; background:#000; display:block; }
+    .modal .modal-body{ padding:18px; overflow:auto; }
+    .modal .modal-body h3{ margin-top:0; font-family:'Cinzel',serif; }
+    .modal .modal-body .date{ color:var(--muted); margin-bottom:8px; display:block; }
+    .modal .modal-body p{ color:var(--muted); line-height:1.6; white-space:pre-wrap; }
+    .modal .close-btn{ position:absolute; right:20px; top:18px; background:rgba(255,255,255,0.04); border:none; color:#fff; padding:8px 10px; border-radius:8px; cursor:pointer; z-index:10; }
 
-    .modal .close-btn {
-      position: absolute;
-      right: 20px;
-      top: 18px;
-      background: rgba(255,255,255,0.04);
-      border: none;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    /* Responsive modal layout */
-    @media (max-width: 980px) {
-      .modal { grid-template-columns: 1fr; max-height: 92vh; }
-      .modal .modal-media { max-height: 50vh; }
-    }
+    @media (max-width:980px){ .modal{ grid-template-columns:1fr; max-height:92vh } .modal .modal-media{ max-height:50vh } }
   </style>
 </head>
 <body>
@@ -102,7 +37,6 @@
       <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
     </div>
     <nav aria-label="navegación principal">
-      <!-- Mantengo las rutas /mapas.html, /recursos.html, /notas.html; agrego /lore.html -->
       <a class="navlink" href="/mapas.html">Mapas</a>
       <a class="navlink" href="/lore.html">Lore</a>
       <a class="navlink" href="/recursos.html">Recursos</a>
@@ -111,217 +45,183 @@
   </header>
 
   <main class="wrap">
-    <!-- Slideshow -->
-    <section class="slideshow" id="slideshow" aria-label="Slideshow de la campaña">
-      <div id="slides" class="slides" aria-live="polite"></div>
+    <!-- CAPÍTULO 01 -->
+    <div class="slideshow-wrapper" id="chapter01-wrapper">
+      <div class="chapter-title">Capítulo 01: Valverde del Río</div>
+      <section class="slideshow" id="slideshow-01" aria-label="Capítulo 01">
+        <div id="slides-01" class="slides" aria-live="polite"></div>
+        <div class="controls"><button id="prev-01" class="ctrl-btn" aria-label="anterior">‹</button><button id="next-01" class="ctrl-btn" aria-label="siguiente">›</button></div>
+        <div class="dots" id="dots-01" role="tablist"></div>
+      </section>
+    </div>
 
-      <!-- Controles dentro del área de imagen -->
-      <div class="controls">
-        <button id="prev" class="ctrl-btn" aria-label="anterior">‹</button>
-        <button id="next" class="ctrl-btn" aria-label="siguiente">›</button>
-      </div>
+    <!-- CAPÍTULO 02 -->
+    <div class="slideshow-wrapper" id="chapter02-wrapper">
+      <div class="chapter-title">Capítulo 02: La Conspiración de los Contrabandistas</div>
+      <section class="slideshow" id="slideshow-02" aria-label="Capítulo 02">
+        <div id="slides-02" class="slides" aria-live="polite"></div>
+        <div class="controls"><button id="prev-02" class="ctrl-btn" aria-label="anterior">‹</button><button id="next-02" class="ctrl-btn" aria-label="siguiente">›</button></div>
+        <div class="dots" id="dots-02" role="tablist"></div>
+      </section>
+    </div>
 
-      <div class="dots" id="dots" role="tablist"></div>
-    </section>
-
-    <!-- Accesos -->
+    <!-- Accesos (se mantienen) -->
     <section class="sections" aria-label="Accesos rápido">
-      <article class="section-card">
-        <h4>Mapas</h4>
-        <p>Galería y planos de la campaña. (Página: <code>/mapas.html</code>).</p>
-      </article>
-      <article class="section-card">
-        <h4>Lore</h4>
-        <p>Contexto, mitos y trasfondo de la campaña. (Página: <code>/lore.html</code>).</p>
-      </article>
-      <article class="section-card">
-        <h4>Recursos</h4>
-        <p>Objetos, handouts y material descargable. (Página: <code>/recursos.html</code>).</p>
-      </article>
-      <article class="section-card">
-        <h4>Notas</h4>
-        <p>Zona de anotaciones y registros de los jugadores. (Página: <code>/notas.html</code>).</p>
-      </article>
+      <article class="section-card"><h4>Mapas</h4><p>Galería y planos. (Página: <code>/mapas.html</code>).</p></article>
+      <article class="section-card"><h4>Lore</h4><p>Contexto y trasfondo. (Página: <code>/lore.html</code>).</p></article>
+      <article class="section-card"><h4>Recursos</h4><p>Objetos y handouts. (Página: <code>/recursos.html</code>).</p></article>
+      <article class="section-card"><h4>Notas</h4><p>Registros de los jugadores. (Página: <code>/notas.html</code>).</p></article>
     </section>
   </main>
 
   <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
 
-  <!-- Modal overlay (oculto por defecto) -->
+  <!-- Modal -->
   <div id="modalOverlay" class="modal-overlay" role="dialog" aria-hidden="true">
     <div class="modal" role="document" aria-modal="true">
       <button id="modalClose" class="close-btn" aria-label="Cerrar">Cerrar ✕</button>
-      <div class="modal-media">
-        <img id="modalImage" src="" alt="Imagen ampliada">
-      </div>
-      <div class="modal-body">
-        <h3 id="modalTitle"></h3>
-        <span class="date" id="modalDate"></span>
-        <p id="modalText"></p>
-      </div>
+      <div class="modal-media"><img id="modalImage" src="" alt="Imagen ampliada"></div>
+      <div class="modal-body"><h3 id="modalTitle"></h3><span class="date" id="modalDate"></span><p id="modalText"></p></div>
     </div>
   </div>
 
   <script>
-    // --- Slideshow (lee slides.json) ---
-    let posts = [];
-    let current = 0, timer = null;
-    const interval = 6000;
-
-    async function loadSlides(){
-      try {
-        const res = await fetch("slides.json", { cache: "no-store" });
-        posts = await res.json();
-      } catch(e) {
-        console.warn("No se pudo cargar slides.json", e);
-        posts = [];
+    // --- Carga slides.json y asigna por capítulo ---
+    let allPosts = [];
+    async function loadSlidesJson(){
+      try{
+        const res = await fetch('slides.json', { cache: 'no-store' });
+        allPosts = await res.json();
+      }catch(e){
+        console.warn('No se pudo cargar slides.json', e);
+        allPosts = [];
       }
-      buildSlides();
-      show(0);
-      startTimer();
     }
 
-    function excerpt(text, max = 420){
-      if(!text) return '';
-      if(text.length <= max) return text;
-      // corta por último espacio antes del límite
-      const cut = text.slice(0, max);
-      const lastSpace = cut.lastIndexOf(' ');
-      return cut.slice(0, lastSpace > 40 ? lastSpace : max) + '…';
+    // Filtrado por capítulo: si post.chapter existe, respeta; si no existe, por defecto va a '01'
+    function postsForChapter(chapter){
+      if(!Array.isArray(allPosts)) return [];
+      return allPosts.filter(p => {
+        if(p.chapter) return String(p.chapter) === String(chapter);
+        return chapter === '01'; // default to 01 for legacy entries
+      });
     }
 
-    function buildSlides(){
-      const container = document.getElementById('slides');
-      const dots = document.getElementById('dots');
-      container.innerHTML = "";
-      dots.innerHTML = "";
+    // Clase simple para crear slideshow independiente
+    function createSlideshow(prefix, chapter){
+      const slidesContainer = document.getElementById(`slides-${prefix}`);
+      const dotsContainer = document.getElementById(`dots-${prefix}`);
+      const prevBtn = document.getElementById(`prev-${prefix}`);
+      const nextBtn = document.getElementById(`next-${prefix}`);
+      let posts = postsForChapter(chapter).slice().sort((a,b)=> new Date(b.date) - new Date(a.date));
+      let current = 0, timer = null, interval = 6000;
 
-      if(!Array.isArray(posts) || posts.length===0){
-        container.innerHTML = `
-          <section class="slide">
-            <div class="slide-media">
-              <img src="assets/placeholder.jpg" alt="placeholder">
-            </div>
-            <div class="slide-meta">
-              <h3>Bienvenido</h3>
-              <div class="date">—</div>
-              <p>No hay entradas todavía. Usa <code>admin.html</code> para crear <code>slides.json</code>.</p>
-            </div>
-          </section>`;
-        const dot = document.createElement("div"); dot.className = "dot active"; dots.appendChild(dot);
-        return;
-      }
-
-      posts
-        .slice()
-        .sort((a,b)=> new Date(b.date) - new Date(a.date))
-        .forEach((p,idx)=>{
-          const slide = document.createElement("section");
-          slide.className = "slide";
-
-          const imgSrc = (p.images && p.images[0]) ? p.images[0] : "assets/placeholder.jpg";
-          const short = excerpt(p.body || '', 300); // excerpt para mostrar en slide
-
+      function build(){
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
+        if(!posts.length){
+          slidesContainer.innerHTML = `<section class="slide"><div class="slide-media"><img src="assets/placeholder.jpg" alt="placeholder"></div><div class="slide-meta"><h3>Sin entradas</h3><div class="date">—</div><p>No hay entradas para este capítulo.</p></div></section>`;
+          const d = document.createElement('div'); d.className='dot active'; dotsContainer.appendChild(d);
+          return;
+        }
+        posts.forEach((p, idx) => {
+          const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
+          const short = excerpt(p.body || '', 300);
+          const slide = document.createElement('section'); slide.className='slide';
           slide.innerHTML = `
             <div class="slide-media"><img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}"></div>
             <div class="slide-meta">
               <h3>${escapeHtml(p.title || 'Sin título')}</h3>
               <div class="date">${escapeHtml(p.date || '')}</div>
               <p>${escapeHtml(short)}</p>
-              <button class="read-more" data-idx="${idx}">Seguir leyendo</button>
+              <button class="read-more" data-id="${p.id}">Seguir leyendo</button>
             </div>`;
-
-          container.appendChild(slide);
-
-          const dot = document.createElement("div");
-          dot.className = "dot";
-          dot.addEventListener("click", ()=> goTo(idx));
-          dots.appendChild(dot);
+          slidesContainer.appendChild(slide);
+          const d = document.createElement('div'); d.className='dot'; d.dataset.idx = idx; d.addEventListener('click', ()=> goTo(idx)); dotsContainer.appendChild(d);
         });
+        updateDots(0);
+      }
 
-      updateDots(0);
+      function show(i){
+        const slides = slidesContainer.children;
+        const n = slides.length;
+        if(n===0) return;
+        current = ((i % n)+n)%n;
+        slidesContainer.style.transform = `translateX(${-current * 100}%)`;
+        updateDots(current);
+      }
+      function next(){ show(current + 1) }
+      function prev(){ show(current - 1) }
+      function goTo(i){ show(i); resetTimer(); }
+      function updateDots(active){
+        dotsContainer.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx===active));
+      }
+      function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval); }
+      function resetTimer(){ startTimer(); }
+
+      // wire buttons
+      nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
+      prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
+
+      // expose methods
+      return { build, show, startTimer, posts, resetTimer };
     }
 
-    function show(index){
-      const slides = document.getElementById("slides");
-      const n = slides.children.length;
-      if(n===0) return;
-      current = ((index % n)+n)%n;
-      slides.style.transform = `translateX(${-current * 100}%)`;
-      updateDots(current);
+    // helpers
+    function excerpt(text, max = 420){
+      if(!text) return '';
+      if(text.length <= max) return text;
+      const cut = text.slice(0,max);
+      const lastSpace = cut.lastIndexOf(' ');
+      return cut.slice(0, lastSpace>40 ? lastSpace : max) + '…';
     }
-    function next(){ show(current+1) }
-    function prev(){ show(current-1) }
-    function goTo(i){ show(i); resetTimer(); }
-    function updateDots(active){
-      document.querySelectorAll("#dots .dot").forEach((d,i)=>
-        d.classList.toggle("active", i===active));
-    }
-    function startTimer(){ if(timer) clearInterval(timer); timer=setInterval(()=> next(), interval); }
-    function resetTimer(){ startTimer(); }
+    function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;"); }
 
-    document.getElementById("next").addEventListener("click", ()=>{ next(); resetTimer(); });
-    document.getElementById("prev").addEventListener("click", ()=>{ prev(); resetTimer(); });
-
-    function escapeHtml(str){
-      return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-        .replace(/'/g,"&#39;");
-    }
-
-    // Pausa en hover
-    const slideshow = document.getElementById('slideshow');
-    slideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
-    slideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
-
-    // Delegación para 'Seguir leyendo' — abre modal
-    document.getElementById('slides').addEventListener('click', (ev) => {
-      const btn = ev.target.closest('.read-more');
-      if(!btn) return;
-      const idx = Number(btn.dataset.idx);
-      openModal(idx);
-    });
-
-    // Modal logic
+    // Modal
     const modalOverlay = document.getElementById('modalOverlay');
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
     const modalText = document.getElementById('modalText');
     const modalClose = document.getElementById('modalClose');
-
-    function openModal(idx){
-      const p = posts.slice().sort((a,b)=> new Date(b.date)-new Date(a.date))[idx];
-      if(!p) return;
-      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
-      modalImage.src = imgSrc;
-      modalImage.alt = p.title || 'imagen';
-      modalTitle.textContent = p.title || '';
-      modalDate.textContent = p.date || '';
-      modalText.textContent = p.body || '';
-
+    function openModalWithPost(post){
+      if(!post) return;
+      const img = (post.images && post.images[0]) ? post.images[0] : 'assets/placeholder.jpg';
+      modalImage.src = img;
+      modalTitle.textContent = post.title || '';
+      modalDate.textContent = post.date || '';
+      modalText.textContent = post.body || '';
       modalOverlay.style.display = 'flex';
       modalOverlay.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
+    function closeModal(){ modalOverlay.style.display = 'none'; modalOverlay.setAttribute('aria-hidden','true'); modalImage.src=''; document.body.style.overflow=''; }
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (ev)=> { if(ev.target === modalOverlay) closeModal(); });
+    window.addEventListener('keydown', (ev)=> { if(ev.key === 'Escape') closeModal(); });
 
-    function closeModal(){
-      modalOverlay.style.display = 'none';
-      modalOverlay.setAttribute('aria-hidden','true');
-      modalImage.src = '';
-      document.body.style.overflow = '';
+    // Delegación para 'Seguir leyendo': busca post por id y abre modal
+    document.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.read-more');
+      if(!btn) return;
+      const id = btn.dataset.id;
+      // buscar post by id en allPosts (id único esperado)
+      const post = (allPosts || []).find(p => String(p.id) === String(id));
+      if(post) openModalWithPost(post);
+    });
+
+    // Inicializar ambos slideshows
+    async function init(){
+      await loadSlidesJson();
+      // create slideshow instances for 01 and 02
+      const ss1 = createSlideshow('01', '01'); // prefix '01' => slides-01, dots-01, prev-01, next-01
+      const ss2 = createSlideshow('02', '02');
+      ss1.build(); ss1.show(0); ss1.startTimer();
+      ss2.build(); ss2.show(0); ss2.startTimer();
     }
 
-    modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (ev) => {
-      if(ev.target === modalOverlay) closeModal();
-    });
-    window.addEventListener('keydown', (ev) => {
-      if(ev.key === 'Escape') closeModal();
-    });
-
-    loadSlides();
+    // on load
+    init();
   </script>
 </body>
 </html>
