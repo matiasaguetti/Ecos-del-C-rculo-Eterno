@@ -1,4 +1,4 @@
-name: Update slides.json via repository_dispatch
+name: Update slides & chapters via repository_dispatch
 
 on:
   repository_dispatch:
@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  update-slides:
+  update-files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,17 +16,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Write slides.json from payload (base64)
+      - name: Write slides.json (if provided)
+        if: ${{ github.event.client_payload.slides_b64 != '' }}
         env:
           SLIDES_B64: ${{ github.event.client_payload.slides_b64 }}
-          PATH_FILE: ${{ github.event.client_payload.path }}
+          SLIDES_PATH: ${{ github.event.client_payload.slides_path || 'slides.json' }}
         run: |
-          set -e
-          FILEPATH="${PATH_FILE:-slides.json}"
-          echo "$SLIDES_B64" | base64 -d > "$FILEPATH"
-          echo "Escrito $FILEPATH"
+          echo "Decodificando slides -> $SLIDES_PATH"
+          echo "$SLIDES_B64" | base64 -d > "$SLIDES_PATH"
+          echo "Wrote $SLIDES_PATH"
 
-      - name: Commit & push
+      - name: Write chapters.json (if provided)
+        if: ${{ github.event.client_payload.chapters_b64 != '' }}
+        env:
+          CH_B64: ${{ github.event.client_payload.chapters_b64 }}
+          CH_PATH: ${{ github.event.client_payload.chapters_path || 'chapters.json' }}
+        run: |
+          echo "Decodificando chapters -> $CH_PATH"
+          echo "$CH_B64" | base64 -d > "$CH_PATH"
+          echo "Wrote $CH_PATH"
+
+      - name: Commit & push changes
         env:
           COMMIT_MESSAGE: ${{ github.event.client_payload.message }}
           BRANCH: ${{ github.event.client_payload.branch }}
@@ -37,8 +47,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "Sin cambios para commitear."
+            echo "No changes to commit."
             exit 0
           fi
-          git commit -m "${COMMIT_MESSAGE:-Update slides.json via repository_dispatch}"
+          git commit -m "${COMMIT_MESSAGE:-Update slides & chapters via repository_dispatch}"
           git push origin HEAD:"$DEST_BRANCH"
