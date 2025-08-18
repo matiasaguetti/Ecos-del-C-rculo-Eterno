@@ -72,22 +72,32 @@
     ]
   },
   {
-    "id": 1755474006337,
-    "title": "De vuelta a las cuevas",
-    "date": "2025-08-16",
-    "body": "Ya prestos para encarar la nueva misión, los aventureros se dirigen nuevamente hacia las cuevas. Sin embargo, los mercenarios reclaman que Isadora rinda cuentas y Adler y Delerion ya no pueden inventar nuevas excusas para retenerla, así que tienen que internarse en las profundidades por su cuenta. Descienden por la cueva y pasan por los pasillos que ya fueron limpiados de enemigos. Recorren el lugar y llegan hasta una formación que evidentemente ha sido adaptada desde hace un tiempo con una puerta de hierro reforzada. Consiguen forzar la puerta ysortear una serie de trampas usando los maltratados cadáveres de las ratas hasta abrirse paso hacia un espacio donde las baldosas y el mortero han reemplazado a la piedra. Pueden escuchar voces y el agetreo de personas trabajando. Avanzan hasta encontrarse con el grupo de maleantes que tiene una operación bien montada en las cavernas. Sin embargo, llama su atención que lo que tienen delante es más que una banda de contrabandistas preparando envíos para un embarque: frente a ellos se yergue la figura de un nigromante hablando con una silueta ensombrecida que le responde con voz cavernosa en un lenguaje que no alcanzan a comprender. Cuando la figura se dispa, el mago se vuelve hacia ellos demostrando que siempre estuvo consciente de su presencia.",
-    "images": [
-      "assets/TS_1755395003.png"
-    ],
-    "chapter": "01"
-  },
-  {
     "id": 1755474040321,
     "title": "Emilio el Herbolario",
     "date": "2025-08-16",
     "body": "Los aventureros hablan con Fausto del Río, capataz de los leñadores y le dan la noticia de que su mujer falleció en las cuevas buscando a su hijo, pero no han encontrado al chico así que todavía que da una posiblidad de que esté con vida. El trabajador les encarga encarecidamente que busquen a su hijo y les da direcciones para que vayan a hablar con Emilio el Herbolario, un curandero que vive en una casa cercana y que puede darles un lugar para descansar y reponerse de sus heridas de combate.\nEn la casa de Emilio toman un descanso y comen abundantemente antes de partir de nuevo hacia las cuevas a enfrentarse con los contrabandistas.",
     "images": [
       "assets/TS_1755391013.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755495817577,
+    "title": "El peor de los finales",
+    "date": "2025-08-17",
+    "body": "La pelea es ardua pero mago y clérigo despliegan sus podres mediante conjuros arcanos y plegarias y consiguen acabar con los matones y reducir al mago. Lo interrogan pero el villano no está dispuesto a soltar ninguna información, hasta les advierte que si no lo matan, volverá por ellos para buscar venganza. Les revela, además, que los mercenarios que se hacían pasar por aventureros están en camino en ese preciso momento, así que no tienen mucho tiempo. La situación escala hasta el punto en que Delerion arrebata la vida del mago enemigo.\nLa batalla ha dejado varios barriles y cajas en llamas pero consiguen recuperar documentos importantes que revelan la ruta de contrabando desde aquel lugar hasta un barco que pasa a la medianoche a recoger las mercancías robadas para llevarlas a un campamento de mercenarios contratados por el Reino del sur. La guerra se aproxima a Valverde del Río pero ese no es el peor hallazgo. En uno de los barriles de vino encuentran el cadáver del hijo del leñador. El panorama es sombrío, pero algo llama la atención de los aventureros en un rincón del recinto...",
+    "images": [
+      "assets/El mago malvado.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755495127422,
+    "title": "De vuelta a las cuevas",
+    "date": "2025-08-16",
+    "body": "Ya prestos para encarar la nueva misión, los aventureros se dirigen nuevamente hacia las cuevas. Sin embargo, los mercenarios reclaman que Isadora rinda cuentas y Adler y Delerion ya no pueden inventar nuevas excusas para retenerla, así que tienen que internarse en las profundidades por su cuenta. Descienden por la cueva y pasan por los pasillos que ya fueron limpiados de enemigos. Recorren el lugar y llegan hasta una formación que evidentemente ha sido adaptada desde hace un tiempo con una puerta de hierro reforzada. Consiguen forzar la puerta y sortear una serie de trampas usando los maltratados cadáveres de las ratas hasta abrirse paso hacia un espacio donde las baldosas y el mortero han reemplazado a la piedra. Pueden escuchar voces y el ajetreo de personas trabajando. Avanzan hasta encontrarse con el grupo de maleantes que tiene una operación bien montada en las cavernas. Sin embargo, llama su atención que lo que tienen delante es más que una banda de contrabandistas preparando envíos para un embarque: frente a ellos se yergue la figura de un nigromante hablando con una silueta ensombrecida que le responde con voz cavernosa en un lenguaje que no alcanzan a comprender. Cuando la figura se disipa, el mago se vuelve hacia ellos demostrando que siempre estuvo consciente de su presencia.",
+    "images": [
+      "assets/TS_1755395003.png"
     ],
     "chapter": "01"
   },
@@ -122,16 +132,6 @@
     "chapter": "01"
   },
   {
-    "id": 1755493897728,
-    "title": "La emboscada a los contrabandistas",
-    "date": "2025-08-18",
-    "body": "Los guardias del gobernador se han encargado de los falsos aventurero y han asegurado la sala del tesoro de intrusos y de lo que sea que fuera la sombra que estaba invocando el mago ahí abajo. Han tenido que dar otra noticia devastadora al capataz y, tras buscar por todas partes a Isadora no han conseguido dar con ella. Sin poder hacer más, se preparan para emboscar a los contrabandistas. Para eso, don Alarico ha prestado la ayuda de un sargento de su guardia llamado Diego, quien acompaña a Adler y Delerion junto a otros dos hombres para detener la conjura de los contrabandistas. Se internan en el bosque, toman posiciones y avistan a varios mercenarios dando órdenes a los estibadores para que suban los cargamentos robados. Parece que Borgar está en la embarcación, pero tendrán que superar a los matones para llegar a él.",
-    "images": [
-      "assets/TS_1755492970.png"
-    ],
-    "chapter": "01"
-  },
-  {
     "id": 1755494393411,
     "title": "Una amarga derrota",
     "date": "2025-08-18",
@@ -140,5 +140,15 @@
       "assets/TS_1755494305.png"
     ],
     "chapter": "01"
-  }
+  },
+  {
+    "id": 1755494573008,
+    "title": "La emboscada a los contrabandistas",
+    "date": "2025-08-18",
+    "body": "Los guardias del gobernador se han encargado de los falsos aventureros y han asegurado la sala del tesoro de intrusos y de lo que sea que fuera la sombra que estaba invocando el mago ahí abajo. Han tenido que dar otra noticia devastadora al capataz y, tras buscar por todas partes a Isadora no han conseguido dar con ella. Sin poder hacer más, se preparan para emboscar a los contrabandistas. Para eso, don Alarico ha prestado la ayuda de un sargento de su guardia llamado Diego, quien acompaña a Adler y Delerion junto a otros dos hombres para detener la conjura de los contrabandistas. Se internan en el bosque, toman posiciones y avistan a varios mercenarios dando órdenes a los estibadores para que suban los cargamentos robados. Parece que Borgar está en la embarcación, pero tendrán que superar a los matones para llegar a él.",
+    "images": [
+      "assets/TS_1755492970.png"
+    ],
+    "chapter": "01"
+  },
 ]
