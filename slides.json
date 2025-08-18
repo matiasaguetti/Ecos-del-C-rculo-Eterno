@@ -72,21 +72,73 @@
     ]
   },
   {
-    "id": 1755391099004,
-    "title": "De vuelta a las cuevas",
-    "date": "2025-08-16",
-    "body": "Los aventureros hablan con Fausto del Río, capataz de los leñadores y le dan la noticia de que su mujer falleció en las cuevas buscando a su hijo, pero no han encontrado al chico así que todavía que da una posiblidad de que esté con vida. El trabajador les encarga encarecidamente que busquen a su hijo y les da direcciones para que vayan a hablar con Emilio el Herbolario, un curandero que vive en una casa cercana y que puede darles un lugar para descansar y reponerse de sus heridas de combate.\nEn la casa de Emilio toman un descanso y comen abundantemente antes de partir de nuevo hacia las cuevas a enfrentarse con los contrabandistas.",
-    "images": [
-      "assets/TS_1755391013.png"
-    ]
-  },
-  {
-    "id": 1755395190522,
+    "id": 1755474006337,
     "title": "De vuelta a las cuevas",
     "date": "2025-08-16",
     "body": "Ya prestos para encarar la nueva misión, los aventureros se dirigen nuevamente hacia las cuevas. Sin embargo, los mercenarios reclaman que Isadora rinda cuentas y Adler y Delerion ya no pueden inventar nuevas excusas para retenerla, así que tienen que internarse en las profundidades por su cuenta. Descienden por la cueva y pasan por los pasillos que ya fueron limpiados de enemigos. Recorren el lugar y llegan hasta una formación que evidentemente ha sido adaptada desde hace un tiempo con una puerta de hierro reforzada. Consiguen forzar la puerta ysortear una serie de trampas usando los maltratados cadáveres de las ratas hasta abrirse paso hacia un espacio donde las baldosas y el mortero han reemplazado a la piedra. Pueden escuchar voces y el agetreo de personas trabajando. Avanzan hasta encontrarse con el grupo de maleantes que tiene una operación bien montada en las cavernas. Sin embargo, llama su atención que lo que tienen delante es más que una banda de contrabandistas preparando envíos para un embarque: frente a ellos se yergue la figura de un nigromante hablando con una silueta ensombrecida que le responde con voz cavernosa en un lenguaje que no alcanzan a comprender. Cuando la figura se dispa, el mago se vuelve hacia ellos demostrando que siempre estuvo consciente de su presencia.",
     "images": [
       "assets/TS_1755395003.png"
-    ]
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755474040321,
+    "title": "Emilio el Herbolario",
+    "date": "2025-08-16",
+    "body": "Los aventureros hablan con Fausto del Río, capataz de los leñadores y le dan la noticia de que su mujer falleció en las cuevas buscando a su hijo, pero no han encontrado al chico así que todavía que da una posiblidad de que esté con vida. El trabajador les encarga encarecidamente que busquen a su hijo y les da direcciones para que vayan a hablar con Emilio el Herbolario, un curandero que vive en una casa cercana y que puede darles un lugar para descansar y reponerse de sus heridas de combate.\nEn la casa de Emilio toman un descanso y comen abundantemente antes de partir de nuevo hacia las cuevas a enfrentarse con los contrabandistas.",
+    "images": [
+      "assets/TS_1755391013.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755474702140,
+    "title": "La puerta secreta",
+    "date": "2025-08-17",
+    "body": "En un rincón, junto a una biblioteca que se salvó por poco del fuego, se percatan de la presencia de una palanca. Al usarla, el mueble se desplaza y se abre una puerta secreta que da a lo que parece ser la cámara del tesoro del castillo Entran con cuidado, buscando trampas o algún enemigo oculto, pero todo parece estar en orden. Hay barriles de vino y cerveza, conservas, cuadros, alfombras traídas de tierras lejanas y, en una esquina, una rebosante montaña de oro, joyas, monedas  todo tipo de riquezas. a dupla empieza a planear la manera de llevarse algo para financiar algunas hazañas heroicas pero entonces escuchan una puerta que se abre y pasos en la escalera que está a su espalda.",
+    "images": [
+      "assets/TS_1755474454.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755481398119,
+    "title": "Primeras impresiones",
+    "date": "2025-08-17",
+    "body": "Por las escaleras viene bajando un hombre de piel oscura y vestimentas que destacan su linaje noble aunque su postura no parece la más digna. Es don Alarico Belmonte y detrás de él viene un enorme guardia ataviado con una armadura completa y un gesto hosco que se acentúa bajo su yelmo. Las formalidades son gélidas pero consiguen explicarles cómo llegaron hasta ahí y el riesgo de seguridad al que estaba expuesto su castillo y, especialmente, la sala del tesoro. Además, explican que los “aventureros” son en realidad parte de la trama de los contrabandistas y vienen en camino. Don Alarico invita a Delerion y Adler a acompañarlo al castillo para poder ponerse al día y planear los próximos pasos.",
+    "images": [
+      "assets/Adler y Delerion soprendidos por don Alarico.jpg"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755486731821,
+    "title": "El libro del linaje",
+    "date": "2025-08-17",
+    "body": "El gobernador los invita a sus habitaciones donde dispone algo de comida y acomoda a los aventureros para que le cuenten todo lo que han descubierto. Tras revelar la trama, trazan un plan para emboscar a Borgar Tempestus y sus hombres cuando estén cargando los artículos robados. Ahí un gran libro que se encuentra sobre un ornamentado atril llama poderosamente la atención de Delerion. Don Alarico les muestra el libro y explica que es donde se encuentra todo el linaje Belmonte que se remonta a los primeros tiempos cuando se formaron los Cuatro Reinos, después de la caída del antiguo Imperio de Aeloria. Pero el mago sabe que hay algo más, hay magia muy poderosa encerrada en aquellas páginas amarillentas, pero la curiosidad del mago tendrá que esperar.",
+    "images": [
+      "assets/TS_1755486579.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755493897728,
+    "title": "La emboscada a los contrabandistas",
+    "date": "2025-08-18",
+    "body": "Los guardias del gobernador se han encargado de los falsos aventurero y han asegurado la sala del tesoro de intrusos y de lo que sea que fuera la sombra que estaba invocando el mago ahí abajo. Han tenido que dar otra noticia devastadora al capataz y, tras buscar por todas partes a Isadora no han conseguido dar con ella. Sin poder hacer más, se preparan para emboscar a los contrabandistas. Para eso, don Alarico ha prestado la ayuda de un sargento de su guardia llamado Diego, quien acompaña a Adler y Delerion junto a otros dos hombres para detener la conjura de los contrabandistas. Se internan en el bosque, toman posiciones y avistan a varios mercenarios dando órdenes a los estibadores para que suban los cargamentos robados. Parece que Borgar está en la embarcación, pero tendrán que superar a los matones para llegar a él.",
+    "images": [
+      "assets/TS_1755492970.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755494393411,
+    "title": "Una amarga derrota",
+    "date": "2025-08-18",
+    "body": "La pelea resulta más difícil de lo que esperaban. Delerion consigue dominar a uno de los matones para que huya del combate y Adler ataca desde una posición estratégica con el arco mientras son respaldados por Diego y sus hombres, pero los mercenarios tienen experiencia y juegan sucio. El mago se queda sin recursos y Adler ha caído inconsciente después de aguantar múltiples heridas. Han conseguido acabar con los hombres de Borgar, pero, entonces, el gigantesco semiorco se asoma por la borda y, con tono burlón, le dice al mago que sus posibilidades son nulas. El clérigo está fuera de combate, los hombres de Diego han caído y Delerion está débil. El jefe de los mercenarios ofrece perdonarle la vida a cambio de partir sin más molestias y el mago acepta a regañadientes para evitar más pérdidas. Con rabia observa cómo suben algunos estibadores, levan anclas y parten con las velas hinchadas por el viento río abajo.",
+    "images": [
+      "assets/TS_1755494305.png"
+    ],
+    "chapter": "01"
   }
 ]
