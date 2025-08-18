@@ -202,7 +202,8 @@
       const prevBtn = document.getElementById(`prev-${prefix}`);
       const nextBtn = document.getElementById(`next-${prefix}`);
 
-      let posts = postsForChapter(chapter).slice().sort((a,b)=> new Date(b.date) - new Date(a.date));
+      // <-- cambio: ya no ordenamos por fecha; respetamos el orden tal como está en slides.json
+      let posts = postsForChapter(chapter).slice();
       let current = 0, timer = null, interval = 6000;
 
       function build(){
