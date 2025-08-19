@@ -195,16 +195,18 @@
       });
     }
 
-    function createSlideshow(prefix, chapter){
-      // prefix: string used to build element IDs (e.g., '01')
+      function createSlideshow(prefix, chapter){
+      // prefix: string usado para crear IDs como slides-01, dots-01, prev-01...
       const slidesContainer = document.getElementById(`slides-${prefix}`);
       const dotsContainer = document.getElementById(`dots-${prefix}`);
       const prevBtn = document.getElementById(`prev-${prefix}`);
       const nextBtn = document.getElementById(`next-${prefix}`);
 
-      // <-- cambio: ya no ordenamos por fecha; respetamos el orden tal como está en slides.json
+      // respetamos el orden del JSON: ya no hacemos .sort(...)
       let posts = postsForChapter(chapter).slice();
-      let current = 0, timer = null, interval = 6000;
+      let current = 0;
+      let timer = null;
+      const interval = 6000;
 
       function build(){
         if(!slidesContainer || !dotsContainer) return;
@@ -216,6 +218,70 @@
           const d = document.createElement('div'); d.className='dot active'; dotsContainer.appendChild(d);
           return;
         }
+
+        posts.forEach((p, idx) => {
+          const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
+          const short = excerpt(p.body || '', 300);
+          const slide = document.createElement('section'); slide.className='slide';
+          slide.innerHTML = `
+            <div class="slide-media"><img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}"></div>
+            <div class="slide-meta">
+              <h3>${escapeHtml(p.title || 'Sin título')}</h3>
+              <div class="date">${escapeHtml(p.date || '')}</div>
+              <p>${escapeHtml(short)}</p>
+              <button class="read-more" data-id="${p.id}">Seguir leyendo</button>
+            </div>`;
+          slidesContainer.appendChild(slide);
+
+          const d = document.createElement('div'); d.className='dot';
+          d.dataset.idx = idx;
+          d.addEventListener('click', ()=> goTo(idx));
+          dotsContainer.appendChild(d);
+        });
+        updateDots(0);
+      }
+
+      function show(i){
+        if(!slidesContainer) return;
+        const slides = slidesContainer.children;
+        const n = slides.length;
+        if(n===0) return;
+        current = ((i % n)+n)%n;
+        slidesContainer.style.transform = `translateX(${-current * 100}%)`;
+        updateDots(current);
+      }
+      function next(){ show(current+1) }
+      function prev(){ show(current-1) }
+      function goTo(i){ show(i); resetTimer(); }
+      function updateDots(active){
+        if(!dotsContainer) return;
+        dotsContainer.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx===active));
+      }
+
+      // timer control
+      function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval); }
+      function pause(){ if(timer){ clearInterval(timer); timer = null; } }
+      function resume(){ if(!timer){ timer = setInterval(()=> next(), interval); } }
+      function resetTimer(){ pause(); startTimer(); }
+
+      // wire buttons
+      nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
+      prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
+
+      // pause on hover (keeps behavior)
+      const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
+      if(parentSlideshow){
+        parentSlideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
+        parentSlideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
+      }
+
+      // register instance globally so modal can pause/resume all
+      const instance = { build, show, startTimer, pause, resume, resetTimer, posts };
+      window.ecdSlideshows = window.ecdSlideshows || [];
+      window.ecdSlideshows.push(instance);
+
+      return instance;
+    }
 
         posts.forEach((p, idx) => {
           const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
