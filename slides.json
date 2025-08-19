@@ -191,6 +191,16 @@
     ],
     "chapter": "02"
   },
+    {
+    "id": 1755561345518,
+    "title": "Reunión a la medianoche",
+    "date": "2025-08-18",
+    "body": "Los aventureros acompañan a Haroldo hasta el punto de reunión en los campos de Valverde del Río. Se esconden a cierta distancia y esperan a que aparezcan los contrabandistas que todavía quedan en el pueblo. Al cabo de un rato aparecen tres figuras entre el trigo alto. Haroldo mantiene una conversación para sacar toda la información que puedan antes de que los maleantes desaparezcan. Entonces, da la señal acordada y el plan se pone en marcha. Delerion invoca una mano etérea que empieza mover el trigo alrededor de los contrabandistas mientras Adler proyecta su voz resonando en todo el campo con una profundidad ominosa. Los bandidos empiezan a incomodarse y finalmente emprenden la retirada pero son reducidos por el trío. Los atan, les confiscan sus pertenencias y Haroldo les dice que pueden llevarlos a la guardia para recoger una recompensa, parece que es otra de las actividades económicas habituales del montaraz. Además, Haroldo ha conseguido información clave, una balsa va a pasar la próxima noche para recoger a los contrabandistas que quedan y llevarlos hacia el campamento enemigo.",
+    "images": [
+      "assets/TS_1755552870.png"
+    ],
+    "chapter": "02"
+  },
   {
     "id": 1755560599196,
     "title": "El Libro Guardián",
@@ -261,14 +271,4 @@
     ],
     "chapter": "02"
   },
-  {
-    "id": 1755561345518,
-    "title": "Reunión a la medianoche",
-    "date": "2025-08-18",
-    "body": "Los aventureros acompañan a Haroldo hasta el punto de reunión en los campos de Valverde del Río. Se esconden a cierta distancia y esperan a que aparezcan los contrabandistas que todavía quedan en el pueblo. Al cabo de un rato aparecen tres figuras entre el trigo alto. Haroldo mantiene una conversación para sacar toda la información que puedan antes de que los maleantes desaparezcan. Entonces, da la señal acordada y el plan se pone en marcha. Delerion invoca una mano etérea que empieza mover el trigo alrededor de los contrabandistas mientras Adler proyecta su voz resonando en todo el campo con una profundidad ominosa. Los bandidos empiezan a incomodarse y finalmente emprenden la retirada pero son reducidos por el trío. Los atan, les confiscan sus pertenencias y Haroldo les dice que pueden llevarlos a la guardia para recoger una recompensa, parece que es otra de las actividades económicas habituales del montaraz. Además, Haroldo ha conseguido información clave, una balsa va a pasar la próxima noche para recoger a los contrabandistas que quedan y llevarlos hacia el campamento enemigo.",
-    "images": [
-      "assets/TS_1755552870.png"
-    ],
-    "chapter": "02"
-  }
 ]
