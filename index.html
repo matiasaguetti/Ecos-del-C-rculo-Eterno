@@ -57,6 +57,7 @@
       gap: 0;
       box-shadow: 0 8px 40px rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.03);
+      position: relative;
     }
     .modal .modal-media img {
       width: 100%;
@@ -86,10 +87,40 @@
       z-index: 10;
     }
 
+    /* Modal external nav buttons (outside the modal frame) */
+    .modal-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1220;
+      display: none; /* shown when modal open */
+      pointer-events: auto;
+    }
+    .modal-nav button {
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      font-size: 28px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+    .modal-nav.left { left: 12px; }
+    .modal-nav.right { right: 12px; }
+
+    .modal-nav button:hover { filter: brightness(1.07); }
+
     /* Responsive modal layout */
     @media (max-width: 980px) {
       .modal { grid-template-columns: 1fr; max-height: 92vh; }
       .modal .modal-media { max-height: 50vh; }
+      .modal-nav.left { left: 8px; }
+      .modal-nav.right { right: 8px; }
     }
 
     /* Chapter titles and dynamic insertion adjustments */
@@ -169,6 +200,7 @@
 
   <!-- Modal overlay (oculto por defecto) -->
   <div id="modalOverlay" class="modal-overlay" role="dialog" aria-hidden="true">
+    <!-- modal box -->
     <div class="modal" role="document" aria-modal="true">
       <button id="modalClose" class="close-btn" aria-label="Cerrar">Cerrar ✕</button>
       <div class="modal-media">
@@ -179,6 +211,13 @@
         <span class="date" id="modalDate"></span>
         <p id="modalText"></p>
       </div>
+    </div>
+    <!-- modal external nav buttons (outside the box) -->
+    <div class="modal-nav left" id="modalNavLeft" aria-hidden="true">
+      <button id="modalPrev" aria-label="Anterior diapositiva">‹</button>
+    </div>
+    <div class="modal-nav right" id="modalNavRight" aria-hidden="true">
+      <button id="modalNext" aria-label="Siguiente diapositiva">›</button>
     </div>
   </div>
 
@@ -276,15 +315,23 @@
       nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
       prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
 
-      // pause on hover behavior (keeps UX)
+      // pause on hover behavior
       const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
       if(parentSlideshow){
         parentSlideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
         parentSlideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
       }
 
+      // Utility: find index of post by id inside this instance
+      function indexOfPostId(postId){
+        for(let i=0;i<posts.length;i++){
+          if(String(posts[i].id) === String(postId)) return i;
+        }
+        return -1;
+      }
+
       // register instance globally
-      const instance = { build, show, startTimer, pause, resume, resetTimer, posts };
+      const instance = { prefix, chapter, build, show, startTimer, pause, resume, resetTimer, posts, indexOfPostId };
       window.ecdSlideshows = window.ecdSlideshows || [];
       window.ecdSlideshows.push(instance);
 
@@ -311,6 +358,14 @@
     const modalText = document.getElementById('modalText');
     const modalClose = document.getElementById('modalClose');
 
+    const modalPrevBtn = document.getElementById('modalPrev');
+    const modalNextBtn = document.getElementById('modalNext');
+    const modalNavLeft = document.getElementById('modalNavLeft');
+    const modalNavRight = document.getElementById('modalNavRight');
+
+    // global modal context: which slideshow instance & index are currently shown in modal
+    let modalContext = { instance: null, index: null };
+
     // pause/resume all registered slideshows
     function pauseAllSlides(){
       if(!window.ecdSlideshows) return;
@@ -321,31 +376,90 @@
       window.ecdSlideshows.forEach(s => { try{ s.resume && s.resume(); } catch(e){ console.warn('resume slide error', e); } });
     }
 
-    function openModalWithPost(post){
+    function updateModalForContext(){
+      const ctx = modalContext;
+      if(!ctx.instance || typeof ctx.index !== 'number') return;
+      const post = ctx.instance.posts[ctx.index];
       if(!post) return;
-      // pause all slideshows (so nothing advances while modal open)
-      pauseAllSlides();
-
+      // update modal content
       const img = (post.images && post.images[0]) ? post.images[0] : 'assets/placeholder.jpg';
       modalImage.src = img;
+      modalImage.alt = post.title || 'imagen';
       modalTitle.textContent = post.title || '';
       modalDate.textContent = post.date || '';
       modalText.textContent = post.body || '';
+      // also ensure underlying slideshow shows same index
+      try{ ctx.instance.show(ctx.index); } catch(e){ /* ignore */ }
+      // show/hide nav according to bounds
+      if(ctx.index <= 0) modalPrevBtn.setAttribute('disabled','disabled'); else modalPrevBtn.removeAttribute('disabled');
+      if(ctx.index >= ctx.instance.posts.length - 1) modalNextBtn.setAttribute('disabled','disabled'); else modalNextBtn.removeAttribute('disabled');
+    }
+
+    function openModalWithPost(post){
+      if(!post) return;
+      // pause all slideshows
+      pauseAllSlides();
+
+      // find instance that contains this post
+      modalContext.instance = null;
+      modalContext.index = null;
+      if(window.ecdSlideshows && window.ecdSlideshows.length){
+        for(const inst of window.ecdSlideshows){
+          const idx = inst.indexOfPostId && inst.indexOfPostId(post.id);
+          if(typeof idx === 'number' && idx >= 0){
+            modalContext.instance = inst;
+            modalContext.index = idx;
+            break;
+          }
+        }
+      }
+      // fallback: if no instance found, try to use global posts array and emulate single instance
+      if(!modalContext.instance){
+        modalContext.instance = { posts: (allPosts || []), show: function(i){ /* no-op if no slides container */ } , indexOfPostId: function(id){ return (allPosts || []).findIndex(p => String(p.id) === String(id)); } };
+        modalContext.index = modalContext.instance.indexOfPostId(post.id);
+        if(modalContext.index < 0) modalContext.index = 0;
+      }
+
+      // populate modal UI
+      updateModalForContext();
+
+      // show nav buttons (external)
+      modalNavLeft.style.display = 'block';
+      modalNavRight.style.display = 'block';
+      modalNavLeft.setAttribute('aria-hidden','false');
+      modalNavRight.setAttribute('aria-hidden','false');
+
       modalOverlay.style.display = 'flex';
       modalOverlay.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
+
     function closeModal(){
       modalOverlay.style.display = 'none';
       modalOverlay.setAttribute('aria-hidden','true');
       modalImage.src = '';
       document.body.style.overflow = '';
-      // resume slides after modal closed
+      // hide nav
+      modalNavLeft.style.display = 'none';
+      modalNavRight.style.display = 'none';
+      modalNavLeft.setAttribute('aria-hidden','true');
+      modalNavRight.setAttribute('aria-hidden','true');
+      // clear modal context and resume slides
+      modalContext.instance = null;
+      modalContext.index = null;
       resumeAllSlides();
     }
+
     modalClose.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (ev)=> { if(ev.target === modalOverlay) closeModal(); });
-    window.addEventListener('keydown', (ev)=> { if(ev.key === 'Escape') closeModal(); });
+    window.addEventListener('keydown', (ev)=> {
+      if(ev.key === 'Escape') closeModal();
+      // left/right arrow navigation when modal open
+      if(modalOverlay.style.display === 'flex'){
+        if(ev.key === 'ArrowLeft') modalPrevHandler();
+        if(ev.key === 'ArrowRight') modalNextHandler();
+      }
+    });
 
     // Delegación para 'Seguir leyendo'
     document.addEventListener('click', (ev) => {
@@ -355,6 +469,27 @@
       const post = (allPosts || []).find(p => String(p.id) === String(id));
       if(post) openModalWithPost(post);
     });
+
+    // modal nav handlers
+    function modalPrevHandler(){
+      const ctx = modalContext;
+      if(!ctx.instance) return;
+      const idx = ctx.index;
+      if(typeof idx !== 'number' || idx <= 0) return;
+      ctx.index = idx - 1;
+      updateModalForContext();
+    }
+    function modalNextHandler(){
+      const ctx = modalContext;
+      if(!ctx.instance) return;
+      const idx = ctx.index;
+      if(typeof idx !== 'number' || idx >= ctx.instance.posts.length - 1) return;
+      ctx.index = idx + 1;
+      updateModalForContext();
+    }
+
+    modalPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); modalPrevHandler(); });
+    modalNextBtn.addEventListener('click', (e) => { e.stopPropagation(); modalNextHandler(); });
 
     // -----------------------------
     // ---- DYNAMIC CHAPTERS SNIPPET
