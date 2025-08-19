@@ -7,15 +7,13 @@
   <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <!-- Estilos adicionales para el modal y ajuste de texto del slideshow.
-       Si prefieres mantener todo en style.css, copia este bloque al final de style.css. -->
   <style>
     /* Ajustes de texto en slide: se limita visualmente y se adapta a mobile */
     .slide-meta p {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      -webkit-line-clamp: 6; /* líneas en desktop */
+      -webkit-line-clamp: 6;
       line-height: 1.5;
       margin-bottom: 10px;
     }
@@ -41,7 +39,7 @@
       position: fixed;
       inset: 0;
       background: rgba(2,2,3,0.7);
-      display: none; /* show/hide with JS */
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 1200;
@@ -97,6 +95,20 @@
     /* Chapter titles and dynamic insertion adjustments */
     .chapter-title { font-family: 'Cinzel', serif; font-size:20px; margin:18px 0 8px; color: #e6e6e6; }
     .slideshow-wrapper { margin-bottom: 28px; }
+
+    /* Basic slides container style to ensure transform works */
+    .slides { display:flex; transition: transform .5s ease; width:100%; }
+    .slide { min-width:100%; display:grid; grid-template-columns: 56% 44%; gap:18px; align-items:center; padding:22px; box-sizing:border-box; }
+    .slide-media{ height:320px; border-radius:10px; overflow:hidden; background:#050506; display:flex; align-items:center; justify-content:center; }
+    .slide-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .slide-meta h3{ margin:0 0 6px; font-family:'Cinzel',serif; font-size:22px; }
+    .slide-meta .date{ color:var(--muted); font-size:13px; margin-bottom:10px; }
+    .controls{ position:absolute; left:12px; right:12px; top:50%; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; }
+    .ctrl-btn{ pointer-events:auto; background:rgba(0,0,0,0.4); border:none; padding:10px; border-radius:50%; backdrop-filter:blur(2px); color:#fff; }
+    .dots{ position:absolute; left:50%; transform:translateX(-50%); bottom:12px; display:flex; gap:6px; }
+    .dot{ width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.08); cursor:pointer; }
+    .dot.active{ background: #8a5b3a; }
+    @media (max-width:900px){ .slide{ grid-template-columns:1fr } .slide-media{ height:220px } .slides{ display:flex } .controls{ top: 46% } }
   </style>
 </head>
 <body>
@@ -106,7 +118,6 @@
       <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
     </div>
     <nav aria-label="navegación principal">
-      <!-- Mantengo las rutas /mapas.html, /recursos.html, /notas.html; agrego /lore.html -->
       <a class="navlink" href="/mapas.html">Mapas</a>
       <a class="navlink" href="/lore.html">Lore</a>
       <a class="navlink" href="/recursos.html">Recursos</a>
@@ -115,7 +126,7 @@
   </header>
 
   <main class="wrap">
-    <!-- CAPÍTULO 01 (wrapper estático, se eliminará si se usa chapters.json dinámico) -->
+    <!-- Static wrappers (fallback) -->
     <div class="slideshow-wrapper" id="chapter01-wrapper">
       <div class="chapter-title">Capítulo 01: Valverde del Río</div>
       <section class="slideshow" id="slideshow-01" aria-label="Capítulo 01">
@@ -125,7 +136,6 @@
       </section>
     </div>
 
-    <!-- CAPÍTULO 02 (wrapper estático, se eliminará si se usa chapters.json dinámico) -->
     <div class="slideshow-wrapper" id="chapter02-wrapper">
       <div class="chapter-title">Capítulo 02: La Conspiración de los Contrabandistas</div>
       <section class="slideshow" id="slideshow-02" aria-label="Capítulo 02">
@@ -135,7 +145,6 @@
       </section>
     </div>
 
-    <!-- Accesos -->
     <section class="sections" aria-label="Accesos rápido">
       <article class="section-card">
         <h4>Mapas</h4>
@@ -174,7 +183,7 @@
   </div>
 
   <script>
-    // --- Código existente adaptado: carga y funciones para slides por capítulo ---
+    // --- Carga y datos ---
     let allPosts = [];
 
     async function loadSlidesJson(){
@@ -191,18 +200,17 @@
       if(!Array.isArray(allPosts)) return [];
       return allPosts.filter(p => {
         if(p.chapter) return String(p.chapter) === String(chapter);
-        return chapter === '01'; // default to 01 for legacy entries
+        return chapter === '01';
       });
     }
 
-      function createSlideshow(prefix, chapter){
-      // prefix: string usado para crear IDs como slides-01, dots-01, prev-01...
+    // --- Slideshow factory (con pause/resume y registro global) ---
+    function createSlideshow(prefix, chapter){
       const slidesContainer = document.getElementById(`slides-${prefix}`);
       const dotsContainer = document.getElementById(`dots-${prefix}`);
       const prevBtn = document.getElementById(`prev-${prefix}`);
       const nextBtn = document.getElementById(`next-${prefix}`);
 
-      // respetamos el orden del JSON: ya no hacemos .sort(...)
       let posts = postsForChapter(chapter).slice();
       let current = 0;
       let timer = null;
@@ -258,24 +266,24 @@
         dotsContainer.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx===active));
       }
 
-      // timer control
+      // timer controls
       function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval); }
       function pause(){ if(timer){ clearInterval(timer); timer = null; } }
       function resume(){ if(!timer){ timer = setInterval(()=> next(), interval); } }
       function resetTimer(){ pause(); startTimer(); }
 
-      // wire buttons
+      // controls binding
       nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
       prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
 
-      // pause on hover (keeps behavior)
+      // pause on hover behavior (keeps UX)
       const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
       if(parentSlideshow){
         parentSlideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
         parentSlideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
       }
 
-      // register instance globally so modal can pause/resume all
+      // register instance globally
       const instance = { build, show, startTimer, pause, resume, resetTimer, posts };
       window.ecdSlideshows = window.ecdSlideshows || [];
       window.ecdSlideshows.push(instance);
@@ -283,62 +291,7 @@
       return instance;
     }
 
-        posts.forEach((p, idx) => {
-          const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
-          const short = excerpt(p.body || '', 300);
-          const slide = document.createElement('section'); slide.className='slide';
-          slide.innerHTML = `
-            <div class="slide-media"><img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}"></div>
-            <div class="slide-meta">
-              <h3>${escapeHtml(p.title || 'Sin título')}</h3>
-              <div class="date">${escapeHtml(p.date || '')}</div>
-              <p>${escapeHtml(short)}</p>
-              <button class="read-more" data-id="${p.id}">Seguir leyendo</button>
-            </div>`;
-          slidesContainer.appendChild(slide);
-
-          const d = document.createElement('div'); d.className='dot';
-          d.dataset.idx = idx;
-          d.addEventListener('click', ()=> goTo(idx));
-          dotsContainer.appendChild(d);
-        });
-        updateDots(0);
-      }
-
-      function show(i){
-        if(!slidesContainer) return;
-        const slides = slidesContainer.children;
-        const n = slides.length;
-        if(n===0) return;
-        current = ((i % n)+n)%n;
-        slidesContainer.style.transform = `translateX(${-current * 100}%)`;
-        updateDots(current);
-      }
-      function next(){ show(current+1) }
-      function prev(){ show(current-1) }
-      function goTo(i){ show(i); resetTimer(); }
-      function updateDots(active){
-        if(!dotsContainer) return;
-        dotsContainer.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx===active));
-      }
-      function startTimer(){ if(timer) clearInterval(timer); timer=setInterval(()=> next(), interval); }
-      function resetTimer(){ startTimer(); }
-
-      // wire buttons
-      nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
-      prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
-
-      // pause on hover
-      const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
-      if(parentSlideshow){
-        parentSlideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
-        parentSlideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
-      }
-
-      // expose useful methods
-      return { build, show, startTimer, resetTimer, posts };
-    }
-
+    // --- helpers ---
     function excerpt(text, max = 420){
       if(!text) return '';
       if(text.length <= max) return text;
@@ -346,15 +299,11 @@
       const lastSpace = cut.lastIndexOf(' ');
       return cut.slice(0, lastSpace > 40 ? lastSpace : max) + '…';
     }
-
     function escapeHtml(str){
-      return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-        .replace(/'/g,"&#39;");
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;");
     }
 
-    // Modal logic (reused)
+    // --- Modal logic ---
     const modalOverlay = document.getElementById('modalOverlay');
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
@@ -362,8 +311,21 @@
     const modalText = document.getElementById('modalText');
     const modalClose = document.getElementById('modalClose');
 
+    // pause/resume all registered slideshows
+    function pauseAllSlides(){
+      if(!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => { try{ s.pause && s.pause(); } catch(e){ console.warn('pause slide error', e); } });
+    }
+    function resumeAllSlides(){
+      if(!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => { try{ s.resume && s.resume(); } catch(e){ console.warn('resume slide error', e); } });
+    }
+
     function openModalWithPost(post){
       if(!post) return;
+      // pause all slideshows (so nothing advances while modal open)
+      pauseAllSlides();
+
       const img = (post.images && post.images[0]) ? post.images[0] : 'assets/placeholder.jpg';
       modalImage.src = img;
       modalTitle.textContent = post.title || '';
@@ -373,12 +335,19 @@
       modalOverlay.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
-    function closeModal(){ modalOverlay.style.display = 'none'; modalOverlay.setAttribute('aria-hidden','true'); modalImage.src=''; document.body.style.overflow=''; }
+    function closeModal(){
+      modalOverlay.style.display = 'none';
+      modalOverlay.setAttribute('aria-hidden','true');
+      modalImage.src = '';
+      document.body.style.overflow = '';
+      // resume slides after modal closed
+      resumeAllSlides();
+    }
     modalClose.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (ev)=> { if(ev.target === modalOverlay) closeModal(); });
     window.addEventListener('keydown', (ev)=> { if(ev.key === 'Escape') closeModal(); });
 
-    // Delegación para 'Seguir leyendo': busca post by id y abre modal
+    // Delegación para 'Seguir leyendo'
     document.addEventListener('click', (ev) => {
       const btn = ev.target.closest('.read-more');
       if(!btn) return;
@@ -390,11 +359,12 @@
     // -----------------------------
     // ---- DYNAMIC CHAPTERS SNIPPET
     // -----------------------------
-    // This will replace the static chapter wrappers if chapters.json exists and contains chapters.
     async function initDynamicChapters(){
       await loadSlidesJson();
 
-      // try to fetch chapters.json
+      // reset global registry to avoid duplicates if re-initialized
+      window.ecdSlideshows = [];
+
       let chaptersList = null;
       try{
         const r = await fetch('chapters.json', { cache: 'no-store' });
@@ -407,24 +377,18 @@
       }
 
       if(!Array.isArray(chaptersList) || chaptersList.length === 0){
-        // No chapters.json found or empty => keep static behavior: build 01 and 02 as before
-        // create two slideshows using existing static wrappers
+        // fallback to static 01/02
         const ss1 = createSlideshow('01','01');
         const ss2 = createSlideshow('02','02');
         ss1.build(); ss1.show(0); ss1.startTimer();
         ss2.build(); ss2.show(0); ss2.startTimer();
-        // also set global allPosts is already loaded
         return;
       }
 
-      // If we have chaptersList, remove the static wrappers (if present) to avoid duplicates
+      // remove static wrappers if present
       const staticIds = ['chapter01-wrapper','chapter02-wrapper'];
-      staticIds.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.remove();
-      });
+      staticIds.forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
 
-      // Insert dynamic slideshows for each chapter (in the order of chaptersList)
       const mainWrap = document.querySelector('.wrap');
       const refNode = document.querySelector('.sections');
 
@@ -432,12 +396,10 @@
         const id = String(ch.id);
         const title = ch.title || `Capítulo ${id}`;
 
-        // create wrapper
         const wrapper = document.createElement('div');
         wrapper.className = 'slideshow-wrapper';
         wrapper.id = `chapter-${id}-dynamic`;
 
-        // inner HTML follows same structure as static ones, using ids with prefix id
         wrapper.innerHTML = `
           <div class="chapter-title">${escapeHtml('Capítulo ' + id + ': ' + title)}</div>
           <section class="slideshow" id="slideshow-${id}" aria-label="Capítulo ${escapeHtml(id)}">
@@ -450,11 +412,9 @@
           </section>
         `;
 
-        // insert before the sections grid so chapters appear above it
         if(refNode && refNode.parentNode) refNode.parentNode.insertBefore(wrapper, refNode);
         else mainWrap.appendChild(wrapper);
 
-        // build slideshow instance for this chapter
         const ss = createSlideshow(id, id);
         ss.build();
         ss.show(0);
@@ -462,7 +422,7 @@
       }
     }
 
-    // initialize dynamic chapters (or fallback to static)
+    // initialize
     initDynamicChapters();
 
   </script>
