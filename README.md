@@ -1,2 +1,2 @@
-# Ecos-del-C-rculo-Eterno
+# Ecos del Círculo Eterno
 Las aventuras de Adler, Delerion, Skitrix y Varka
