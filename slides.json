@@ -39,7 +39,7 @@
     "id": 1755378472312,
     "title": "En la cueva de los contrabandistas",
     "date": "2025-08-16",
-    "body": "Las frías cavernas bajo los bosques de Valverde del ruido resuentan con el echo de los sonidos ferales de la manada de lobos alimentándose más adelante. El goteo constante de algún río subterráneo crea una atmósfera amenazante, pero Adler e Isadora se aventuran dentro de la cueva. Después de avanzar por un pasillo estrecho avistan a un montón de ratas de enorme tamaño que deben haber habitado estas cuevas por largo tiempo, pero que deben haber sido desplazadas por la manada invasora. Ahora están hambrientas y son más numerosas que los humanos que se han adentrado en su dominio. La batalla es rápida y sangrienta, pero los aventureros consiguen librarse sin mayores dificultades. Saben que adelante les esperan más peligros, así que se guardan sus recursos más valiosos para lo que viene.",
+    "body": "Las frías cavernas bajo los bosques de Valverde del ruido resuentan con el eco de los sonidos ferales de la manada de lobos alimentándose más adelante. El goteo constante de algún río subterráneo crea una atmósfera amenazante, pero Adler e Isadora se aventuran dentro de la cueva. Después de avanzar por un pasillo estrecho avistan a un montón de ratas de enorme tamaño que deben haber habitado estas cuevas por largo tiempo, pero que deben haber sido desplazadas por la manada invasora. Ahora están hambrientas y son más numerosas que los humanos que se han adentrado en su dominio. La batalla es rápida y sangrienta, pero los aventureros consiguen librarse sin mayores dificultades. Saben que adelante les esperan más peligros, así que se guardan sus recursos más valiosos para lo que viene.",
     "images": [
       "assets/TS_1755378106.png"
     ]
@@ -121,16 +121,6 @@
     ],
     "chapter": "01"
   },
-    {
-    "id": 1755486731821,
-    "title": "El libro del linaje",
-    "date": "2025-08-17",
-    "body": "El gobernador los invita a sus habitaciones donde dispone algo de comida y acomoda a los aventureros para que le cuenten todo lo que han descubierto. Tras revelar la trama, trazan un plan para emboscar a Borgar Tempestus y sus hombres cuando estén cargando los artículos robados. Ahí un gran libro que se encuentra sobre un ornamentado atril llama poderosamente la atención de Delerion. Don Alarico les muestra el libro y explica que es donde se encuentra todo el linaje Belmonte que se remonta a los primeros tiempos cuando se formaron los Cuatro Reinos, después de la caída del antiguo Imperio de Aeloria. Pero el mago sabe que hay algo más, hay magia muy poderosa encerrada en aquellas páginas amarillentas, pero la curiosidad del mago tendrá que esperar.",
-    "images": [
-      "assets/TS_1755486579.png"
-    ],
-    "chapter": "01"
-  },
   {
     "id": 1755494573008,
     "title": "La emboscada a los contrabandistas",
@@ -138,6 +128,16 @@
     "body": "Los guardias del gobernador se han encargado de los falsos aventureros y han asegurado la sala del tesoro de intrusos y de lo que sea que fuera la sombra que estaba invocando el mago ahí abajo. Han tenido que dar otra noticia devastadora al capataz y, tras buscar por todas partes a Isadora no han conseguido dar con ella. Sin poder hacer más, se preparan para emboscar a los contrabandistas. Para eso, don Alarico ha prestado la ayuda de un sargento de su guardia llamado Diego, quien acompaña a Adler y Delerion junto a otros dos hombres para detener la conjura de los contrabandistas. Se internan en el bosque, toman posiciones y avistan a varios mercenarios dando órdenes a los estibadores para que suban los cargamentos robados. Parece que Borgar está en la embarcación, pero tendrán que superar a los matones para llegar a él.",
     "images": [
       "assets/TS_1755492970.png"
+    ],
+    "chapter": "01"
+  },
+  {
+    "id": 1755486731821,
+    "title": "El libro del linaje",
+    "date": "2025-08-17",
+    "body": "El gobernador los invita a sus habitaciones donde dispone algo de comida y acomoda a los aventureros para que le cuenten todo lo que han descubierto. Tras revelar la trama, trazan un plan para emboscar a Borgar Tempestus y sus hombres cuando estén cargando los artículos robados. Ahí un gran libro que se encuentra sobre un ornamentado atril llama poderosamente la atención de Delerion. Don Alarico les muestra el libro y explica que es donde se encuentra todo el linaje Belmonte que se remonta a los primeros tiempos cuando se formaron los Cuatro Reinos, después de la caída del antiguo Imperio de Aeloria. Pero el mago sabe que hay algo más, hay magia muy poderosa encerrada en aquellas páginas amarillentas, pero la curiosidad del mago tendrá que esperar.",
+    "images": [
+      "assets/TS_1755486579.png"
     ],
     "chapter": "01"
   },
@@ -188,16 +188,6 @@
     "body": "Los aventureros llegan hasta la casa de Haroldo el Montaraz y lo interrogan. Parece un tipo raro, de higiene laxa y sin mucha vida social, pero, según les cuenta, ha estado investigando por su cuenta el campamento de los mercenarios y estuvo haciéndose pasar por alguien interesado en adquirir artículos robados para poder infiltrarse y llegar hasta el fondo del asunto. Lleva varias noches reuniéndose cerca de los campos y, tras la persecución de la guardia del gobernador después de que el complot fuera desbaratado por nuestros héroes, Haroldo está seguro de que los mercenarios se presentarán esta noche en el punto de encuentro para vender lo que puedan antes de de huir. Así, Adler, Delerion y Haroldo se disponen a emboscar a los mercenarios en el punto de encuentro.",
     "images": [
       "assets/Haroldo el Montaraz.png"
-    ],
-    "chapter": "02"
-  },
-    {
-    "id": 1755561345518,
-    "title": "Reunión a la medianoche",
-    "date": "2025-08-18",
-    "body": "Los aventureros acompañan a Haroldo hasta el punto de reunión en los campos de Valverde del Río. Se esconden a cierta distancia y esperan a que aparezcan los contrabandistas que todavía quedan en el pueblo. Al cabo de un rato aparecen tres figuras entre el trigo alto. Haroldo mantiene una conversación para sacar toda la información que puedan antes de que los maleantes desaparezcan. Entonces, da la señal acordada y el plan se pone en marcha. Delerion invoca una mano etérea que empieza mover el trigo alrededor de los contrabandistas mientras Adler proyecta su voz resonando en todo el campo con una profundidad ominosa. Los bandidos empiezan a incomodarse y finalmente emprenden la retirada pero son reducidos por el trío. Los atan, les confiscan sus pertenencias y Haroldo les dice que pueden llevarlos a la guardia para recoger una recompensa, parece que es otra de las actividades económicas habituales del montaraz. Además, Haroldo ha conseguido información clave, una balsa va a pasar la próxima noche para recoger a los contrabandistas que quedan y llevarlos hacia el campamento enemigo.",
-    "images": [
-      "assets/TS_1755552870.png"
     ],
     "chapter": "02"
   },
@@ -271,4 +261,14 @@
     ],
     "chapter": "02"
   },
+  {
+    "id": 1755561345518,
+    "title": "Reunión a la medianoche",
+    "date": "2025-08-18",
+    "body": "Los aventureros acompañan a Haroldo hasta el punto de reunión en los campos de Valverde del Río. Se esconden a cierta distancia y esperan a que aparezcan los contrabandistas que todavía quedan en el pueblo. Al cabo de un rato aparecen tres figuras entre el trigo alto. Haroldo mantiene una conversación para sacar toda la información que puedan antes de que los maleantes desaparezcan. Entonces, da la señal acordada y el plan se pone en marcha. Delerion invoca una mano etérea que empieza mover el trigo alrededor de los contrabandistas mientras Adler proyecta su voz resonando en todo el campo con una profundidad ominosa. Los bandidos empiezan a incomodarse y finalmente emprenden la retirada pero son reducidos por el trío. Los atan, les confiscan sus pertenencias y Haroldo les dice que pueden llevarlos a la guardia para recoger una recompensa, parece que es otra de las actividades económicas habituales del montaraz. Además, Haroldo ha conseguido información clave, una balsa va a pasar la próxima noche para recoger a los contrabandistas que quedan y llevarlos hacia el campamento enemigo.",
+    "images": [
+      "assets/TS_1755552870.png"
+    ],
+    "chapter": "02"
+  }
 ]
