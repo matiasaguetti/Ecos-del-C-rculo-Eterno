@@ -121,6 +121,16 @@
     ],
     "chapter": "01"
   },
+    {
+    "id": 1755486731821,
+    "title": "El libro del linaje",
+    "date": "2025-08-17",
+    "body": "El gobernador los invita a sus habitaciones donde dispone algo de comida y acomoda a los aventureros para que le cuenten todo lo que han descubierto. Tras revelar la trama, trazan un plan para emboscar a Borgar Tempestus y sus hombres cuando estén cargando los artículos robados. Ahí un gran libro que se encuentra sobre un ornamentado atril llama poderosamente la atención de Delerion. Don Alarico les muestra el libro y explica que es donde se encuentra todo el linaje Belmonte que se remonta a los primeros tiempos cuando se formaron los Cuatro Reinos, después de la caída del antiguo Imperio de Aeloria. Pero el mago sabe que hay algo más, hay magia muy poderosa encerrada en aquellas páginas amarillentas, pero la curiosidad del mago tendrá que esperar.",
+    "images": [
+      "assets/TS_1755486579.png"
+    ],
+    "chapter": "01"
+  },
   {
     "id": 1755494573008,
     "title": "La emboscada a los contrabandistas",
@@ -128,16 +138,6 @@
     "body": "Los guardias del gobernador se han encargado de los falsos aventureros y han asegurado la sala del tesoro de intrusos y de lo que sea que fuera la sombra que estaba invocando el mago ahí abajo. Han tenido que dar otra noticia devastadora al capataz y, tras buscar por todas partes a Isadora no han conseguido dar con ella. Sin poder hacer más, se preparan para emboscar a los contrabandistas. Para eso, don Alarico ha prestado la ayuda de un sargento de su guardia llamado Diego, quien acompaña a Adler y Delerion junto a otros dos hombres para detener la conjura de los contrabandistas. Se internan en el bosque, toman posiciones y avistan a varios mercenarios dando órdenes a los estibadores para que suban los cargamentos robados. Parece que Borgar está en la embarcación, pero tendrán que superar a los matones para llegar a él.",
     "images": [
       "assets/TS_1755492970.png"
-    ],
-    "chapter": "01"
-  },
-  {
-    "id": 1755486731821,
-    "title": "El libro del linaje",
-    "date": "2025-08-17",
-    "body": "El gobernador los invita a sus habitaciones donde dispone algo de comida y acomoda a los aventureros para que le cuenten todo lo que han descubierto. Tras revelar la trama, trazan un plan para emboscar a Borgar Tempestus y sus hombres cuando estén cargando los artículos robados. Ahí un gran libro que se encuentra sobre un ornamentado atril llama poderosamente la atención de Delerion. Don Alarico les muestra el libro y explica que es donde se encuentra todo el linaje Belmonte que se remonta a los primeros tiempos cuando se formaron los Cuatro Reinos, después de la caída del antiguo Imperio de Aeloria. Pero el mago sabe que hay algo más, hay magia muy poderosa encerrada en aquellas páginas amarillentas, pero la curiosidad del mago tendrá que esperar.",
-    "images": [
-      "assets/TS_1755486579.png"
     ],
     "chapter": "01"
   },
