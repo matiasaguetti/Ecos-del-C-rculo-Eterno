@@ -7,140 +7,6 @@
   <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Ajustes de texto en slide: se limita visualmente y se adapta a mobile */
-    .slide-meta p {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      -webkit-line-clamp: 6;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-    @media (max-width:900px) {
-      .slide-meta p { -webkit-line-clamp: 4; }
-    }
-
-    /* Botón 'Seguir leyendo' */
-    .read-more {
-      background: linear-gradient(90deg, rgba(138,91,58,0.95), rgba(91,122,123,0.95));
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 6px;
-    }
-    .read-more:hover { filter: brightness(1.05); }
-
-    /* Modal (overlay) */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2,2,3,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1200;
-      padding: 20px;
-    }
-    .modal {
-      background: #0b0b0c;
-      max-width: 1100px;
-      width: 100%;
-      max-height: 90vh;
-      border-radius: 12px;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 0;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.03);
-      position: relative;
-    }
-    .modal .modal-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-      display: block;
-    }
-    .modal .modal-body {
-      padding: 18px;
-      overflow: auto;
-    }
-    .modal .modal-body h3 { margin-top: 0; font-family: 'Cinzel', serif; }
-    .modal .modal-body .date { color: var(--muted); margin-bottom: 8px; display:block; }
-    .modal .modal-body p { color: var(--muted); line-height:1.6; white-space:pre-wrap; }
-
-    .modal .close-btn {
-      position: absolute;
-      right: 20px;
-      top: 18px;
-      background: rgba(255,255,255,0.04);
-      border: none;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    /* Modal external nav buttons (outside the modal frame) */
-    .modal-nav {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1220;
-      display: none; /* shown when modal open */
-      pointer-events: auto;
-    }
-    .modal-nav button {
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      border: none;
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      font-size: 28px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-    }
-    .modal-nav.left { left: 12px; }
-    .modal-nav.right { right: 12px; }
-
-    .modal-nav button:hover { filter: brightness(1.07); }
-
-    /* Responsive modal layout */
-    @media (max-width: 980px) {
-      .modal { grid-template-columns: 1fr; max-height: 92vh; }
-      .modal .modal-media { max-height: 50vh; }
-      .modal-nav.left { left: 8px; }
-      .modal-nav.right { right: 8px; }
-    }
-
-    /* Chapter titles and dynamic insertion adjustments */
-    .chapter-title { font-family: 'Cinzel', serif; font-size:20px; margin:18px 0 8px; color: #e6e6e6; }
-    .slideshow-wrapper { margin-bottom: 28px; }
-
-    /* Basic slides container style to ensure transform works */
-    .slides { display:flex; transition: transform .5s ease; width:100%; }
-    .slide { min-width:100%; display:grid; grid-template-columns: 56% 44%; gap:18px; align-items:center; padding:22px; box-sizing:border-box; }
-    .slide-media{ height:320px; border-radius:10px; overflow:hidden; background:#050506; display:flex; align-items:center; justify-content:center; }
-    .slide-media img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .slide-meta h3{ margin:0 0 6px; font-family:'Cinzel',serif; font-size:22px; }
-    .slide-meta .date{ color:var(--muted); font-size:13px; margin-bottom:10px; }
-    .controls{ position:absolute; left:12px; right:12px; top:50%; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; }
-    .ctrl-btn{ pointer-events:auto; background:rgba(0,0,0,0.4); border:none; padding:10px; border-radius:50%; backdrop-filter:blur(2px); color:#fff; }
-    .dots{ position:absolute; left:50%; transform:translateX(-50%); bottom:12px; display:flex; gap:6px; }
-    .dot{ width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.08); cursor:pointer; }
-    .dot.active{ background: #8a5b3a; }
-    @media (max-width:900px){ .slide{ grid-template-columns:1fr } .slide-media{ height:220px } .slides{ display:flex } .controls{ top: 46% } }
-  </style>
 </head>
 <body>
   <header class="banner">
@@ -162,7 +28,10 @@
       <div class="chapter-title">Capítulo 01: Valverde del Río</div>
       <section class="slideshow" id="slideshow-01" aria-label="Capítulo 01">
         <div id="slides-01" class="slides" aria-live="polite"></div>
-        <div class="controls"><button id="prev-01" class="ctrl-btn" aria-label="anterior">‹</button><button id="next-01" class="ctrl-btn" aria-label="siguiente">›</button></div>
+        <div class="controls">
+          <button id="prev-01" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-01" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
         <div class="dots" id="dots-01" role="tablist"></div>
       </section>
     </div>
@@ -171,7 +40,10 @@
       <div class="chapter-title">Capítulo 02: La Conspiración de los Contrabandistas</div>
       <section class="slideshow" id="slideshow-02" aria-label="Capítulo 02">
         <div id="slides-02" class="slides" aria-live="polite"></div>
-        <div class="controls"><button id="prev-02" class="ctrl-btn" aria-label="anterior">‹</button><button id="next-02" class="ctrl-btn" aria-label="siguiente">›</button></div>
+        <div class="controls">
+          <button id="prev-02" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-02" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
         <div class="dots" id="dots-02" role="tablist"></div>
       </section>
     </div>
@@ -198,11 +70,10 @@
 
   <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
 
-  <!-- Modal overlay (oculto por defecto) -->
+  <!-- Modal overlay -->
   <div id="modalOverlay" class="modal-overlay" role="dialog" aria-hidden="true">
-    <!-- modal box -->
     <div class="modal" role="document" aria-modal="true">
-      <button id="modalClose" class="close-btn" aria-label="Cerrar">Cerrar ✕</button>
+      <button id="modalClose" class="close-btn" aria-label="Cerrar">✕</button>
       <div class="modal-media">
         <img id="modalImage" src="" alt="Imagen ampliada">
       </div>
@@ -212,7 +83,7 @@
         <p id="modalText"></p>
       </div>
     </div>
-    <!-- modal external nav buttons (outside the box) -->
+    <!-- Modal navigation buttons -->
     <div class="modal-nav left" id="modalNavLeft" aria-hidden="true">
       <button id="modalPrev" aria-label="Anterior diapositiva">‹</button>
     </div>
@@ -222,29 +93,29 @@
   </div>
 
   <script>
-    // --- Carga y datos ---
+    // === Data Loading ===
     let allPosts = [];
 
-    async function loadSlidesJson(){
-      try{
+    async function loadSlidesJson() {
+      try {
         const res = await fetch('slides.json', { cache: 'no-store' });
         allPosts = await res.json();
-      }catch(e){
+      } catch (e) {
         console.warn('No se pudo cargar slides.json', e);
         allPosts = [];
       }
     }
 
-    function postsForChapter(chapter){
-      if(!Array.isArray(allPosts)) return [];
+    function postsForChapter(chapter) {
+      if (!Array.isArray(allPosts)) return [];
       return allPosts.filter(p => {
-        if(p.chapter) return String(p.chapter) === String(chapter);
+        if (p.chapter) return String(p.chapter) === String(chapter);
         return chapter === '01';
       });
     }
 
-    // --- Slideshow factory (con pause/resume y registro global) ---
-    function createSlideshow(prefix, chapter){
+    // === Slideshow Factory ===
+    function createSlideshow(prefix, chapter) {
       const slidesContainer = document.getElementById(`slides-${prefix}`);
       const dotsContainer = document.getElementById(`dots-${prefix}`);
       const prevBtn = document.getElementById(`prev-${prefix}`);
@@ -255,23 +126,38 @@
       let timer = null;
       const interval = 6000;
 
-      function build(){
-        if(!slidesContainer || !dotsContainer) return;
+      function build() {
+        if (!slidesContainer || !dotsContainer) return;
         slidesContainer.innerHTML = '';
         dotsContainer.innerHTML = '';
 
-        if(!posts.length){
-          slidesContainer.innerHTML = `<section class="slide"><div class="slide-media"><img src="assets/placeholder.jpg" alt="placeholder"></div><div class="slide-meta"><h3>Sin entradas</h3><div class="date">—</div><p>No hay entradas para este capítulo.</p></div></section>`;
-          const d = document.createElement('div'); d.className='dot active'; dotsContainer.appendChild(d);
+        if (!posts.length) {
+          slidesContainer.innerHTML = `
+            <section class="slide">
+              <div class="slide-media">
+                <img src="assets/placeholder.jpg" alt="placeholder">
+              </div>
+              <div class="slide-meta">
+                <h3>Sin entradas</h3>
+                <div class="date">—</div>
+                <p>No hay entradas para este capítulo.</p>
+              </div>
+            </section>`;
+          const d = document.createElement('div');
+          d.className = 'dot active';
+          dotsContainer.appendChild(d);
           return;
         }
 
         posts.forEach((p, idx) => {
           const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
           const short = excerpt(p.body || '', 300);
-          const slide = document.createElement('section'); slide.className='slide';
+          const slide = document.createElement('section');
+          slide.className = 'slide';
           slide.innerHTML = `
-            <div class="slide-media"><img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}"></div>
+            <div class="slide-media">
+              <img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}">
+            </div>
             <div class="slide-meta">
               <h3>${escapeHtml(p.title || 'Sin título')}</h3>
               <div class="date">${escapeHtml(p.date || '')}</div>
@@ -280,254 +166,343 @@
             </div>`;
           slidesContainer.appendChild(slide);
 
-          const d = document.createElement('div'); d.className='dot';
+          const d = document.createElement('div');
+          d.className = 'dot';
           d.dataset.idx = idx;
-          d.addEventListener('click', ()=> goTo(idx));
+          d.addEventListener('click', () => goTo(idx));
           dotsContainer.appendChild(d);
         });
         updateDots(0);
       }
 
-      function show(i){
-        if(!slidesContainer) return;
+      function show(i) {
+        if (!slidesContainer) return;
         const slides = slidesContainer.children;
         const n = slides.length;
-        if(n===0) return;
-        current = ((i % n)+n)%n;
+        if (n === 0) return;
+        current = ((i % n) + n) % n;
         slidesContainer.style.transform = `translateX(${-current * 100}%)`;
         updateDots(current);
       }
-      function next(){ show(current+1) }
-      function prev(){ show(current-1) }
-      function goTo(i){ show(i); resetTimer(); }
-      function updateDots(active){
-        if(!dotsContainer) return;
-        dotsContainer.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx===active));
+
+      function next() { show(current + 1) }
+      function prev() { show(current - 1) }
+      function goTo(i) { show(i); resetTimer(); }
+
+      function updateDots(active) {
+        if (!dotsContainer) return;
+        dotsContainer.querySelectorAll('.dot').forEach((d, idx) =>
+          d.classList.toggle('active', idx === active));
       }
 
-      // timer controls
-      function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> next(), interval); }
-      function pause(){ if(timer){ clearInterval(timer); timer = null; } }
-      function resume(){ if(!timer){ timer = setInterval(()=> next(), interval); } }
-      function resetTimer(){ pause(); startTimer(); }
+      // Timer controls
+      function startTimer() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(() => next(), interval);
+      }
 
-      // controls binding
-      nextBtn && nextBtn.addEventListener('click', ()=>{ next(); resetTimer(); });
-      prevBtn && prevBtn.addEventListener('click', ()=>{ prev(); resetTimer(); });
+      function pause() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
 
-      // pause on hover behavior
+      function resume() {
+        if (!timer) {
+          timer = setInterval(() => next(), interval);
+        }
+      }
+
+      function resetTimer() {
+        pause();
+        startTimer();
+      }
+
+      // Event listeners
+      nextBtn && nextBtn.addEventListener('click', () => {
+        next();
+        resetTimer();
+      });
+
+      prevBtn && prevBtn.addEventListener('click', () => {
+        prev();
+        resetTimer();
+      });
+
+      // Pause on hover
       const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
-      if(parentSlideshow){
-        parentSlideshow.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
-        parentSlideshow.addEventListener('mouseleave', ()=>{ startTimer(); });
+      if (parentSlideshow) {
+        parentSlideshow.addEventListener('mouseenter', () => {
+          if (timer) clearInterval(timer);
+        });
+        parentSlideshow.addEventListener('mouseleave', () => {
+          startTimer();
+        });
       }
 
-      // Utility: find index of post by id inside this instance
-      function indexOfPostId(postId){
-        for(let i=0;i<posts.length;i++){
-          if(String(posts[i].id) === String(postId)) return i;
+      function indexOfPostId(postId) {
+        for (let i = 0; i < posts.length; i++) {
+          if (String(posts[i].id) === String(postId)) return i;
         }
         return -1;
       }
 
-      // register instance globally
-      const instance = { prefix, chapter, build, show, startTimer, pause, resume, resetTimer, posts, indexOfPostId };
+      // Register instance globally
+      const instance = {
+        prefix, chapter, build, show, startTimer, pause, resume, resetTimer, posts, indexOfPostId
+      };
       window.ecdSlideshows = window.ecdSlideshows || [];
       window.ecdSlideshows.push(instance);
 
       return instance;
     }
 
-    // --- helpers ---
-    function excerpt(text, max = 420){
-      if(!text) return '';
-      if(text.length <= max) return text;
+    // === Utility Functions ===
+    function excerpt(text, max = 420) {
+      if (!text) return '';
+      if (text.length <= max) return text;
       const cut = text.slice(0, max);
       const lastSpace = cut.lastIndexOf(' ');
       return cut.slice(0, lastSpace > 40 ? lastSpace : max) + '…';
     }
-    function escapeHtml(str){
-      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;");
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, "&#39;");
     }
 
-    // --- Modal logic ---
+    // === Modal Logic ===
     const modalOverlay = document.getElementById('modalOverlay');
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
     const modalText = document.getElementById('modalText');
     const modalClose = document.getElementById('modalClose');
-
     const modalPrevBtn = document.getElementById('modalPrev');
     const modalNextBtn = document.getElementById('modalNext');
     const modalNavLeft = document.getElementById('modalNavLeft');
     const modalNavRight = document.getElementById('modalNavRight');
 
-    // global modal context: which slideshow instance & index are currently shown in modal
     let modalContext = { instance: null, index: null };
 
-    // pause/resume all registered slideshows
-    function pauseAllSlides(){
-      if(!window.ecdSlideshows) return;
-      window.ecdSlideshows.forEach(s => { try{ s.pause && s.pause(); } catch(e){ console.warn('pause slide error', e); } });
-    }
-    function resumeAllSlides(){
-      if(!window.ecdSlideshows) return;
-      window.ecdSlideshows.forEach(s => { try{ s.resume && s.resume(); } catch(e){ console.warn('resume slide error', e); } });
+    function pauseAllSlides() {
+      if (!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => {
+        try {
+          s.pause && s.pause();
+        } catch (e) {
+          console.warn('pause slide error', e);
+        }
+      });
     }
 
-    function updateModalForContext(){
+    function resumeAllSlides() {
+      if (!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => {
+        try {
+          s.resume && s.resume();
+        } catch (e) {
+          console.warn('resume slide error', e);
+        }
+      });
+    }
+
+    function updateModalForContext() {
       const ctx = modalContext;
-      if(!ctx.instance || typeof ctx.index !== 'number') return;
+      if (!ctx.instance || typeof ctx.index !== 'number') return;
       const post = ctx.instance.posts[ctx.index];
-      if(!post) return;
-      // update modal content
+      if (!post) return;
+
+      // Update modal content
       const img = (post.images && post.images[0]) ? post.images[0] : 'assets/placeholder.jpg';
       modalImage.src = img;
       modalImage.alt = post.title || 'imagen';
       modalTitle.textContent = post.title || '';
       modalDate.textContent = post.date || '';
       modalText.textContent = post.body || '';
-      // also ensure underlying slideshow shows same index
-      try{ ctx.instance.show(ctx.index); } catch(e){ /* ignore */ }
-      // show/hide nav according to bounds
-      if(ctx.index <= 0) modalPrevBtn.setAttribute('disabled','disabled'); else modalPrevBtn.removeAttribute('disabled');
-      if(ctx.index >= ctx.instance.posts.length - 1) modalNextBtn.setAttribute('disabled','disabled'); else modalNextBtn.removeAttribute('disabled');
+
+      // Update underlying slideshow
+      try {
+        ctx.instance.show(ctx.index);
+      } catch (e) {
+        // ignore
+      }
+
+      // Update navigation buttons
+      if (ctx.index <= 0) {
+        modalPrevBtn.setAttribute('disabled', 'disabled');
+      } else {
+        modalPrevBtn.removeAttribute('disabled');
+      }
+
+      if (ctx.index >= ctx.instance.posts.length - 1) {
+        modalNextBtn.setAttribute('disabled', 'disabled');
+      } else {
+        modalNextBtn.removeAttribute('disabled');
+      }
     }
 
-    function openModalWithPost(post){
-      if(!post) return;
-      // pause all slideshows
+    function openModalWithPost(post) {
+      if (!post) return;
+
       pauseAllSlides();
 
-      // find instance that contains this post
+      // Find instance that contains this post
       modalContext.instance = null;
       modalContext.index = null;
-      if(window.ecdSlideshows && window.ecdSlideshows.length){
-        for(const inst of window.ecdSlideshows){
+
+      if (window.ecdSlideshows && window.ecdSlideshows.length) {
+        for (const inst of window.ecdSlideshows) {
           const idx = inst.indexOfPostId && inst.indexOfPostId(post.id);
-          if(typeof idx === 'number' && idx >= 0){
+          if (typeof idx === 'number' && idx >= 0) {
             modalContext.instance = inst;
             modalContext.index = idx;
             break;
           }
         }
       }
-      // fallback: if no instance found, try to use global posts array and emulate single instance
-      if(!modalContext.instance){
-        modalContext.instance = { posts: (allPosts || []), show: function(i){ /* no-op if no slides container */ } , indexOfPostId: function(id){ return (allPosts || []).findIndex(p => String(p.id) === String(id)); } };
+
+      // Fallback
+      if (!modalContext.instance) {
+        modalContext.instance = {
+          posts: (allPosts || []),
+          show: function(i) { /* no-op */ },
+          indexOfPostId: function(id) {
+            return (allPosts || []).findIndex(p => String(p.id) === String(id));
+          }
+        };
         modalContext.index = modalContext.instance.indexOfPostId(post.id);
-        if(modalContext.index < 0) modalContext.index = 0;
+        if (modalContext.index < 0) modalContext.index = 0;
       }
 
-      // populate modal UI
       updateModalForContext();
 
-      // show nav buttons (external)
+      // Show navigation
       modalNavLeft.style.display = 'block';
       modalNavRight.style.display = 'block';
-      modalNavLeft.setAttribute('aria-hidden','false');
-      modalNavRight.setAttribute('aria-hidden','false');
+      modalNavLeft.setAttribute('aria-hidden', 'false');
+      modalNavRight.setAttribute('aria-hidden', 'false');
 
+      // Show modal
       modalOverlay.style.display = 'flex';
-      modalOverlay.setAttribute('aria-hidden','false');
+      modalOverlay.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     }
 
-    function closeModal(){
+    function closeModal() {
       modalOverlay.style.display = 'none';
-      modalOverlay.setAttribute('aria-hidden','true');
+      modalOverlay.setAttribute('aria-hidden', 'true');
       modalImage.src = '';
       document.body.style.overflow = '';
-      // hide nav
+
+      // Hide navigation
       modalNavLeft.style.display = 'none';
       modalNavRight.style.display = 'none';
-      modalNavLeft.setAttribute('aria-hidden','true');
-      modalNavRight.setAttribute('aria-hidden','true');
-      // clear modal context and resume slides
+      modalNavLeft.setAttribute('aria-hidden', 'true');
+      modalNavRight.setAttribute('aria-hidden', 'true');
+
+      // Clear context and resume slides
       modalContext.instance = null;
       modalContext.index = null;
       resumeAllSlides();
     }
 
+    // Modal event listeners
     modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (ev)=> { if(ev.target === modalOverlay) closeModal(); });
-    window.addEventListener('keydown', (ev)=> {
-      if(ev.key === 'Escape') closeModal();
-      // left/right arrow navigation when modal open
-      if(modalOverlay.style.display === 'flex'){
-        if(ev.key === 'ArrowLeft') modalPrevHandler();
-        if(ev.key === 'ArrowRight') modalNextHandler();
+    modalOverlay.addEventListener('click', (ev) => {
+      if (ev.target === modalOverlay) closeModal();
+    });
+
+    window.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') closeModal();
+      // Arrow key navigation when modal is open
+      if (modalOverlay.style.display === 'flex') {
+        if (ev.key === 'ArrowLeft') modalPrevHandler();
+        if (ev.key === 'ArrowRight') modalNextHandler();
       }
     });
 
-    // Delegación para 'Seguir leyendo'
+    // Read more button delegation
     document.addEventListener('click', (ev) => {
       const btn = ev.target.closest('.read-more');
-      if(!btn) return;
+      if (!btn) return;
       const id = btn.dataset.id;
       const post = (allPosts || []).find(p => String(p.id) === String(id));
-      if(post) openModalWithPost(post);
+      if (post) openModalWithPost(post);
     });
 
-    // modal nav handlers
-    function modalPrevHandler(){
+    // Modal navigation handlers
+    function modalPrevHandler() {
       const ctx = modalContext;
-      if(!ctx.instance) return;
+      if (!ctx.instance) return;
       const idx = ctx.index;
-      if(typeof idx !== 'number' || idx <= 0) return;
+      if (typeof idx !== 'number' || idx <= 0) return;
       ctx.index = idx - 1;
       updateModalForContext();
     }
-    function modalNextHandler(){
+
+    function modalNextHandler() {
       const ctx = modalContext;
-      if(!ctx.instance) return;
+      if (!ctx.instance) return;
       const idx = ctx.index;
-      if(typeof idx !== 'number' || idx >= ctx.instance.posts.length - 1) return;
+      if (typeof idx !== 'number' || idx >= ctx.instance.posts.length - 1) return;
       ctx.index = idx + 1;
       updateModalForContext();
     }
 
-    modalPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); modalPrevHandler(); });
-    modalNextBtn.addEventListener('click', (e) => { e.stopPropagation(); modalNextHandler(); });
+    modalPrevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modalPrevHandler();
+    });
 
-    // -----------------------------
-    // ---- DYNAMIC CHAPTERS SNIPPET
-    // -----------------------------
-    async function initDynamicChapters(){
+    modalNextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modalNextHandler();
+    });
+
+    // === Dynamic Chapters Initialization ===
+    async function initDynamicChapters() {
       await loadSlidesJson();
 
-      // reset global registry to avoid duplicates if re-initialized
+      // Reset global registry
       window.ecdSlideshows = [];
 
       let chaptersList = null;
-      try{
+      try {
         const r = await fetch('chapters.json', { cache: 'no-store' });
-        if(r.ok){
+        if (r.ok) {
           const data = await r.json();
-          if(Array.isArray(data) && data.length > 0) chaptersList = data;
+          if (Array.isArray(data) && data.length > 0) chaptersList = data;
         }
-      }catch(e){
+      } catch (e) {
         console.warn('No chapters.json or failed to load it', e);
       }
 
-      if(!Array.isArray(chaptersList) || chaptersList.length === 0){
-        // fallback to static 01/02
-        const ss1 = createSlideshow('01','01');
-        const ss2 = createSlideshow('02','02');
-        ss1.build(); ss1.show(0); ss1.startTimer();
-        ss2.build(); ss2.show(0); ss2.startTimer();
+      if (!Array.isArray(chaptersList) || chaptersList.length === 0) {
+        // Fallback to static chapters
+        const ss1 = createSlideshow('01', '01');
+        const ss2 = createSlideshow('02', '02');
+        ss1.build();
+        ss1.show(0);
+        ss1.startTimer();
+        ss2.build();
+        ss2.show(0);
+        ss2.startTimer();
         return;
       }
 
-      // remove static wrappers if present
-      const staticIds = ['chapter01-wrapper','chapter02-wrapper'];
-      staticIds.forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+      // Remove static wrappers if present
+      const staticIds = ['chapter01-wrapper', 'chapter02-wrapper'];
+      staticIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+      });
 
       const mainWrap = document.querySelector('.wrap');
       const refNode = document.querySelector('.sections');
 
-      for(const ch of chaptersList){
+      for (const ch of chaptersList) {
         const id = String(ch.id);
         const title = ch.title || `Capítulo ${id}`;
 
@@ -547,8 +522,11 @@
           </section>
         `;
 
-        if(refNode && refNode.parentNode) refNode.parentNode.insertBefore(wrapper, refNode);
-        else mainWrap.appendChild(wrapper);
+        if (refNode && refNode.parentNode) {
+          refNode.parentNode.insertBefore(wrapper, refNode);
+        } else {
+          mainWrap.appendChild(wrapper);
+        }
 
         const ss = createSlideshow(id, id);
         ss.build();
@@ -557,9 +535,8 @@
       }
     }
 
-    // initialize
+    // Initialize the application
     initDynamicChapters();
-
   </script>
 </body>
 </html>
