@@ -3,223 +3,540 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web English Center — Clase demo gratuita</title>
-  <meta name="description" content="Clases de inglés online. Reserva una clase demo gratuita y acelera tu nivel con profesores nativos y metodología práctica." />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --color-primary:#0082d4;   /* brand */
-      --color-secondary:#56c5fc; /* brand */
-      --color-white:#ffffff;
-      --color-accent:#FFC300;    /* derivado de RGB 255,195,0 en manual (confirmar) */
-      --text:#0b1b2b;
-      --max-width:1100px;
-      --radius:10px;
-      --container-padding:20px;
-      --shadow: 0 8px 24px rgba(11,27,43,0.08);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      font-family: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color:var(--text);
-      margin:0;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
-      line-height:1.4;
-    }
-    .wrap{max-width:var(--max-width);margin:0 auto;padding:var(--container-padding)}
-    header{padding:40px 0; display:flex; align-items:center; justify-content:space-between;}
-    .logo{display:flex; gap:14px; align-items:center;}
-    .logo .mark{
-      width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));
-      display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;
-      box-shadow:var(--shadow);
-    }
-    nav a{color:rgba(11,27,43,0.75);text-decoration:none;margin-left:18px;font-weight:600}
-    /* HERO */
-    .hero{
-      display:grid;grid-template-columns:1fr 460px;gap:32px;align-items:center;padding:40px 0;
-    }
-    .hero .eyebrow{display:inline-block;background:rgba(86,197,252,0.12);color:var(--color-primary);padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px}
-    .hero h1{font-size:36px;margin:10px 0 12px;line-height:1.05}
-    .hero p.lead{margin:0 0 22px;color:rgba(11,27,43,0.75)}
-    .cta-row{display:flex;gap:12px;align-items:center}
-    .btn{
-      padding:14px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;
-      box-shadow:0 6px 20px rgba(0,0,0,0.08);
-    }
-    .btn-primary{background:var(--color-primary);color:white}
-    .btn-outline{background:transparent;border:2px solid var(--color-secondary);color:var(--color-primary);font-weight:700}
-    .card{
-      background:white;border-radius:12px;padding:18px;box-shadow:var(--shadow)
-    }
-    .stats{display:flex;gap:12px;justify-content:space-between;margin-top:18px}
-    .stat{flex:1;text-align:center}
-    .stat strong{display:block;font-size:20px;color:var(--color-primary)}
-    /* FEATURES */
-    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:30px 0}
-    .feature{background:white;padding:18px;border-radius:12px;box-shadow:var(--shadow);min-height:120px}
-    .feature h4{margin:8px 0 6px}
-    /* TESTIMONIALS */
-    .testimonials{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .testimonial{background:linear-gradient(180deg, #ffffff, #f9fbff);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
-    footer{padding:30px 0;color:rgba(11,27,43,0.6);font-size:14px}
-    /* Responsive */
-    @media (max-width:960px){
-      .hero{grid-template-columns:1fr; text-align:center}
-      .hero .card{margin:0 auto}
-      .features{grid-template-columns:1fr}
-      .testimonials{grid-template-columns:1fr}
-      nav{display:none}
-    }
-    /* Small helpers */
-    .muted{color:rgba(11,27,43,0.6);font-size:14px}
-    form label{font-weight:600;font-size:13px;margin-bottom:6px;display:block}
-    input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #e6eef9;background:white;font-size:15px}
-    .form-compact{display:flex;gap:10px}
-    .form-compact input{flex:1}
-    .micro{font-size:13px;color:rgba(11,27,43,0.6)}
-  </style>
+  <title>Ecos del Círculo eterno — Diario de campaña</title>
+  <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">
-        <div class="mark" aria-hidden="true">W</div>
-        <div>
-          <div style="font-weight:800">Web English Center</div>
-          <div style="font-size:12px;color:rgba(11,27,43,0.55)">Inglés online — Profesores nativos</div>
+  <header class="banner">
+    <div>
+      <div class="camp-name">Ecos del Círculo eterno</div>
+      <div class="camp-sub">Diario de campaña — crónicas, mapas y recursos</div>
+    </div>
+    <nav aria-label="navegación principal">
+      <a class="navlink" href="/mapas.html">Mapas</a>
+      <a class="navlink" href="/lore.html">Lore</a>
+      <a class="navlink" href="/recursos.html">Recursos</a>
+      <a class="navlink" href="/notas.html">Notas</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- Static wrappers (fallback) -->
+    <div class="slideshow-wrapper" id="chapter01-wrapper">
+      <div class="chapter-title">Capítulo 01: Valverde del Río</div>
+      <section class="slideshow" id="slideshow-01" aria-label="Capítulo 01">
+        <div id="slides-01" class="slides" aria-live="polite"></div>
+        <div class="controls">
+          <button id="prev-01" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-01" class="ctrl-btn" aria-label="siguiente">›</button>
         </div>
+        <div class="dots" id="dots-01" role="tablist"></div>
+      </section>
+    </div>
+
+    <div class="slideshow-wrapper" id="chapter02-wrapper">
+      <div class="chapter-title">Capítulo 02: La Conspiración de los Contrabandistas</div>
+      <section class="slideshow" id="slideshow-02" aria-label="Capítulo 02">
+        <div id="slides-02" class="slides" aria-live="polite"></div>
+        <div class="controls">
+          <button id="prev-02" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-02" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
+        <div class="dots" id="dots-02" role="tablist"></div>
+      </section>
+    </div>
+
+    <section class="sections" aria-label="Accesos rápido">
+      <article class="section-card">
+        <h4>Mapas</h4>
+        <p>Galería y planos de la campaña. (Página: <code>/mapas.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Lore</h4>
+        <p>Contexto, mitos y trasfondo de la campaña. (Página: <code>/lore.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Recursos</h4>
+        <p>Objetos, handouts y material descargable. (Página: <code>/recursos.html</code>).</p>
+      </article>
+      <article class="section-card">
+        <h4>Notas</h4>
+        <p>Zona de anotaciones y registros de los jugadores. (Página: <code>/notas.html</code>).</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>Creado para la campaña «Ecos del Círculo eterno»</footer>
+
+  <!-- Modal overlay -->
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <button id="modalClose" class="close-btn" aria-label="Cerrar">✕</button>
+      <div class="modal-media">
+        <img id="modalImage" src="" alt="Imagen ampliada">
       </div>
-      <nav aria-label="menu">
-        <a href="#metodo">Método</a>
-        <a href="#precios">Precios</a>
-        <a href="#testimonios">Testimonios</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <div>
-          <span class="eyebrow">Clase demo gratuita</span>
-          <h1 id="hero-title">Aprende inglés online con profesores nativos — práctica real desde la primera clase</h1>
-          <p class="lead">Metodología comunicativa, grupos reducidos y seguimiento personalizado. Reserva una clase demo en 30 segundos.</p>
-          <div class="cta-row">
-            <a class="btn btn-primary" href="#form">Reservar clase gratis</a>
-            <a class="btn btn-outline" href="#precios">Ver precios</a>
-          </div>
-
-          <div class="stats" role="list" aria-label="estadísticas">
-            <div class="stat">
-              <strong>+1.200</strong>
-              <span class="muted">alumnos satisfechos</span>
-            </div>
-            <div class="stat">
-              <strong>95%</strong>
-              <span class="muted">satisfacción</span>
-            </div>
-            <div class="stat">
-              <strong>Clases 24/7</strong>
-              <span class="muted">flexibilidad total</span>
-            </div>
-          </div>
-        </div>
-
-        <aside class="card" aria-label="reserva">
-          <h3 style="margin:0 0 8px">Reserva tu clase demo</h3>
-          <form id="form" action="https://example.com/submit" method="POST" novalidate>
-            <label for="name">Nombre</label>
-            <input id="name" name="name" type="text" required placeholder="Tu nombre">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" required placeholder="nombre@ejemplo.com">
-            <div style="display:flex;gap:8px;margin-top:10px">
-              <button class="btn btn-primary" type="submit" style="flex:1">Reservar clase</button>
-            </div>
-            <p class="micro" style="margin-top:8px">Al enviar aceptas recibir un email de confirmación. No compartimos tus datos.</p>
-          </form>
-        </aside>
-      </section>
-
-      <section id="metodo">
-        <div style="display:flex;align-items:center;gap:20px;padding:18px 0">
-          <div style="flex:1">
-            <h2>Metodología práctica en 3 pasos</h2>
-            <p class="muted">Diseñada para mejorar la fluidez y la confianza en situaciones reales: foco en conversación, feedback personalizado y material interactivo.</p>
-            <div class="features" role="list">
-              <div class="feature" role="listitem">
-                <strong>Clases en vivo</strong>
-                <p class="muted">Profesores nativos con plan por niveles.</p>
-              </div>
-              <div class="feature" role="listitem">
-                <strong>Material interactivo</strong>
-                <p class="muted">Ejercicios prácticos y seguimiento semanal.</p>
-              </div>
-              <div class="feature" role="listitem">
-                <strong>Progreso medible</strong>
-                <p class="muted">Reportes y recomendaciones por alumno.</p>
-              </div>
-            </div>
-          </div>
-          <div style="width:320px">
-            <div style="border-radius:12px;overflow:hidden">
-              <!-- Placeholder image, reemplaza por hero.webp -->
-              <img src="https://via.placeholder.com/640x480.webp?text=Clase+en+vivo" alt="Alumnos en clase online" width="640" height="480" style="width:100%;height:auto;display:block">
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="testimonios">
-        <h2>Testimonios</h2>
-        <div class="testimonials" role="list">
-          <div class="testimonial" role="listitem">
-            <p><strong>María G.</strong> — "Mi nivel mejoró en 3 meses. Las clases son muy prácticas y los profesores atentos."</p>
-          </div>
-          <div class="testimonial" role="listitem">
-            <p><strong>Carlos P.</strong> — "Reservé una demo y me convenció la metodología. Recomiendo 100%."</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="precios" style="padding:30px 0">
-        <h2>Planes</h2>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div class="card" style="flex:1;min-width:220px">
-            <h3>Plan Starter</h3>
-            <strong>USD 29 / mes</strong>
-            <p class="muted">2 clases semanales — grupo reducido</p>
-            <div style="margin-top:10px"><a class="btn btn-outline" href="#form">Elegir</a></div>
-          </div>
-          <div class="card" style="flex:1;min-width:220px">
-            <h3>Plan Pro</h3>
-            <strong>USD 59 / mes</strong>
-            <p class="muted">Clases ilimitadas + feedback semanal</p>
-            <div style="margin-top:10px"><a class="btn btn-primary" href="#form">Elegir</a></div>
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-    <footer>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <div>
-          © Web English Center — <span class="muted">Todos los derechos reservados</span>
-        </div>
-        <div class="muted">Contacto: hola@webenglishcenter.com</div>
+      <div class="modal-body">
+        <h3 id="modalTitle"></h3>
+        <span class="date" id="modalDate"></span>
+        <p id="modalText"></p>
       </div>
-    </footer>
+    </div>
+    <!-- Modal navigation buttons -->
+    <div class="modal-nav left" id="modalNavLeft" aria-hidden="true">
+      <button id="modalPrev" aria-label="Anterior diapositiva">‹</button>
+    </div>
+    <div class="modal-nav right" id="modalNavRight" aria-hidden="true">
+      <button id="modalNext" aria-label="Siguiente diapositiva">›</button>
+    </div>
   </div>
 
-  <!-- Simple accessibility & analytics placeholder -->
   <script>
-    // Placeholder: aquí insertarías el snippet de GA4/measurement y el dataLayer para eventos de conversión
-    // Ej: window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
-    // gtag('event','conversion', { 'method': 'form' });
-    // Para preview no se envía nada.
+    // === Data Loading ===
+    let allPosts = [];
+
+    async function loadSlidesJson() {
+      try {
+        const res = await fetch('slides.json', { cache: 'no-store' });
+        allPosts = await res.json();
+      } catch (e) {
+        console.warn('No se pudo cargar slides.json', e);
+        allPosts = [];
+      }
+    }
+
+    function postsForChapter(chapter) {
+      if (!Array.isArray(allPosts)) return [];
+      return allPosts.filter(p => {
+        if (p.chapter) return String(p.chapter) === String(chapter);
+        return chapter === '01';
+      });
+    }
+
+    // === Slideshow Factory ===
+    function createSlideshow(prefix, chapter) {
+      const slidesContainer = document.getElementById(`slides-${prefix}`);
+      const dotsContainer = document.getElementById(`dots-${prefix}`);
+      const prevBtn = document.getElementById(`prev-${prefix}`);
+      const nextBtn = document.getElementById(`next-${prefix}`);
+
+      let posts = postsForChapter(chapter).slice();
+      let current = 0;
+      let timer = null;
+      const interval = 6000;
+
+      function build() {
+        if (!slidesContainer || !dotsContainer) return;
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
+
+        if (!posts.length) {
+          slidesContainer.innerHTML = `
+            <section class="slide">
+              <div class="slide-media">
+                <img src="assets/placeholder.jpg" alt="placeholder">
+              </div>
+              <div class="slide-meta">
+                <h3>Sin entradas</h3>
+                <div class="date">—</div>
+                <p>No hay entradas para este capítulo.</p>
+              </div>
+            </section>`;
+          const d = document.createElement('div');
+          d.className = 'dot active';
+          dotsContainer.appendChild(d);
+          return;
+        }
+
+        posts.forEach((p, idx) => {
+          const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
+          const short = excerpt(p.body || '', 300);
+          const slide = document.createElement('section');
+          slide.className = 'slide';
+          slide.innerHTML = `
+            <div class="slide-media">
+              <img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}">
+            </div>
+            <div class="slide-meta">
+              <h3>${escapeHtml(p.title || 'Sin título')}</h3>
+              <div class="date">${escapeHtml(p.date || '')}</div>
+              <p>${escapeHtml(short)}</p>
+              <button class="read-more" data-id="${p.id}">Seguir leyendo</button>
+            </div>`;
+          slidesContainer.appendChild(slide);
+
+          const d = document.createElement('div');
+          d.className = 'dot';
+          d.dataset.idx = idx;
+          d.addEventListener('click', () => goTo(idx));
+          dotsContainer.appendChild(d);
+        });
+        updateDots(0);
+      }
+
+      function show(i) {
+        if (!slidesContainer) return;
+        const slides = slidesContainer.children;
+        const n = slides.length;
+        if (n === 0) return;
+        current = ((i % n) + n) % n;
+        slidesContainer.style.transform = `translateX(${-current * 100}%)`;
+        updateDots(current);
+      }
+
+      function next() { show(current + 1) }
+      function prev() { show(current - 1) }
+      function goTo(i) { show(i); resetTimer(); }
+
+      function updateDots(active) {
+        if (!dotsContainer) return;
+        dotsContainer.querySelectorAll('.dot').forEach((d, idx) =>
+          d.classList.toggle('active', idx === active));
+      }
+
+      // Timer controls
+      function startTimer() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(() => next(), interval);
+      }
+
+      function pause() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      function resume() {
+        if (!timer) {
+          timer = setInterval(() => next(), interval);
+        }
+      }
+
+      function resetTimer() {
+        pause();
+        startTimer();
+      }
+
+      // Event listeners
+      nextBtn && nextBtn.addEventListener('click', () => {
+        next();
+        resetTimer();
+      });
+
+      prevBtn && prevBtn.addEventListener('click', () => {
+        prev();
+        resetTimer();
+      });
+
+      // Pause on hover
+      const parentSlideshow = slidesContainer && slidesContainer.closest('.slideshow');
+      if (parentSlideshow) {
+        parentSlideshow.addEventListener('mouseenter', () => {
+          if (timer) clearInterval(timer);
+        });
+        parentSlideshow.addEventListener('mouseleave', () => {
+          startTimer();
+        });
+      }
+
+      function indexOfPostId(postId) {
+        for (let i = 0; i < posts.length; i++) {
+          if (String(posts[i].id) === String(postId)) return i;
+        }
+        return -1;
+      }
+
+      // Register instance globally
+      const instance = {
+        prefix, chapter, build, show, startTimer, pause, resume, resetTimer, posts, indexOfPostId
+      };
+      window.ecdSlideshows = window.ecdSlideshows || [];
+      window.ecdSlideshows.push(instance);
+
+      return instance;
+    }
+
+    // === Utility Functions ===
+    function excerpt(text, max = 420) {
+      if (!text) return '';
+      if (text.length <= max) return text;
+      const cut = text.slice(0, max);
+      const lastSpace = cut.lastIndexOf(' ');
+      return cut.slice(0, lastSpace > 40 ? lastSpace : max) + '…';
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, "&#39;");
+    }
+
+    // === Modal Logic ===
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDate = document.getElementById('modalDate');
+    const modalText = document.getElementById('modalText');
+    const modalClose = document.getElementById('modalClose');
+    const modalPrevBtn = document.getElementById('modalPrev');
+    const modalNextBtn = document.getElementById('modalNext');
+    const modalNavLeft = document.getElementById('modalNavLeft');
+    const modalNavRight = document.getElementById('modalNavRight');
+
+    let modalContext = { instance: null, index: null };
+
+    function pauseAllSlides() {
+      if (!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => {
+        try {
+          s.pause && s.pause();
+        } catch (e) {
+          console.warn('pause slide error', e);
+        }
+      });
+    }
+
+    function resumeAllSlides() {
+      if (!window.ecdSlideshows) return;
+      window.ecdSlideshows.forEach(s => {
+        try {
+          s.resume && s.resume();
+        } catch (e) {
+          console.warn('resume slide error', e);
+        }
+      });
+    }
+
+    function updateModalForContext() {
+      const ctx = modalContext;
+      if (!ctx.instance || typeof ctx.index !== 'number') return;
+      const post = ctx.instance.posts[ctx.index];
+      if (!post) return;
+
+      // Update modal content
+      const img = (post.images && post.images[0]) ? post.images[0] : 'assets/placeholder.jpg';
+      modalImage.src = img;
+      modalImage.alt = post.title || 'imagen';
+      modalTitle.textContent = post.title || '';
+      modalDate.textContent = post.date || '';
+      modalText.textContent = post.body || '';
+
+      // Update underlying slideshow
+      try {
+        ctx.instance.show(ctx.index);
+      } catch (e) {
+        // ignore
+      }
+
+      // Update navigation buttons
+      if (ctx.index <= 0) {
+        modalPrevBtn.setAttribute('disabled', 'disabled');
+      } else {
+        modalPrevBtn.removeAttribute('disabled');
+      }
+
+      if (ctx.index >= ctx.instance.posts.length - 1) {
+        modalNextBtn.setAttribute('disabled', 'disabled');
+      } else {
+        modalNextBtn.removeAttribute('disabled');
+      }
+    }
+
+    function openModalWithPost(post) {
+      if (!post) return;
+
+      pauseAllSlides();
+
+      // Find instance that contains this post
+      modalContext.instance = null;
+      modalContext.index = null;
+
+      if (window.ecdSlideshows && window.ecdSlideshows.length) {
+        for (const inst of window.ecdSlideshows) {
+          const idx = inst.indexOfPostId && inst.indexOfPostId(post.id);
+          if (typeof idx === 'number' && idx >= 0) {
+            modalContext.instance = inst;
+            modalContext.index = idx;
+            break;
+          }
+        }
+      }
+
+      // Fallback
+      if (!modalContext.instance) {
+        modalContext.instance = {
+          posts: (allPosts || []),
+          show: function(i) { /* no-op */ },
+          indexOfPostId: function(id) {
+            return (allPosts || []).findIndex(p => String(p.id) === String(id));
+          }
+        };
+        modalContext.index = modalContext.instance.indexOfPostId(post.id);
+        if (modalContext.index < 0) modalContext.index = 0;
+      }
+
+      updateModalForContext();
+
+      // Show navigation
+      modalNavLeft.style.display = 'block';
+      modalNavRight.style.display = 'block';
+      modalNavLeft.setAttribute('aria-hidden', 'false');
+      modalNavRight.setAttribute('aria-hidden', 'false');
+
+      // Show modal
+      modalOverlay.style.display = 'flex';
+      modalOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+      modalOverlay.setAttribute('aria-hidden', 'true');
+      modalImage.src = '';
+      document.body.style.overflow = '';
+
+      // Hide navigation
+      modalNavLeft.style.display = 'none';
+      modalNavRight.style.display = 'none';
+      modalNavLeft.setAttribute('aria-hidden', 'true');
+      modalNavRight.setAttribute('aria-hidden', 'true');
+
+      // Clear context and resume slides
+      modalContext.instance = null;
+      modalContext.index = null;
+      resumeAllSlides();
+    }
+
+    // Modal event listeners
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (ev) => {
+      if (ev.target === modalOverlay) closeModal();
+    });
+
+    window.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') closeModal();
+      // Arrow key navigation when modal is open
+      if (modalOverlay.style.display === 'flex') {
+        if (ev.key === 'ArrowLeft') modalPrevHandler();
+        if (ev.key === 'ArrowRight') modalNextHandler();
+      }
+    });
+
+    // Read more button delegation
+    document.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.read-more');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const post = (allPosts || []).find(p => String(p.id) === String(id));
+      if (post) openModalWithPost(post);
+    });
+
+    // Modal navigation handlers
+    function modalPrevHandler() {
+      const ctx = modalContext;
+      if (!ctx.instance) return;
+      const idx = ctx.index;
+      if (typeof idx !== 'number' || idx <= 0) return;
+      ctx.index = idx - 1;
+      updateModalForContext();
+    }
+
+    function modalNextHandler() {
+      const ctx = modalContext;
+      if (!ctx.instance) return;
+      const idx = ctx.index;
+      if (typeof idx !== 'number' || idx >= ctx.instance.posts.length - 1) return;
+      ctx.index = idx + 1;
+      updateModalForContext();
+    }
+
+    modalPrevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modalPrevHandler();
+    });
+
+    modalNextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modalNextHandler();
+    });
+
+    // === Dynamic Chapters Initialization ===
+    async function initDynamicChapters() {
+      await loadSlidesJson();
+
+      // Reset global registry
+      window.ecdSlideshows = [];
+
+      let chaptersList = null;
+      try {
+        const r = await fetch('chapters.json', { cache: 'no-store' });
+        if (r.ok) {
+          const data = await r.json();
+          if (Array.isArray(data) && data.length > 0) chaptersList = data;
+        }
+      } catch (e) {
+        console.warn('No chapters.json or failed to load it', e);
+      }
+
+      if (!Array.isArray(chaptersList) || chaptersList.length === 0) {
+        // Fallback to static chapters
+        const ss1 = createSlideshow('01', '01');
+        const ss2 = createSlideshow('02', '02');
+        ss1.build();
+        ss1.show(0);
+        ss1.startTimer();
+        ss2.build();
+        ss2.show(0);
+        ss2.startTimer();
+        return;
+      }
+
+      // Remove static wrappers if present
+      const staticIds = ['chapter01-wrapper', 'chapter02-wrapper'];
+      staticIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+      });
+
+      const mainWrap = document.querySelector('.wrap');
+      const refNode = document.querySelector('.sections');
+
+      for (const ch of chaptersList) {
+        const id = String(ch.id);
+        const title = ch.title || `Capítulo ${id}`;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'slideshow-wrapper';
+        wrapper.id = `chapter-${id}-dynamic`;
+
+        wrapper.innerHTML = `
+          <div class="chapter-title">${escapeHtml('Capítulo ' + id + ': ' + title)}</div>
+          <section class="slideshow" id="slideshow-${id}" aria-label="Capítulo ${escapeHtml(id)}">
+            <div id="slides-${id}" class="slides" aria-live="polite"></div>
+            <div class="controls">
+              <button id="prev-${id}" class="ctrl-btn" aria-label="anterior">‹</button>
+              <button id="next-${id}" class="ctrl-btn" aria-label="siguiente">›</button>
+            </div>
+            <div class="dots" id="dots-${id}" role="tablist"></div>
+          </section>
+        `;
+
+        if (refNode && refNode.parentNode) {
+          refNode.parentNode.insertBefore(wrapper, refNode);
+        } else {
+          mainWrap.appendChild(wrapper);
+        }
+
+        const ss = createSlideshow(id, id);
+        ss.build();
+        ss.show(0);
+        ss.startTimer();
+      }
+    }
+
+    // Initialize the application
+    initDynamicChapters();
   </script>
 </body>
 </html>
