@@ -293,78 +293,54 @@
     if(savedPat) document.getElementById('ghToken').value = savedPat;
 
     publishForm.addEventListener('submit', async (e)=> {
-  e.preventDefault();
-  const owner = document.getElementById('ghOwner').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  const branch = document.getElementById('ghBranch').value.trim() || 'main';
-  const token = document.getElementById('ghToken').value.trim();
-  const message = document.getElementById('commitMsg').value.trim() || 'Actualiza slides & chapters (admin)';
+      e.preventDefault();
+      const owner = document.getElementById('ghOwner').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+      const branch = document.getElementById('ghBranch').value.trim() || 'main';
+      const token = document.getElementById('ghToken').value.trim();
+      const message = document.getElementById('commitMsg').value.trim() || 'Actualiza slides & chapters (admin)';
 
-  if(!owner || !repo || !token){ alert('Owner, repo y token son obligatorios'); return; }
+      if(!owner || !repo || !token){ alert('Owner, repo y token son obligatorios'); return; }
 
-  localStorage.setItem(LS_PAT_KEY, token);
+      localStorage.setItem(LS_PAT_KEY, token);
 
-  // 1) Construir slides por capítulo
-  // slides = array global con todas las entradas; chapters = array [{id,title},...]
-  const slidesByChapter = {};
-  // init
-  chapters.forEach(c => { slidesByChapter[c.id] = []; });
-  // assign slides to chapter (use '01' default if missing)
-  slides.forEach(s => {
-    const ch = String(s.chapter || '01');
-    if(!slidesByChapter[ch]) slidesByChapter[ch] = [];
-    slidesByChapter[ch].push(s);
-  });
+      // Prepare base64 payloads (UTF-8 safe)
+      const slidesStr = JSON.stringify(slides, null, 2);
+      const chaptersStr = JSON.stringify(chapters, null, 2);
+      const slidesB64 = btoa(unescape(encodeURIComponent(slidesStr)));
+      const chaptersB64 = btoa(unescape(encodeURIComponent(chaptersStr)));
 
-  // 2) preparar payloads base64
-  const slidesFiles = [];
-  for(const [chapId, arr] of Object.entries(slidesByChapter)){
-    const path = `slides-${chapId}.json`;
-    const content_b64 = btoa(unescape(encodeURIComponent(JSON.stringify(arr, null, 2))));
-    slidesFiles.push({ path, content_b64 });
-  }
-
-  // also send aggregated slides.json for backward compatibility
-  const slidesStr = JSON.stringify(slides, null, 2);
-  const slidesB64 = btoa(unescape(encodeURIComponent(slidesStr)));
-
-  const chaptersStr = JSON.stringify(chapters, null, 2);
-  const chaptersB64 = btoa(unescape(encodeURIComponent(chaptersStr)));
-
-  // slidesFiles array -> base64 wrapper (so workflow can receive single field)
-  const slidesFilesB64 = btoa(unescape(encodeURIComponent(JSON.stringify(slidesFiles, null, 2))));
-
-  try {
-    const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        event_type: 'update-slides',
-        client_payload: {
-          slides_files_b64: slidesFilesB64,   // new: multiple files
-          slides_b64: slidesB64,              // legacy aggregate
-          chapters_b64: chaptersB64,
-          message,
-          slides_path: 'slides.json',
-          chapters_path: 'chapters.json',
-          branch
+      try {
+        const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_type: 'update-slides',
+            client_payload: {
+              slides_b64: slidesB64,
+              chapters_b64: chaptersB64,
+              message,
+              slides_path: 'slides.json',
+              chapters_path: 'chapters.json',
+              branch
+            }
+          })
+        });
+        if(!resp.ok){
+          const txt = await resp.text();
+          alert('Error al despachar evento:\n' + txt);
+          return;
         }
-      })
+        alert('Evento enviado correctamente. Revisa Actions en el repo para ver progreso.');
+      } catch(err){
+        alert('Error de red: ' + err.message);
+      }
     });
-    if(!resp.ok){
-      const txt = await resp.text();
-      alert('Error al despachar evento:\n' + txt);
-      return;
-    }
-    alert('Evento enviado correctamente. Revisa Actions en el repo para ver progreso.');
-  } catch(err){
-    alert('Error de red: ' + err.message);
-  }
-});
+
     // Inicializar
     loadFromRepo();
   </script>
