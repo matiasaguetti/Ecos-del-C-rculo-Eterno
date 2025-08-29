@@ -93,26 +93,176 @@
   </div>
 
   <script>
-    // === Data Loading ===
-    let allPosts = [];
+// --- Nuevo: fetch slides por capítulo (intenta slides-XX.json, sino cae a slides.json) ---
+async function fetchSlidesForChapter(chapterId) {
+  // try chapter-specific file first
+  try {
+    const r = await fetch(`slides-${chapterId}.json`, { cache: 'no-store' });
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data)) return data;
+    }
+  } catch (e) {
+    // ignore, we'll fallback
+  }
 
-    async function loadSlidesJson() {
-      try {
-        const res = await fetch('slides.json', { cache: 'no-store' });
-        allPosts = await res.json();
-      } catch (e) {
-        console.warn('No se pudo cargar slides.json', e);
-        allPosts = [];
+  // fallback: try aggregated slides.json and filter by chapter
+  try {
+    const r2 = await fetch('slides.json', { cache: 'no-store' });
+    if (r2.ok) {
+      const all = await r2.json();
+      if (Array.isArray(all)) {
+        return all.filter(p => String(p.chapter || '01') === String(chapterId));
       }
     }
+  } catch (e) {
+    // ignore
+  }
 
-    function postsForChapter(chapter) {
-      if (!Array.isArray(allPosts)) return [];
-      return allPosts.filter(p => {
-        if (p.chapter) return String(p.chapter) === String(chapter);
-        return chapter === '01';
-      });
+  return [];
+}
+
+// Modificar createSlideshow para aceptar posts pre-cargados (opcional)
+// Busca la función createSlideshow(prefix, chapter) y cambia su firma a:
+function createSlideshow(prefix, chapter, postsOverride) {
+  const slidesContainer = document.getElementById(`slides-${prefix}`);
+  const dotsContainer = document.getElementById(`dots-${prefix}`);
+  const prevBtn = document.getElementById(`prev-${prefix}`);
+  const nextBtn = document.getElementById(`next-${prefix}`);
+
+  let posts = Array.isArray(postsOverride) ? postsOverride.slice() : [];
+  let current = 0;
+  let timer = null;
+  const interval = 6000;
+
+  function build() {
+    if (!slidesContainer || !dotsContainer) return;
+    slidesContainer.innerHTML = '';
+    dotsContainer.innerHTML = '';
+
+    if (!posts.length) {
+      slidesContainer.innerHTML = `
+        <section class="slide">
+          <div class="slide-media">
+            <img src="assets/placeholder.jpg" alt="placeholder">
+          </div>
+          <div class="slide-meta">
+            <h3>Sin entradas</h3>
+            <div class="date">—</div>
+            <p>No hay entradas para este capítulo.</p>
+          </div>
+        </section>`;
+      const d = document.createElement('div');
+      d.className = 'dot active';
+      dotsContainer.appendChild(d);
+      return;
     }
+
+    posts.forEach((p, idx) => {
+      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/placeholder.jpg';
+      const short = excerpt(p.body || '', 300);
+      const slide = document.createElement('section');
+      slide.className = 'slide';
+      slide.innerHTML = `
+        <div class="slide-media">
+          <img src="${imgSrc}" alt="${escapeHtml(p.title || 'captura')}">
+        </div>
+        <div class="slide-meta">
+          <h3>${escapeHtml(p.title || 'Sin título')}</h3>
+          <div class="date">${escapeHtml(p.date || '')}</div>
+          <p>${escapeHtml(short)}</p>
+          <button class="read-more" data-id="${p.id}">Seguir leyendo</button>
+        </div>`;
+      slidesContainer.appendChild(slide);
+
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.dataset.idx = idx;
+      d.addEventListener('click', () => goTo(idx));
+      dotsContainer.appendChild(d);
+    });
+    updateDots(0);
+  }
+
+  // (mantén el resto de createSlideshow exactamente igual: show, next, prev, timers, etc.)
+  // ... el resto de la función (show, next, prev, timer, eventos) permanece sin cambios ...
+  // (Asegúrate de no duplicar definiciones si ya existe la función: sustituye la anterior por esta versión.)
+}
+
+// Nuevo initDynamicChapters: carga slides-<id>.json para cada capítulo
+async function initDynamicChapters() {
+  // Reset global registry
+  window.ecdSlideshows = [];
+
+  let chaptersList = null;
+  try {
+    const r = await fetch('chapters.json', { cache: 'no-store' });
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length > 0) chaptersList = data;
+    }
+  } catch (e) {
+    console.warn('No chapters.json or failed to load it', e);
+  }
+
+  if (!Array.isArray(chaptersList) || chaptersList.length === 0) {
+    // Fallback to static chapters (mantener comportamiento actual)
+    const ss1 = createSlideshow('01', '01', await fetchSlidesForChapter('01'));
+    const ss2 = createSlideshow('02', '02', await fetchSlidesForChapter('02'));
+    ss1.build();
+    ss1.show(0);
+    ss1.startTimer();
+    ss2.build();
+    ss2.show(0);
+    ss2.startTimer();
+    return;
+  }
+
+  // Remove static wrappers if present
+  const staticIds = ['chapter01-wrapper', 'chapter02-wrapper'];
+  staticIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+
+  const mainWrap = document.querySelector('.wrap');
+  const refNode = document.querySelector('.sections');
+
+  for (const ch of chaptersList) {
+    const id = String(ch.id);
+    const title = ch.title || `Capítulo ${id}`;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'slideshow-wrapper';
+    wrapper.id = `chapter-${id}-dynamic`;
+
+    wrapper.innerHTML = `
+      <div class="chapter-title">${escapeHtml('Capítulo ' + id + ': ' + title)}</div>
+      <section class="slideshow" id="slideshow-${id}" aria-label="Capítulo ${escapeHtml(id)}">
+        <div id="slides-${id}" class="slides" aria-live="polite"></div>
+        <div class="controls">
+          <button id="prev-${id}" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-${id}" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
+        <div class="dots" id="dots-${id}" role="tablist"></div>
+      </section>
+    `;
+
+    if (refNode && refNode.parentNode) {
+      refNode.parentNode.insertBefore(wrapper, refNode);
+    } else {
+      mainWrap.appendChild(wrapper);
+    }
+
+    // fetch posts for this chapter (tries slides-<id>.json first)
+    const posts = await fetchSlidesForChapter(id);
+
+    const ss = createSlideshow(id, id, posts);
+    ss.build();
+    ss.show(0);
+    ss.startTimer();
+  }
+}
 
     // === Slideshow Factory ===
     function createSlideshow(prefix, chapter) {
