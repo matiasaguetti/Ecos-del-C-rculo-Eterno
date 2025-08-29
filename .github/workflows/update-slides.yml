@@ -16,40 +16,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Write slides files (per chapter) (if provided)
-        if: ${{ github.event.client_payload.slides_files_b64 != '' }}
-        env:
-          SLIDES_FILES_B64: ${{ github.event.client_payload.slides_files_b64 }}
-        run: |
-          echo "Decodificando slides por capítulo desde payload..."
-          mkdir -p slides_by_chapter
-          # decode JSON (array of {path, content_b64}) into a temp file
-          echo "$SLIDES_FILES_B64" | base64 -d > /tmp/slides_files.json
-          python3 - <<'PY'
-import json, base64, sys
-items = json.load(open('/tmp/slides_files.json','r',encoding='utf-8'))
-for it in items:
-    path = it.get('path')
-    content_b64 = it.get('content_b64')
-    if not path or not content_b64:
-        print("Skipping invalid entry:", it)
-        continue
-    # ensure parent dir exists
-    import os
-    d = os.path.dirname(path)
-    if d and not os.path.exists(d):
-        os.makedirs(d, exist_ok=True)
-    open(path, 'wb').write(base64.b64decode(content_b64))
-    print("Wrote", path)
-PY
-
-      - name: Write slides.json (if provided, legacy)
+      - name: Write slides.json (if provided)
         if: ${{ github.event.client_payload.slides_b64 != '' }}
         env:
           SLIDES_B64: ${{ github.event.client_payload.slides_b64 }}
           SLIDES_PATH: ${{ github.event.client_payload.slides_path || 'slides.json' }}
         run: |
-          echo "Decodificando slides (legacy) -> $SLIDES_PATH"
+          echo "Decodificando slides -> $SLIDES_PATH"
           echo "$SLIDES_B64" | base64 -d > "$SLIDES_PATH"
           echo "Wrote $SLIDES_PATH"
 
