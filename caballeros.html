@@ -3,41 +3,181 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Caballeros de Pontargentum</title>
+  <title>Tarjetas — Caballeros de Pontargentum</title>
   <link rel="stylesheet" href="caballeros.css">
 </head>
-<body>
+<body class="caballeros-page">
   <main class="sheet caballeros">
     <header class="page-header">
       <h1>Caballeros de la Orden de Pontargentum</h1>
-      <p class="subtitle">Bendiciones vinculadas al Libro de los Nombres — Uso: Adler (Clérigo de Deneir)</p>
+      <p class="subtitle">Habilidades rituales y hojas resumen — uso rápido en partida</p>
     </header>
 
     <!-- Tarjetas -->
-    <section class="cards">
-      <!-- Copia y pega más artículos .card según sea necesario -->
+    <section class="cards" aria-label="Tarjetas de caballeros">
+
+      <!-- 1 -->
       <article class="card">
         <header class="card-head">
           <h2>Don Alonso de Montemar</h2>
-          <p class="epitaph">Aquí yace el Muro Inquebrantable.</p>
+          <p class="epitaph">El Muro Inquebrantable</p>
         </header>
         <div class="card-body">
           <p><strong>Dominio:</strong> Fortaleza y Defensa</p>
-          <p><strong>Situación típica:</strong> Reaccionar cuando un aliado crítico recibe daño o crear barrera temporal para la línea defensiva.</p>
           <div class="mechanics">
             <h3>Mecánica</h3>
-            <p><strong>Reacción:</strong> Reducir el daño recibido por un aliado a ≤6 m en <strong>2d8 + mod. Sab</strong> (mitad si supera una salvación de Constitución; DC = 8 + prof + Sab).</p>
-            <p><strong>Acción alternativa:</strong> Crear barrera temporal: 1 minuto; el aliado gana <strong>temp HP 2d8 + mod. Sab</strong> y ventaja en salvaciones de Fuerza.</p>
+            <p><strong>Reacción:</strong> Cuando un aliado a ≤6 m sufre daño, reduce el daño en <strong>2d8 + mod. Sab</strong>. El objetivo puede superar EA (Con) para tomar la mitad de la reducción.</p>
+            <p><strong>Acción (opcional):</strong> Crear barrera (1 min): otorga <strong>hp temporales 2d8 + mod. Sab</strong> y ventaja en salv. de Fuerza.</p>
           </div>
-          <p class="uses"><strong>Usos:</strong> 1 invocación gratis por descanso largo. Invocaciones extra consumen ranura (mín. 2º).</p>
-          <p class="flavor">Su escudo aún canta cuando la línea flaquea; su presencia calma el pavor.</p>
+          <p class="uses"><strong>Usos:</strong> 1 restauración por descanso largo. Invocaciones extra consumen ranura (mín. 2º).</p>
+          <p class="flavor">Su escudo canta cuando la línea flaquea; su presencia calma el pavor.</p>
         </div>
       </article>
-      <!-- ...más tarjetas... -->
+
+      <!-- 2 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Isolda la Vigía</h2>
+          <p class="epitaph">Ojo que no duerme</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Vigilancia y percepción</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción bonus:</strong> Revela criaturas invisibles o camufladas en 12 m durante 1 minuto. Afecta sensores mágicos (pericia contra Sigilo).</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 2/día (recarga en descanso corto).</p>
+          <p class="flavor">Sus ojos atraviesan la niebla tanto literal como figuradamente.</p>
+        </div>
+      </article>
+
+      <!-- 3 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Hernando el Rojo</h2>
+          <p class="epitaph">Furia contenida</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Combate y provocación</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción:</strong> Provocar: obliga a una criatura cercana a atacar a Hernando con desventaja si falla una salvación (Sab).</p>
+            <p><strong>Bonus:</strong> mientras provoca, gana +2 CA frente a la criatura provocada.</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 1/encuentro.</p>
+          <p class="flavor">Sus provocaciones a menudo salvan la retaguardia del grupo.</p>
+        </div>
+      </article>
+
+      <!-- 4 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Isadora la Lúcida</h2>
+          <p class="epitaph">La que susurra runas</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Apoyo arcano</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción:</strong> Canalizar sello: concede ventaja en 1 chequeo de habilidad o salvación a un aliado en 18 m.</p>
+            <p><strong>Ritual:</strong> Crear un sello de protección (1 hora) que otorga resistencia elemental a un área pequeña.</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 3/día (recarga en descanso largo).</p>
+          <p class="flavor">Su trazo lunar en el suelo mantiene a raya la corrupción.</p>
+        </div>
+      </article>
+
+      <!-- 5 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Delerion el Errante</h2>
+          <p class="epitaph">Viajero de las grietas</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Exploración y movilidad</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción:</strong> Paso veloz: teletransporta hasta 18 m a un aliado a la vista (no atraviesa superficies sólidas).</p>
+            <p><strong>Efecto secundario:</strong> quien se teletransporta gana velocidad +3 m durante 1 turno.</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 2 por descanso corto.</p>
+          <p class="flavor">Siempre encuentra un camino donde antes solo había muro.</p>
+        </div>
+      </article>
+
+      <!-- 6 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Fausto del Río</h2>
+          <p class="epitaph">Manos de hierba</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Curación y remedios</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción larga (min):</strong> preparar ungüento: cura 3d6 + mod. Sab distribuidos entre hasta 3 criaturas en 10 m.</p>
+            <p><strong>Bonus:</strong> elimina condición menor (envenenado o fatigado) si supera salvación (Con).</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 1 por descanso largo; preparación extra consume ingredientes.</p>
+          <p class="flavor">Sus frascos huelen a bosque y a promesas de cura.</p>
+        </div>
+      </article>
+
+      <!-- 7 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Borgar Tempestus</h2>
+          <p class="epitaph">Puño de hierro</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Ofensiva y control</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción:</strong> Golpe aplastante: ataque que inflige +1d10 daño contundente y empuja 2 m si falla salvación (Fuerza).</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 2/encuentro.</p>
+          <p class="flavor">Su presencia en batalla cambia el pulso del combate.</p>
+        </div>
+      </article>
+
+      <!-- 8 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Emilio el Herbolario</h2>
+          <p class="epitaph">Tutor de curaciones</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Sustento y apoyo</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Acción (ritual):</strong> Caldo reparador: todos los aliados cercanos ganan 1d8 + mod. Sab HP temporales y ventaja en la próximas tiradas de salvación por 1 turno.</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 1/día sin ingredientes; 3/día con ingredientes.</p>
+          <p class="flavor">Sus remedios calman heridas y miedos por igual.</p>
+        </div>
+      </article>
+
+      <!-- 9 -->
+      <article class="card">
+        <header class="card-head">
+          <h2>Diego, Sargento de Guardia</h2>
+          <p class="epitaph">Orden y látigo</p>
+        </header>
+        <div class="card-body">
+          <p><strong>Dominio:</strong> Táctica y mando</p>
+          <div class="mechanics">
+            <h3>Mecánica</h3>
+            <p><strong>Reacción (comando):</strong> Un aliado gana acción adicional en su turno si pasa una tirada de Sab (DC moderada).</p>
+          </div>
+          <p class="uses"><strong>Usos:</strong> 1/encuentro.</p>
+          <p class="flavor">Ordena con voz de trueno y consigue obediencia cuando importa.</p>
+        </div>
+      </article>
+
     </section>
 
     <footer class="page-footer">
-      <p>Reglas generales: Invocar un Caballero = Acción. 1 invocación gratis por descanso largo. Invocaciones adicionales consumen ranura (mín. 2º nivel). DCs usan la base de Adler: 8 + competencia + mod. Sab.</p>
+      <p>Reglas: invocar la ayuda de un caballero es una acción. Los DCs de salvación usan la base de Adler: 8 + competencia + mod. Sab (salvo que se indique lo contrario).</p>
     </footer>
   </main>
 </body>
