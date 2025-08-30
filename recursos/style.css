@@ -1,0 +1,45 @@
+/* recursos/style.css - estilos específicos del submódulo Recursos */
+:root{
+  --muted:#9aa3a8;
+  --card-bg:#0f1112;
+  --panel:#0b0c0d;
+  --accent:#8a5b3a;
+}
+
+.resource-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+  margin-top:12px;
+}
+
+.resource-card{
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
+  border-radius:12px;
+  padding:14px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,0.03);
+}
+
+.resource-card img{
+  width:120px;
+  height:80px;
+  object-fit:cover;
+  border-radius:8px;
+  flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.02);
+}
+
+.resource-card h3{
+  margin:0 0 6px 0;
+  font-family:"Cinzel",serif;
+}
+
+.resource-card p{ margin:0 0 6px 0; color:var(--muted); font-size:14px; }
+
+@media (max-width:900px){
+  .resource-grid{ grid-template-columns:1fr; }
+  .resource-card img{ width:100px; height:64px; }
+}
