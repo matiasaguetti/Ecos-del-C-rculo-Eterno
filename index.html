@@ -7,6 +7,24 @@
   <meta name="description" content="Ecos del Círculo eterno: registro de sesiones, galería de mapas y recursos de la partida (D&D 5e)."/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Styles for text-only links */
+    .text-only-link {
+      font-size: 0.75em;
+      margin-left: 10px;
+      padding: 4px 8px;
+      background: #f5f5f5;
+      color: #666;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-weight: normal;
+    }
+    .text-only-link:hover {
+      background: #e8e8e8;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
   <header class="banner">
@@ -25,7 +43,10 @@
   <main class="wrap">
     <!-- Static wrappers (fallback) -->
     <div class="slideshow-wrapper" id="chapter01-wrapper">
-      <div class="chapter-title">Capítulo 01: Valverde del Río</div>
+      <div class="chapter-title">
+        Capítulo 01: Valverde del Río
+        <a href="chapter-text.html?chapter=01" target="_blank" class="text-only-link">[Versión Solo Texto]</a>
+      </div>
       <section class="slideshow" id="slideshow-01" aria-label="Capítulo 01">
         <div id="slides-01" class="slides" aria-live="polite"></div>
         <div class="controls">
@@ -37,7 +58,10 @@
     </div>
 
     <div class="slideshow-wrapper" id="chapter02-wrapper">
-      <div class="chapter-title">Capítulo 02: La Conspiración de los Contrabandistas</div>
+      <div class="chapter-title">
+        Capítulo 02: La Conspiración de los Contrabandistas
+        <a href="chapter-text.html?chapter=02" target="_blank" class="text-only-link">[Versión Solo Texto]</a>
+      </div>
       <section class="slideshow" id="slideshow-02" aria-label="Capítulo 02">
         <div id="slides-02" class="slides" aria-live="polite"></div>
         <div class="controls">
@@ -49,7 +73,10 @@
     </div>
 
     <div class="slideshow-wrapper" id="chapter03-wrapper" style="display:none">
-      <div class="chapter-title">Capítulo 03</div>
+      <div class="chapter-title">
+        Capítulo 03
+        <a href="chapter-text.html?chapter=03" target="_blank" class="text-only-link">[Versión Solo Texto]</a>
+      </div>
       <section class="slideshow" id="slideshow-03" aria-label="Capítulo 03">
         <div id="slides-03" class="slides" aria-live="polite"></div>
         <div class="controls">
@@ -61,7 +88,10 @@
     </div>
 
     <div class="slideshow-wrapper" id="chapter04-wrapper" style="display:none">
-      <div class="chapter-title">Capítulo 04</div>
+      <div class="chapter-title">
+        Capítulo 04
+        <a href="chapter-text.html?chapter=04" target="_blank" class="text-only-link">[Versión Solo Texto]</a>
+      </div>
       <section class="slideshow" id="slideshow-04" aria-label="Capítulo 04">
         <div id="slides-04" class="slides" aria-live="polite"></div>
         <div class="controls">
@@ -146,7 +176,16 @@
                     const wrapper = document.getElementById(`chapter${cid.padStart(2,'0')}-wrapper`);
                     if (wrapper) wrapper.style.display = '';
                     const ct = document.querySelector(`#chapter${cid.padStart(2,'0')}-wrapper .chapter-title`);
-                    if (ct && ch.title) ct.textContent = `Capítulo ${cid}: ${ch.title}`;
+                    if (ct && ch.title) {
+                      // Update chapter title while preserving the text-only link
+                      const textOnlyLink = ct.querySelector('.text-only-link');
+                      const newTitle = `Capítulo ${cid}: ${ch.title}`;
+                      if (textOnlyLink) {
+                        ct.innerHTML = `${newTitle} <a href="chapter-text.html?chapter=${cid}" target="_blank" class="text-only-link">[Versión Solo Texto]</a>`;
+                      } else {
+                        ct.textContent = newTitle;
+                      }
+                    }
                     // dynamic wrappers: if you used dynamic creation, initDynamicChapters will handle it
                   } else {
                     console.warn(fname, 'no contiene un array');
@@ -511,108 +550,3 @@
     // Modal navigation handlers
     function modalPrevHandler() {
       const ctx = modalContext;
-      if (!ctx.instance) return;
-      const idx = ctx.index;
-      if (typeof idx !== 'number' || idx <= 0) return;
-      ctx.index = idx - 1;
-      updateModalForContext();
-    }
-
-    function modalNextHandler() {
-      const ctx = modalContext;
-      if (!ctx.instance) return;
-      const idx = ctx.index;
-      if (typeof idx !== 'number' || idx >= ctx.instance.posts.length - 1) return;
-      ctx.index = idx + 1;
-      updateModalForContext();
-    }
-
-    modalPrevBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      modalPrevHandler();
-    });
-
-    modalNextBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      modalNextHandler();
-    });
-
-    // === Dynamic Chapters Initialization ===
-    async function initDynamicChapters() {
-      await loadSlidesJson();
-
-      // Reset global registry
-      window.ecdSlideshows = [];
-
-      let chaptersList = null;
-      try {
-        const r = await fetch('chapters.json', { cache: 'no-store' });
-        if (r.ok) {
-          const data = await r.json();
-          if (Array.isArray(data) && data.length > 0) chaptersList = data;
-        }
-      } catch (e) {
-        console.warn('No chapters.json or failed to load it', e);
-      }
-
-      if (!Array.isArray(chaptersList) || chaptersList.length === 0) {
-        // Fallback to static chapters
-        const ss1 = createSlideshow('01', '01');
-        const ss2 = createSlideshow('02', '02');
-        const ss3 = createSlideshow('03', '03');
-        const ss4 = createSlideshow('04', '04');
-        ss1.build(); ss1.show(0); ss1.startTimer();
-        ss2.build(); ss2.show(0); ss2.startTimer();
-        ss3.build(); ss3.show(0); ss3.startTimer();
-        ss4.build(); ss4.show(0); ss4.startTimer();
-        return;
-      }
-
-      // Remove static wrappers if present
-      const staticIds = ['chapter01-wrapper', 'chapter02-wrapper', 'chapter03-wrapper', 'chapter04-wrapper'];
-      staticIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.remove();
-      });
-
-      const mainWrap = document.querySelector('.wrap');
-      const refNode = document.querySelector('.sections');
-
-      for (const ch of chaptersList) {
-        const id = String(ch.id);
-        const title = ch.title || `Capítulo ${id}`;
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'slideshow-wrapper';
-        wrapper.id = `chapter-${id}-dynamic`;
-
-        wrapper.innerHTML = `
-          <div class="chapter-title">${escapeHtml('Capítulo ' + id + ': ' + title)}</div>
-          <section class="slideshow" id="slideshow-${id}" aria-label="Capítulo ${escapeHtml(id)}">
-            <div id="slides-${id}" class="slides" aria-live="polite"></div>
-            <div class="controls">
-              <button id="prev-${id}" class="ctrl-btn" aria-label="anterior">‹</button>
-              <button id="next-${id}" class="ctrl-btn" aria-label="siguiente">›</button>
-            </div>
-            <div class="dots" id="dots-${id}" role="tablist"></div>
-          </section>
-        `;
-
-        if (refNode && refNode.parentNode) {
-          refNode.parentNode.insertBefore(wrapper, refNode);
-        } else {
-          mainWrap.appendChild(wrapper);
-        }
-
-        const ss = createSlideshow(id, id);
-        ss.build();
-        ss.show(0);
-        ss.startTimer();
-      }
-    }
-
-    // Initialize the application
-    initDynamicChapters();
-  </script>
-</body>
-</html>

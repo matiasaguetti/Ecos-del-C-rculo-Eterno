@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Capítulo - Versión Solo Texto | Ecos del Círculo eterno</title>
+  <meta name="description" content="Versión de solo texto para lectores de pantalla - Ecos del Círculo eterno"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      color: #333;
+    }
+    h1 {
+      border-bottom: 2px solid #333;
+      padding-bottom: 10px;
+    }
+    .entry {
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    .entry:last-child {
+      border-bottom: none;
+    }
+    .entry-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .entry-date {
+      font-style: italic;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .entry-content {
+      line-height: 1.8;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 16px;
+      background: #f0f0f0;
+      text-decoration: none;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+    .back-link:hover {
+      background: #e0e0e0;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-style: italic;
+    }
+    .error {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 15px;
+      border: 1px solid #f8bbd9;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-link">← Volver al diario principal</a>
+  
+  <main>
+    <h1 id="chapter-title">Cargando capítulo...</h1>
+    <div id="content" class="loading">Cargando contenido...</div>
+  </main>
+
+  <script>
+    // Get chapter parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const chapterId = urlParams.get('chapter') || '01';
+    
+    async function loadChapterContent() {
+      const titleElement = document.getElementById('chapter-title');
+      const contentElement = document.getElementById('content');
+      
+      try {
+        // Try to load chapter info first
+        let chapterTitle = `Capítulo ${chapterId}`;
+        
+        try {
+          const chaptersResp = await fetch('chapters.json', { cache: 'no-store' });
+          if (chaptersResp.ok) {
+            const chapters = await chaptersResp.json();
+            const chapter = chapters.find(ch => String(ch.id) === String(chapterId));
+            if (chapter && chapter.title) {
+              chapterTitle = `Capítulo ${chapterId}: ${chapter.title}`;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load chapters.json', e);
+        }
+        
+        titleElement.textContent = `${chapterTitle} - Versión Solo Texto`;
+        
+        // Try to load chapter-specific JSON file first
+        let posts = [];
+        const fileName = `slides-${chapterId}.json`;
+        
+        try {
+          const resp = await fetch(fileName, { cache: 'no-store' });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (Array.isArray(data)) {
+              posts = data;
+            }
+          }
+        } catch (e) {
+          console.warn(`Could not load ${fileName}, trying fallback`, e);
+        }
+        
+        // Fallback to slides.json if chapter-specific file not found
+        if (posts.length === 0) {
+          try {
+            const resp = await fetch('slides.json', { cache: 'no-store' });
+            if (resp.ok) {
+              const allData = await resp.json();
+              if (Array.isArray(allData)) {
+                // Filter posts for this chapter
+                posts = allData.filter(post => {
+                  if (post.chapter) {
+                    return String(post.chapter) === String(chapterId);
+                  }
+                  // If no chapter specified, assume it's chapter 01
+                  return chapterId === '01';
+                });
+              }
+            }
+          } catch (e) {
+            console.warn('Could not load slides.json either', e);
+          }
+        }
+        
+        if (posts.length === 0) {
+          contentElement.innerHTML = '<div class="error">No se encontró contenido para este capítulo.</div>';
+          return;
+        }
+        
+        // Render posts as plain text
+        let html = '';
+        posts.forEach((post, index) => {
+          html += `
+            <article class="entry">
+              ${post.title ? `<div class="entry-title">${escapeHtml(post.title)}</div>` : ''}
+              ${post.date ? `<div class="entry-date">${escapeHtml(post.date)}</div>` : ''}
+              ${post.body ? `<div class="entry-content">${escapeHtml(post.body).replace(/\n/g, '<br>')}</div>` : ''}
+            </article>
+          `;
+        });
+        
+        contentElement.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Error loading chapter content:', error);
+        contentElement.innerHTML = '<div class="error">Error al cargar el contenido del capítulo.</div>';
+      }
+    }
+    
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, "&#39;");
+    }
+    
+    // Load content when page loads
+    loadChapterContent();
+  </script>
+</body>
+</html>
