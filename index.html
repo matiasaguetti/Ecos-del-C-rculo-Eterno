@@ -48,6 +48,30 @@
       </section>
     </div>
 
+    <div class="slideshow-wrapper" id="chapter03-wrapper" style="display:none">
+      <div class="chapter-title">Capítulo 03</div>
+      <section class="slideshow" id="slideshow-03" aria-label="Capítulo 03">
+        <div id="slides-03" class="slides" aria-live="polite"></div>
+        <div class="controls">
+          <button id="prev-03" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-03" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
+        <div class="dots" id="dots-03" role="tablist"></div>
+      </section>
+    </div>
+
+    <div class="slideshow-wrapper" id="chapter04-wrapper" style="display:none">
+      <div class="chapter-title">Capítulo 04</div>
+      <section class="slideshow" id="slideshow-04" aria-label="Capítulo 04">
+        <div id="slides-04" class="slides" aria-live="polite"></div>
+        <div class="controls">
+          <button id="prev-04" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="next-04" class="ctrl-btn" aria-label="siguiente">›</button>
+        </div>
+        <div class="dots" id="dots-04" role="tablist"></div>
+      </section>
+    </div>
+
     <section class="sections" aria-label="Accesos rápido">
       <article class="section-card">
         <h4>Mapas</h4>
@@ -94,14 +118,66 @@
 
   <script>
     // === Data Loading ===
+    // Ahora loadSlidesJson intenta:
+    // 1) leer chapters.json -> por cada capítulo intenta cargar slides-<id>.json
+    // 2) si chapters.json no existe o no encuentra slides-<id>.json, hace fallback a slides.json
     let allPosts = [];
 
     async function loadSlidesJson() {
+      allPosts = [];
+      // try chapters.json
       try {
-        const res = await fetch('slides.json', { cache: 'no-store' });
-        allPosts = await res.json();
+        const chResp = await fetch('chapters.json', { cache: 'no-store' });
+        if (chResp.ok) {
+          const chList = await chResp.json();
+          if (Array.isArray(chList) && chList.length > 0) {
+            // for each chapter try to load slides-<id>.json
+            for (const ch of chList) {
+              const cid = String(ch.id);
+              const fname = `slides-${cid}.json`;
+              try {
+                const r = await fetch(fname, { cache: 'no-store' });
+                if (r.ok) {
+                  const arr = await r.json();
+                  if (Array.isArray(arr)) {
+                    // mantén el orden tal como viene en cada archivo
+                    allPosts = allPosts.concat(arr);
+                    // make the chapter wrapper visible and set title if present
+                    const wrapper = document.getElementById(`chapter${cid.padStart(2,'0')}-wrapper`);
+                    if (wrapper) wrapper.style.display = '';
+                    const ct = document.querySelector(`#chapter${cid.padStart(2,'0')}-wrapper .chapter-title`);
+                    if (ct && ch.title) ct.textContent = `Capítulo ${cid}: ${ch.title}`;
+                    // dynamic wrappers: if you used dynamic creation, initDynamicChapters will handle it
+                  } else {
+                    console.warn(fname, 'no contiene un array');
+                  }
+                } else {
+                  // file not found -> continue silently
+                  console.warn('No existe', fname);
+                }
+              } catch (e) {
+                console.warn('Error cargando', fname, e);
+              }
+            }
+            return; // allPosts poblado por capítulos existentes
+          }
+        }
       } catch (e) {
-        console.warn('No se pudo cargar slides.json', e);
+        console.warn('No se pudo cargar chapters.json', e);
+      }
+
+      // fallback: cargar slides.json entero (antiguo comportamiento)
+      try {
+        const resp = await fetch('slides.json', { cache: 'no-store' });
+        if (resp.ok) {
+          const arr = await resp.json();
+          if (Array.isArray(arr)) allPosts = arr;
+        } else {
+          console.warn('slides.json no disponible:', resp.status);
+          allPosts = [];
+        }
+      } catch (e) {
+        console.warn('Error al obtener slides.json', e);
         allPosts = [];
       }
     }
@@ -483,17 +559,17 @@
         // Fallback to static chapters
         const ss1 = createSlideshow('01', '01');
         const ss2 = createSlideshow('02', '02');
-        ss1.build();
-        ss1.show(0);
-        ss1.startTimer();
-        ss2.build();
-        ss2.show(0);
-        ss2.startTimer();
+        const ss3 = createSlideshow('03', '03');
+        const ss4 = createSlideshow('04', '04');
+        ss1.build(); ss1.show(0); ss1.startTimer();
+        ss2.build(); ss2.show(0); ss2.startTimer();
+        ss3.build(); ss3.show(0); ss3.startTimer();
+        ss4.build(); ss4.show(0); ss4.startTimer();
         return;
       }
 
       // Remove static wrappers if present
-      const staticIds = ['chapter01-wrapper', 'chapter02-wrapper'];
+      const staticIds = ['chapter01-wrapper', 'chapter02-wrapper', 'chapter03-wrapper', 'chapter04-wrapper'];
       staticIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.remove();
