@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Libros y Pergaminos — Recursos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Pergamino modal specific */
+    .scroll-modal {
+      background: linear-gradient(180deg,#f7ecd8 0%, #efe0c2 100%);
+      border: 6px solid #9c7a4f;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 880px;
+      width: calc(100% - 40px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      font-family: "Cinzel", serif;
+      color:#2b2b2b;
+    }
+    .scroll-header { text-align:center; font-weight:700; margin-bottom:8px; font-size:20px; }
+    .scroll-body { max-height:65vh; overflow:auto; padding-right:8px; line-height:1.45; }
+    .scroll-image { display:block; width:100%; height:auto; margin:10px 0; border-radius:6px; }
+    .chapter-list { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0 18px 0;}
+    .chapter-card { background: rgba(0,0,0,0.04); padding:10px 12px; border-radius:8px; cursor:pointer; border:1px solid rgba(0,0,0,0.06); }
+    .chapter-card.active { border-color:var(--accent); box-shadow: 0 6px 18px rgba(138,91,58,0.08); }
+  </style>
+</head>
+<body>
+  <header class="banner">
+    <div>
+      <div class="camp-name">Ecos del Círculo eterno</div>
+      <div class="camp-sub">Libros y Pergaminos — Recursos</div>
+    </div>
+    <nav aria-label="navegación principal">
+      <a class="navlink" href="/mapas.html">Mapas</a>
+      <a class="navlink" href="/lore.html">Lore</a>
+      <a class="navlink" href="/recursos/index.html">Recursos</a>
+      <a class="navlink" href="/notas.html">Notas</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1 style="font-family:Cinzel,serif">Libros y Pergaminos</h1>
+    <p style="color:var(--muted)">Selecciona un capítulo para ver los libros y pergaminos leídos por los personajes.</p>
+
+    <div class="chapter-list" id="chapterList">
+      <!-- Botones de capítulos -->
+      <div class="chapter-card" data-id="05">Capítulo 05 — El Templo del Círculo Eterno</div>
+      <!-- en el futuro puedes añadir más -->
+    </div>
+
+    <section id="chapterPreview" style="margin-top:12px;color:var(--muted)">
+      <p>Al pulsar sobre un capítulo se abrirá un pergamino modal con los libros y pergaminos (slideshow).</p>
+    </section>
+
+    <section style="margin-top:18px">
+      <a class="navlink" href="admin.html">Admin — editar Libros & Pergaminos</a>
+    </section>
+  </main>
+
+  <!-- Modal pergamino -->
+  <div id="scrollOverlay" style="display:none; position:fixed; inset:0; background:rgba(2,2,2,0.65); align-items:center; justify-content:center; z-index:1200;">
+    <div class="scroll-modal" role="dialog" aria-modal="true" id="scrollModal">
+      <button id="closeScroll" style="position:absolute; right:18px; top:18px; background:#b66; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer">Cerrar</button>
+      <div class="scroll-header" id="scrollTitle">Capítulo 05 — El Templo del Círculo Eterno</div>
+      <div class="scroll-body" id="scrollBody">
+        <!-- Slideshow container -->
+        <div id="librosSlides" style="display:flex; gap:14px; overflow:hidden; transition:transform .4s ease"></div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:10px;">
+          <button id="libPrev" class="ctrl-btn">‹</button>
+          <button id="libNext" class="ctrl-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/recursos.js"></script>
+  <script src="js/libros.js"></script>
+</body>
+</html>
