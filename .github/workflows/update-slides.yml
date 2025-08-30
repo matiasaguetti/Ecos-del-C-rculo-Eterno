@@ -1,54 +1,169 @@
-name: Update slides & chapters via repository_dispatch
+name: Update slides & assets
 
+# Triggered by repository_dispatch from admin.html (event_type: update-slides)
 on:
   repository_dispatch:
     types: [update-slides]
 
 permissions:
-  contents: write
+  contents: write    # necessary to push changes
 
 jobs:
   update-files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Write slides.json (if provided)
+      - name: Setup git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      ##################################################################
+      # Decode slides JSON from client_payload.slides_b64 (if present)
+      # and split into slides-<chapter>.json files + slides_converted.json
+      ##################################################################
+      - name: Decode & split slides.json -> slides-<cap>.json
         if: ${{ github.event.client_payload.slides_b64 != '' }}
         env:
           SLIDES_B64: ${{ github.event.client_payload.slides_b64 }}
-          SLIDES_PATH: ${{ github.event.client_payload.slides_path || 'slides.json' }}
         run: |
-          echo "Decodificando slides -> $SLIDES_PATH"
-          echo "$SLIDES_B64" | base64 -d > "$SLIDES_PATH"
-          echo "Wrote $SLIDES_PATH"
+          set -euo pipefail
+          echo "Decoding slides_b64 to slides.json..."
+          printf '%s' "$SLIDES_B64" | base64 --decode > slides.json
+          echo "slides.json written. Detecting JSON shape..."
+          TYPE=$(jq -r 'type' slides.json)
+          echo "JSON type: $TYPE"
 
-      - name: Write chapters.json (if provided)
+          if [ "$TYPE" = "object" ]; then
+            # Case: object with keys per chapter OR generic object
+            # If object's values are arrays -> treat as per-chapter mapping
+            if jq -e 'type=="object" and (.[keys[]]|type)=="array"' slides.json >/dev/null 2>&1; then
+              echo "Detected object whose values are arrays (assumed chapter mapping). Splitting..."
+              for chap in $(jq -r 'keys[]' slides.json); do
+                safe=$(echo "$chap" | tr -c '[:alnum:]_' '_')
+                jq --arg key "$chap" '.[$key]' slides.json > "slides-${safe}.json"
+                echo "Wrote slides-${safe}.json"
+              done
+              # flattened combined file (for backup/compat)
+              jq 'reduce to_entries[] as $e ( []; . + ($e.value) )' slides.json > slides_converted.json || true
+            else
+              # Generic object: convert to array, then group by chapter
+              echo "Generic object: converting to array and grouping by 'chapter' field..."
+              jq -c 'if type=="object" then ( [ . ] ) else . end' slides.json > /tmp/tmp_obj.json || true
+              # Try to coerce into array if possible
+              jq 'if type=="array" then . else [.] end' slides.json > slides_converted.json
+              for ch in $(jq -r 'map(.chapter // "01") | unique[]' slides_converted.json); do
+                safe=$(echo "$ch" | tr -c '[:alnum:]_' '_')
+                jq --arg ch "$ch" '[ .[] | select((.chapter // "01") == $ch) ]' slides_converted.json > "slides-${safe}.json"
+                echo "Wrote slides-${safe}.json"
+              done
+            fi
+
+          elif [ "$TYPE" = "array" ]; then
+            echo "Array detected. Writing slides_converted.json and splitting by chapter..."
+            jq '.' slides.json > slides_converted.json
+            for ch in $(jq -r 'map(.chapter // "01") | unique[]' slides_converted.json); do
+              safe=$(echo "$ch" | tr -c '[:alnum:]_' '_')
+              jq --arg ch "$ch" '[ .[] | select((.chapter // "01") == $ch) ]' slides_converted.json > "slides-${safe}.json"
+              echo "Wrote slides-${safe}.json"
+            done
+
+          else
+            echo "Unexpected JSON type: $TYPE" >&2
+            exit 1
+          fi
+
+          echo "Listing generated slide files:"
+          ls -la slides-*.json || true
+          echo "Done decoding & splitting slides."
+
+      ##################################################################
+      # If chapters_b64 supplied, decode it to chapters.json
+      ##################################################################
+      - name: Decode chapters_b64 -> chapters.json
         if: ${{ github.event.client_payload.chapters_b64 != '' }}
         env:
-          CH_B64: ${{ github.event.client_payload.chapters_b64 }}
-          CH_PATH: ${{ github.event.client_payload.chapters_path || 'chapters.json' }}
+          C_B64: ${{ github.event.client_payload.chapters_b64 }}
         run: |
-          echo "Decodificando chapters -> $CH_PATH"
-          echo "$CH_B64" | base64 -d > "$CH_PATH"
-          echo "Wrote $CH_PATH"
+          set -euo pipefail
+          echo "Decoding chapters_b64..."
+          printf '%s' "$C_B64" | base64 --decode > chapters.json
+          echo "Wrote chapters.json (preview):"
+          jq '.' chapters.json || true
 
-      - name: Commit & push changes
+      ##################################################################
+      # Write images provided in client_payload.images (if any)
+      # images is expected as array of { path, content_b64 }
+      ##################################################################
+      - name: Write images (if provided)
+        if: ${{ github.event.client_payload.images != '' }}
         env:
-          COMMIT_MESSAGE: ${{ github.event.client_payload.message }}
-          BRANCH: ${{ github.event.client_payload.branch }}
+          IMAGES_JSON: ${{ toJson(github.event.client_payload.images) }}
         run: |
-          set -e
-          DEST_BRANCH="${BRANCH:-main}"
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -euo pipefail
+          echo "Processing images from payload..."
+          printf '%s' "$IMAGES_JSON" > /tmp/images.json
+          count=$(jq 'length' /tmp/images.json)
+          echo "Image entries: $count"
+          if [ "$count" -eq 0 ]; then
+            echo "No images to write."
+            exit 0
+          fi
+          for i in $(seq 0 $((count-1))); do
+            row=$(jq -r ".[$i]" /tmp/images.json)
+            path=$(echo "$row" | jq -r '.path')
+            content=$(echo "$row" | jq -r '.content_b64')
+            # sanitize path and create dir
+            dir=$(dirname "$path")
+            mkdir -p "$dir"
+            echo "$content" | base64 -d > "$path"
+            echo "Wrote $path"
+          done
+
+      ##################################################################
+      # Optionally: other payload-driven writes can be added here
+      ##################################################################
+
+      - name: Show git status (before commit)
+        run: |
+          echo "Files changed:"
+          git status --porcelain
+          echo "---"
+          git ls-files --modified || true
+
+      - name: Commit & push changes (if any)
+        env:
+          TARGET_BRANCH: ${{ github.event.client_payload.branch }}
+        run: |
+          set -euo pipefail
+          # default branch fallback
+          BRANCH="${TARGET_BRANCH:-main}"
+          echo "Target branch: $BRANCH"
+          # create branch if needed
+          # If the payload specified a branch and it doesn't exist, create it from current default
+          # (actions/checkout already checked out a ref; we ensure we push to requested branch)
+          # Stage all changes
           git add -A
+          # check for changes
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "${COMMIT_MESSAGE:-Update slides & chapters via repository_dispatch}"
-          git push origin HEAD:"$DEST_BRANCH"
+          # compose commit message
+          MSG="Update slides & assets via repository_dispatch"
+          # include optional message from payload
+          if [ -n "${{ github.event.client_payload.message || '' }}" ]; then
+            MSG="${{ github.event.client_payload.message }}"
+          fi
+          git commit -m "$MSG"
+          # push to the target branch (force create if branch doesn't exist remotely)
+          git push origin HEAD:"$BRANCH"
+          echo "Pushed changes to $BRANCH"
+
+      - name: Done
+        run: echo "update-slides workflow finished."
