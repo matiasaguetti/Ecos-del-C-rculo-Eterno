@@ -1,4 +1,4 @@
-:root {
+:root{
   --bg:#F7EBD9;
   --accent:#3B2F2F;
   --border:#7A5A3C;
@@ -8,90 +8,84 @@
   --serif: "Times New Roman", Times, serif;
 }
 
-body.caballeros-page {
-  background:#EFEFEF;
-  margin:0;
-}
-
+/* Page wrapper (scoped) */
 .caballeros {
   font-family: var(--serif);
-  max-width: 210mm;
-  margin: 12mm auto;
-  padding: 6mm;
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 20px;
   color:#222;
+  background: linear-gradient(180deg, #fbf6ee 0%, #f7efe0 100%);
+  box-sizing: border-box;
+  border-radius: 10px;
 }
 
-/* Encabezado */
-.caballeros .page-header {
-  text-align:center;
-  margin-bottom:8mm;
-}
-.caballeros .page-header h1 {
-  font-size:22px;
-  color:var(--accent);
-  margin:0;
-}
-.caballeros .page-header .subtitle {
-  color:var(--muted);
-  margin-top:6px;
-  font-size:12px;
-}
+/* Tipografía ampliada */
+.caballeros { font-size: 16px; }           /* base */
+.caballeros .page-header h1 { font-size: 28px; margin:0; color:var(--accent); }
+.caballeros .page-header .subtitle { font-size:14px; color:var(--muted); margin-top:6px; }
 
-/* Contenedor tarjetas */
+/* Cards grid */
 .caballeros .cards {
   display:flex;
   flex-wrap:wrap;
-  gap:12mm;
+  gap:20px;
   justify-content:space-between;
+  margin-top:18px;
 }
 
-/* Tarjeta individual */
+/* Card */
 .caballeros .card {
-  background: linear-gradient(180deg, var(--paper) 0%, var(--bg) 100%);
-  width: calc(48% - 6mm);
-  box-shadow: 0 6px 18px var(--shadow);
-  border-radius:8px;
+  background: linear-gradient(180deg, var(--paper) 0%, #fdf7ee 100%);
+  width: calc(50% - 10px);
+  box-shadow: 0 8px 24px var(--shadow);
+  border-radius:10px;
   border:2px solid var(--border);
-  padding:12px;
+  padding:14px;
   box-sizing:border-box;
   page-break-inside: avoid;
 }
 
-/* Encabezado de tarjeta */
+/* Card header */
 .caballeros .card-head {
   background: var(--accent);
   color:#fff;
-  padding:8px 12px;
-  border-radius:6px;
-  margin-bottom:8px;
+  padding:10px 12px;
+  border-radius:8px;
+  margin-bottom:10px;
 }
-.caballeros .card-head h2 { font-size:16px; margin:0; }
-.caballeros .card-head .epitaph { font-size:11px; color:#f4e9e0; margin:0; font-style:italic; }
+.caballeros .card-head h2 { font-size:18px; margin:0; line-height:1.1; }
+.caballeros .card-head .epitaph { font-size:12px; color:#f6eae4; margin:4px 0 0 0; font-style:italic; }
 
-/* Contenido */
-.caballeros .card-body p { margin:6px 0; line-height:1.18; font-size:12px; }
-.caballeros .card-body h3 { margin:8px 0 4px 0; font-size:13px; color:var(--accent); }
+/* Body */
+.caballeros .card-body p { margin:8px 0; line-height:1.35; font-size:14px; color:#222; }
+.caballeros .card-body h3 { margin:8px 0 6px 0; font-size:15px; color:var(--accent); }
 
+/* Mechanics box */
 .caballeros .mechanics {
-  background: rgba(250,245,240,0.8);
-  padding:8px;
-  border-radius:6px;
+  background: rgba(250,245,240,0.9);
+  padding:10px;
+  border-radius:8px;
   border:1px solid rgba(120,90,60,0.12);
+  font-size:14px;
 }
-.caballeros .uses { font-size:12px; color:var(--muted); margin-top:8px; }
-.caballeros .flavor { margin-top:6px; font-size:11px; font-style:italic; color:#333; }
+.caballeros .uses { font-size:13px; color:var(--muted); margin-top:8px; }
+.caballeros .flavor { margin-top:8px; font-size:13px; font-style:italic; color:#333; }
 
 /* Footer */
-.caballeros .page-footer {
-  margin-top:12mm;
-  text-align:center;
-  font-size:11px;
-  color:var(--muted);
+.caballeros .page-footer { margin-top:20px; text-align:center; font-size:13px; color:var(--muted); }
+
+/* Responsive */
+@media (max-width:900px){
+  .caballeros .cards { gap:12px; }
+  .caballeros .card { width:100%; }
+  .caballeros { padding:14px; }
+  .caballeros .page-header h1 { font-size:22px; }
 }
 
-/* Impresión */
-@media print {
-  .caballeros .cards { gap:6mm; }
-  .caballeros .card { width:100%; break-inside: avoid; }
+/* Print-friendly */
+@media print{
+  body { background: #fff; }
+  .caballeros { box-shadow:none; border:none; background: #fff; max-width:100%; margin:0; padding:0; }
+  .caballeros .card { break-inside: avoid; page-break-inside: avoid; }
 }
-
