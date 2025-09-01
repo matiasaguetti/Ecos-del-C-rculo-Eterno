@@ -16,7 +16,6 @@
   }));
 
   async function openChapter(id){
-    // for now expect file: libros-<id>.json inside same folder (/recursos/)
     const path = `libros-${id}.json`;
     try {
       const arr = await fetchJson(path);
@@ -38,20 +37,19 @@
   function renderSlides(){
     slidesEl.innerHTML = '';
     posts.forEach((p, i) => {
-      const item = document.createElement('div');
-      item.style.minWidth = '100%';
-      item.style.boxSizing = 'border-box';
-      item.innerHTML = `
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <img src="${(p.images && p.images[0]) ? p.images[0] : 'assets/recursos/placeholder.jpg'}" class="scroll-image" alt="${p.title||''}" style="max-width:320px; width:40%;"/>
-          <div style="width:60%">
-            <h3 style="margin-top:0">${escapeHtml(p.title||'Sin título')}</h3>
-            <div style="color:#6b6b6b;font-size:13px;margin-bottom:8px">${escapeHtml(p.date||'')}</div>
-            <div>${escapeHtml(p.body||'')}</div>
+      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/recursos/placeholder.jpg';
+      const slideWrap = document.createElement('div');
+      slideWrap.innerHTML = `
+        <div class="scroll-slide">
+          <img class="scroll-image" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.title||'')}" />
+          <div class="scroll-text">
+            <h3>${escapeHtml(p.title||'Sin título')}</h3>
+            <div class="date">${escapeHtml(p.date||'')}</div>
+            <div class="body-content">${escapeHtml(p.body||'')}</div>
           </div>
         </div>
       `;
-      slidesEl.appendChild(item);
+      slidesEl.appendChild(slideWrap);
     });
     updatePosition();
   }
@@ -74,6 +72,5 @@
     slidesEl.innerHTML = '';
   }
 
-  // small helper
   function escapeHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 })();
