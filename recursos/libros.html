@@ -8,24 +8,12 @@
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Pergamino modal specific */
-    .scroll-modal {
-      background: linear-gradient(180deg,#f7ecd8 0%, #efe0c2 100%);
-      border: 6px solid #9c7a4f;
-      border-radius: 8px;
-      padding: 20px;
-      max-width: 880px;
-      width: calc(100% - 40px);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-      font-family: "Cinzel", serif;
-      color:#2b2b2b;
-    }
-    .scroll-header { text-align:center; font-weight:700; margin-bottom:8px; font-size:20px; }
-    .scroll-body { max-height:65vh; overflow:auto; padding-right:8px; line-height:1.45; }
-    .scroll-image { display:block; width:100%; height:auto; margin:10px 0; border-radius:6px; }
-    .chapter-list { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0 18px 0;}
+    /* Styles pequeños específicos aquí (si ya tienes recurso/style.css, puedes borrar) */
+    .chapter-list { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0 18px 0; }
     .chapter-card { background: rgba(0,0,0,0.04); padding:10px 12px; border-radius:8px; cursor:pointer; border:1px solid rgba(0,0,0,0.06); }
     .chapter-card.active { border-color:var(--accent); box-shadow: 0 6px 18px rgba(138,91,58,0.08); }
+    .ctrl-btn{ background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
+    @media (max-width:900px){ .scroll-modal{ width: calc(100% - 24px); } }
   </style>
 </head>
 <body>
@@ -47,9 +35,7 @@
     <p style="color:var(--muted)">Selecciona un capítulo para ver los libros y pergaminos leídos por los personajes.</p>
 
     <div class="chapter-list" id="chapterList">
-      <!-- Botones de capítulos -->
       <div class="chapter-card" data-id="05">Capítulo 05 — El Templo del Círculo Eterno</div>
-      <!-- en el futuro puedes añadir más -->
     </div>
 
     <section id="chapterPreview" style="margin-top:12px;color:var(--muted)">
@@ -65,16 +51,24 @@
   <div id="scrollOverlay" style="display:none; position:fixed; inset:0; background:rgba(2,2,2,0.65); align-items:center; justify-content:center; z-index:1200;">
     <div class="scroll-modal" role="dialog" aria-modal="true" id="scrollModal">
       <button id="closeScroll" style="position:absolute; right:18px; top:18px; background:#b66; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer">Cerrar</button>
-      <div class="scroll-header" id="scrollTitle">Capítulo 05 — El Templo del Círculo Eterno</div>
+      <div class="scroll-header" id="scrollTitle">Capítulo —</div>
       <div class="scroll-body" id="scrollBody">
         <!-- Slideshow container -->
         <div id="librosSlides" style="display:flex; gap:14px; overflow:hidden; transition:transform .4s ease"></div>
         <div style="display:flex;justify-content:center;gap:8px;margin-top:10px;">
-          <button id="libPrev" class="ctrl-btn">‹</button>
-          <button id="libNext" class="ctrl-btn">›</button>
+          <button id="libPrev" class="ctrl-btn" aria-label="anterior">‹</button>
+          <button id="libNext" class="ctrl-btn" aria-label="siguiente">›</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- nav buttons outside modal (so they don't overlap content) -->
+  <div class="modal-nav left" style="display:none;">
+    <button id="modalPrev" class="ctrl-btn" aria-label="anterior grande">‹</button>
+  </div>
+  <div class="modal-nav right" style="display:none;">
+    <button id="modalNext" class="ctrl-btn" aria-label="siguiente grande">›</button>
   </div>
 
   <script src="js/recursos.js"></script>
