@@ -202,13 +202,33 @@
   .scroll-slide img.scroll-image { width:100%; max-width:100%; }
   .scroll-modal { padding:16px; }
 }
-.resource-icon {
-  width: 120px;
-  height: 80px;
-  object-fit: contain; /* o contain si prefieres mantener todo el icono visible */
+/* Contenedor fijo (evita recortes y permite centrar la imagen) */
+.resource-card .icon-wrap {
+  width: 120px;              /* ancho visible del icono */
+  height: 80px;              /* alto visible del icono */
+  display: flex;
+  align-items: center;       /* centra verticalmente */
+  justify-content: center;   /* centra horizontalmente */
+  overflow: hidden;          /* recorta sólo si la imagen supera la caja (pero con contain no debería) */
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.04);
+  background: transparent;   /* o un color de fondo si lo deseas */
+  flex-shrink: 0;            /* evita que la caja se encoja en diseños flex/grid */
 }
+
+/* Imagen dentro del wrapper: mantenemos proporciones, nada de recorte */
+.resource-icon {
+  display: block;            /* evitar gaps por baseline */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;       /* asegura que toda la imagen quede visible */
+  object-position: center center;
+}
+
+/* Responsive */
 @media (max-width:900px){
-  .resource-icon { width: 100px; height: 64px; }
+  .resource-card .icon-wrap { width: 100px; height: 64px; }
 }
+
