@@ -5,10 +5,10 @@
   --card-bg:#0f1112;
   --panel:#0b0c0d;
   --accent:#8a5b3a;
-  --text-strong: #efefef;       /* texto claro para fondos oscuros */
-  --paper-dark: #121212;        /* fondo oscuro secundario */
-  --paper-light: #fff9ec;       /* pergamino claro */
-  --paper-ink: #1b1b1b;         /* texto sobre pergamino */
+  --text-strong: #efefef;
+  --paper-dark: #121212;
+  --paper-light: #fff9ec;
+  --paper-ink: #1b1b1b;
   --btn-bg: #8a5b3a;
   --btn-contrast: #ffffff;
 }
@@ -29,7 +29,7 @@
   gap:12px;
   align-items:center;
   border:1px solid rgba(255,255,255,0.04);
-  color: var(--text-strong); /* texto claro y contrastado */
+  color: var(--text-strong);
   transition: transform .16s ease, box-shadow .16s ease;
 }
 .resource-card:hover{
@@ -37,14 +37,20 @@
   box-shadow: 0 12px 30px rgba(0,0,0,0.45);
 }
 
-.resource-card img{
+/* --- Ajuste importante:
+   Solo dirigimos esta regla a imágenes que sean HIJAS DIRECTAS del artículo .resource-card
+   (las imágenes dentro de .icon-wrap ya NO serán afectadas por esta regla) --- */
+.resource-card > img{
   width:120px;
   height:80px;
-  object-fit:cover;
+  object-fit:cover;          /* sigue cubriendo miniaturas directas */
   border-radius:8px;
   flex-shrink:0;
   border:1px solid rgba(255,255,255,0.03);
 }
+
+/* Si quieres que las miniaturas directas usen contain en lugar de cover,
+   cámbialo aquí; pero dejamos cover para fotos recortadas y mantenemos icon-wrap separado. */
 
 .resource-card h3{
   margin:0 0 6px 0;
@@ -55,7 +61,7 @@
 
 .resource-card p{
   margin:0 0 6px 0;
-  color: #d8e0e3; /* ligeramente menos brillante que el título */
+  color: #d8e0e3;
   font-size:14px;
 }
 
@@ -73,8 +79,6 @@
 }
 
 /* --- Modal / pergamino --- */
-
-/* overlay (se manejaba inline en libros.html) */
 #scrollOverlay {
   backdrop-filter: blur(4px);
 }
@@ -89,10 +93,9 @@
   width: calc(100% - 40px);
   box-shadow: 0 10px 50px rgba(0,0,0,0.6);
   font-family: "Cinzel", serif;
-  color: var(--paper-ink); /* texto oscuro sobre pergamino */
+  color: var(--paper-ink);
 }
 
-/* cabecera del pergamino */
 .scroll-header {
   text-align:center;
   font-weight:700;
@@ -101,7 +104,6 @@
   letter-spacing: 0.6px;
 }
 
-/* cuerpo desplazable del pergamino */
 .scroll-body {
   max-height:65vh;
   overflow:auto;
@@ -111,7 +113,6 @@
   font-size: 15px;
 }
 
-/* imagen dentro del pergamino */
 .scroll-image {
   display:block;
   width:100%;
@@ -134,15 +135,13 @@
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 
-/* --- Slides (cada "diapositiva" dentro del modal) --- */
-/* contenedor slide (cada elemento del slideshow) */
+/* Slides */
 #librosSlides > div {
   min-width: 100%;
   box-sizing: border-box;
   padding: 12px;
 }
 
-/* estructura interna: caja clara para texto y contraste alto */
 .scroll-slide {
   display:flex;
   gap:16px;
@@ -152,7 +151,6 @@
   padding:10px;
 }
 
-/* la zona de texto tiene fondo claro (alto contraste sobre pergamino) */
 .scroll-text {
   background: rgba(255,255,255,0.90);
   color: var(--paper-ink);
@@ -165,7 +163,6 @@
   line-height:1.45;
 }
 
-/* la imagen queda en la izquierda con borde sutil */
 .scroll-slide img.scroll-image {
   max-width:320px;
   width:40%;
@@ -190,40 +187,42 @@
 .modal-nav.right{ right:14px; }
 .modal-nav button { background: var(--btn-bg); color: var(--btn-contrast); border-radius:50%; padding:12px 14px; font-size:20px; border:none; }
 
-/* accesibilidad: mejora de tamaño de foco */
+/* accesibilidad */
 :focus { outline: 3px solid rgba(138,91,58,0.18); outline-offset: 3px; }
 
 /* Responsive */
 @media (max-width:900px){
   .resource-grid { grid-template-columns:1fr; }
-  .resource-card img{ width:100px; height:64px; }
+  /* dejar reglas de imagenes directas más pequeñas */
+  .resource-card > img{ width:100px; height:64px; }
   .scroll-slide { flex-direction:column; }
   .scroll-text { width:100%; }
   .scroll-slide img.scroll-image { width:100%; max-width:100%; }
   .scroll-modal { padding:16px; }
 }
-/* Contenedor fijo (evita recortes y permite centrar la imagen) */
+
+/* Contenedor para iconos (evita recortes y centra imagen) */
 .resource-card .icon-wrap {
-  width: 120px;              /* ancho visible del icono */
-  height: 80px;              /* alto visible del icono */
+  width: 120px;
+  height: 80px;
   display: flex;
-  align-items: center;       /* centra verticalmente */
-  justify-content: center;   /* centra horizontalmente */
-  overflow: hidden;          /* recorta sólo si la imagen supera la caja (pero con contain no debería) */
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.04);
-  background: transparent;   /* o un color de fondo si lo deseas */
-  flex-shrink: 0;            /* evita que la caja se encoja en diseños flex/grid */
+  background: transparent;
+  flex-shrink: 0;
 }
 
-/* Imagen dentro del wrapper: mantenemos proporciones, nada de recorte */
+/* Imagen dentro del wrapper: se escala para verse completa */
 .resource-icon {
-  display: block;            /* evitar gaps por baseline */
+  display: block;
+  width: 100%;
+  height: 100%;
   max-width: 100%;
   max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;       /* asegura que toda la imagen quede visible */
+  object-fit: contain;
   object-position: center center;
 }
 
@@ -231,4 +230,3 @@
 @media (max-width:900px){
   .resource-card .icon-wrap { width: 100px; height: 64px; }
 }
-
