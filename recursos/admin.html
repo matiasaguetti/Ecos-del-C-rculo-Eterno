@@ -7,18 +7,23 @@
   <link rel="stylesheet" href="../style.css">
   <style>
     body{ font-family:Inter,system-ui,Arial; padding:18px; background:linear-gradient(180deg,#070708,#0d0d0e); color:#e6eef1 }
-    .card{ background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); max-width:960px; margin:0 auto;}
-    label{ display:block; margin-top:8px; font-size:13px }
-    input[type=text], textarea, select { width:100%; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:inherit }
-    .row{ display:flex; gap:8px }
-    .btn{ background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-top:10px }
-    .thumbs img{ max-height:80px; margin-right:6px; border-radius:6px; }
+    .card{ background:rgba(255,255,255,0.02); padding:16px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); max-width:980px; margin:0 auto;}
+    label{ display:block; margin-top:10px; font-size:13px }
+    input[type=text], textarea, select { width:100%; padding:9px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:inherit; box-sizing:border-box }
+    .row{ display:flex; gap:8px; align-items:center; }
+    .btn{ background:var(--accent); color:#fff; border:none; padding:9px 14px; border-radius:8px; cursor:pointer; margin-top:12px; font-weight:700 }
+    .btn.secondary{ background:#2b7a4f }
+    .thumbs img{ max-height:90px; margin-right:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.04) }
+    .modes { display:flex; gap:8px; margin-top:8px; }
+    .rich-area { min-height:140px; border:1px dashed rgba(255,255,255,0.06); padding:10px; border-radius:6px; background:rgba(0,0,0,0.02); color:inherit; overflow:auto }
+    .note { color:#aab2b6; font-size:13px; margin-top:8px }
+    pre#log{ height:160px; overflow:auto; background:#070708; border-radius:6px; padding:8px; color:#d8e0e3 }
   </style>
 </head>
 <body>
-  <main class="card">
+  <main class="card" role="main">
     <h2>Admin — Libros y Pergaminos (Cap.05)</h2>
-    <p style="color:#aab2b6">Usa este panel para crear/actualizar el archivo <code>recursos/libros-05.json</code> y subir imágenes a <code>assets/recursos/</code>. Necesitas un PAT con permiso repo.</p>
+    <p class="note">Sube entradas (título, subtítulo, fecha, texto) y las imágenes asociadas. El campo Texto acepta HTML (pegar desde Google Docs), Markdown o texto plano. Las imágenes se guardarán en <code>assets/recursos/</code>.</p>
 
     <label>Owner (usuario/org)</label>
     <input id="owner" type="text" placeholder="tu-usuario" />
@@ -35,210 +40,65 @@
     <hr/>
 
     <h3>Nuevo pergamino / libro</h3>
+
     <label>Título</label>
     <input id="title" type="text" />
+
+    <label>Subtítulo (se mostrará en cursiva)</label>
+    <input id="subtitle" type="text" />
 
     <label>Fecha</label>
     <input id="date" type="text" placeholder="2025-08-30" />
 
-    <label>Texto (markdown o HTML simple)</label>
-    <textarea id="body" rows="6"></textarea>
+    <label>Modo de pegado</label>
+    <div class="modes">
+      <label><input name="mode" type="radio" value="text" checked> Texto plano</label>
+      <label><input name="mode" type="radio" value="html"> HTML</label>
+      <label><input name="mode" type="radio" value="md"> Markdown</label>
+    </div>
 
-    <label>Imágenes (PNG/JPG). Se subirán como JPG optimizado</label>
+    <label>Texto</label>
+    <textarea id="bodyText" rows="6" placeholder="Texto o Markdown"></textarea>
+
+    <div id="bodyHtmlContainer" style="display:none; margin-top:8px;">
+      <div id="bodyHtml" class="rich-area" contenteditable="true"></div>
+      <div class="note">Pega desde Google Docs aquí para conservar formato.</div>
+    </div>
+
+    <label>Imágenes (PNG/JPG → JPG optimizado en assets/recursos/)</label>
     <input id="images" type="file" accept="image/*" multiple />
     <div class="thumbs" id="thumbs"></div>
+    <div style="margin-top:8px">
+      <button id="clearImgs" class="btn secondary" type="button">Limpiar imágenes</button>
+    </div>
 
-    <button id="addBtn" class="btn">Añadir pergamino al JSON local</button>
-    <button id="uploadBtn" class="btn" style="background:#2b7a4f">Subir JSON + imágenes a GitHub</button>
+    <div style="margin-top:12px">
+      <button id="addBtn" class="btn" type="button">Añadir pergamino</button>
+      <button id="uploadBtn" class="btn secondary" type="button">Subir JSON + imágenes</button>
+    </div>
 
     <hr/>
-    <h3>Estado</h3>
-    <pre id="log" style="height:120px; overflow:auto; background:#070708; border-radius:6px; padding:8px"></pre>
+    <h3>Preview / Estado</h3>
+    <pre id="log"></pre>
   </main>
 
   <script>
-    // Admin simple: coleccion local en memoria -> sube imágenes y JSON a GitHub (PUT contents)
-    const imgsInput = document.getElementById('images');
-    const thumbs = document.getElementById('thumbs');
-    const addBtn = document.getElementById('addBtn');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const logEl = document.getElementById('log');
-
-    let localItems = []; // array de entries {id,title,date,body,images: [url,...] }
-    let stagedImages = []; // File objects
-
-    imgsInput.addEventListener('change', ()=>{
-      thumbs.innerHTML = '';
-      stagedImages = Array.from(imgsInput.files || []);
-      stagedImages.forEach(f=>{
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(f);
-        img.title = f.name;
-        thumbs.appendChild(img);
-      });
-    });
-
-    function log(msg){ logEl.textContent = (new Date()).toISOString() + ' — ' + msg + "\n" + logEl.textContent; }
-
-    addBtn.addEventListener('click', () => {
-      const title = document.getElementById('title').value.trim();
-      const date = document.getElementById('date').value.trim();
-      const body = document.getElementById('body').value.trim();
-      if(!title){ alert('Título obligatorio'); return; }
-      const id = Date.now();
-      // Prepare placeholder image paths (will be replaced after upload)
-      const imagePaths = stagedImages.map(f => `assets/recursos/${sanitizeFilename(f.name).replace(/\.[^.]+$/, '')}-${id}.jpg`);
-      localItems.push({ id, title, date, body, images: imagePaths });
-      log('Added local entry: ' + title);
-      // clear inputs
-      document.getElementById('title').value='';
-      document.getElementById('date').value='';
-      document.getElementById('body').value='';
-      imgsInput.value = '';
-      thumbs.innerHTML = '';
-      stagedImages = [];
-      refreshPreview();
-    });
-
-    function refreshPreview(){
-      // quick preview of localItems
-      let html = localItems.map(it=>`[${it.id}] ${it.title} — ${it.date}\n`).join('');
-      log('Current localItems: ' + localItems.length + ' entries');
-    }
-
-    function sanitizeFilename(name){
-      return name.replace(/[^a-zA-Z0-9_\-\.]/g,'_');
-    }
-
-    // Converts File -> JPEG base64 (like earlier pattern)
-    function fileToJpegBase64(file, quality=0.78, maxWidth=2000){
-      return new Promise((resolve,reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=> {
-          const img = new Image();
-          img.onload = ()=> {
-            let w = img.width, h = img.height;
-            if(maxWidth && w > maxWidth){ h = Math.round(h * (maxWidth / w)); w = maxWidth; }
-            const canvas = document.createElement('canvas');
-            canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#000'; ctx.fillRect(0,0,w,h);
-            ctx.drawImage(img,0,0,w,h);
-            canvas.toBlob(blob=>{
-              const r = new FileReader();
-              r.onload = ()=> { const data = String(r.result); const b64 = data.split(',')[1]; resolve(b64); };
-              r.onerror = ()=> reject(new Error('Error leyendo blob'));
-              r.readAsDataURL(blob);
-            }, 'image/jpeg', quality);
-          };
-          img.onerror = ()=> reject(new Error('Error cargando imagen'));
-          img.src = reader.result;
-        };
-        reader.onerror = ()=> reject(new Error('Error leyendo archivo'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // PUT a file to GitHub via REST API (create or update). path: e.g., 'recursos/libros-05.json' or 'assets/recursos/foo.jpg'
-    async function putFile(owner, repo, path, content_b64, message, branch, token){
-      const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
-      // get current sha if exists
-      let sha = null;
-      const headers = { Authorization: 'token ' + token, Accept:'application/vnd.github+json' };
-      try {
-        const g = await fetch(api + '?ref=' + encodeURIComponent(branch), { headers });
-        if(g.ok){
-          const info = await g.json();
-          sha = info.sha;
-          log('Found existing file ' + path + ' (sha ' + sha + ')');
-        } else {
-          log('File not found (will create): ' + path);
-        }
-      } catch(e){
-        log('Info fetch failed for ' + path + ': ' + e.message);
-      }
-      const body = { message, content: content_b64, branch };
-      if(sha) body.sha = sha;
-      const resp = await fetch(api, {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(body)
-      });
-      if(!resp.ok){
-        const txt = await resp.text();
-        throw new Error('PUT failed: ' + resp.status + ' ' + txt);
-      }
-      const resj = await resp.json();
-      log('Uploaded ' + path + ' -> ' + (resj.content && resj.content.path ? resj.content.path : 'ok'));
-      return resj;
-    }
-
-    uploadBtn.addEventListener('click', async ()=>{
-      const owner = document.getElementById('owner').value.trim();
-      const repo = document.getElementById('repo').value.trim();
-      const branch = document.getElementById('branch').value.trim() || 'main';
-      const token = document.getElementById('token').value.trim();
-      if(!owner||!repo||!token){ alert('Owner, repo y token son obligatorios'); return; }
-      if(localItems.length === 0){ alert('No hay entradas añadidas. Pulsa "Añadir pergamino" primero.'); return; }
-
-      uploadBtn.disabled = true;
-      try {
-        // 1) upload staged images (we re-collect images from the input files referenced when each entry was added)
-        // NOTE: stagedImages is empty after adding entry. We'll re-ask user to select images again in same order.
-        // Simpler approach: ask user to upload all images first and then add entries; here we assume images are currently selected in the control.
-        // We'll fetch files from the file input at time of upload
-        const files = Array.from(document.getElementById('images').files || []);
-        // Map by sanitized base name + timestamp: but we used naming pattern earlier in add stage.
-        // We'll instead iterate localItems and attempt to match by name; if not found, skip.
-        const toUpload = [];
-        // Build a map of filenames to File objects (by original name)
-        const fileMap = {};
-        files.forEach(f => fileMap[sanitizeFilename(f.name)] = f);
-
-        // But because the admin workflow expects the user to have staged images before adding, and we cleared stagedImages,
-        // a robust approach: re-prompt user to select the exact files (we keep UI simple: require images selected at upload time)
-        // If there are NO files selected now, we will still upload JSON but images paths will be left as-is (user must upload images separately).
-        if(files.length===0){
-          if(!confirm('No se han seleccionado archivos de imagen en este momento. ¿Deseas continuar subiendo sólo el JSON (sin imágenes)?')) {
-            uploadBtn.disabled = false; return;
-          }
-        }
-
-        // Upload each file and translate into repo path. We'll upload to assets/recursos/
-        for(const file of files){
-          log('Convirtiendo ' + file.name + ' a JPG...');
-          const b64 = await fileToJpegBase64(file, 0.78, 2000);
-          const safe = sanitizeFilename(file.name).replace(/\.[^.]+$/,'') + '-' + Date.now() + '.jpg';
-          const targetPath = 'assets/recursos/' + safe;
-          await putFile(owner, repo, targetPath, b64, 'Upload recurso image ' + safe, branch, token);
-          log('Uploaded image as ' + targetPath);
-          // replace any localItems image placeholders that match base name with this path
-          localItems.forEach(it=>{
-            it.images = it.images.map(im => {
-              const base = sanitizeFilename(im.split('/').pop().split('.')[0]);
-              if(file.name && sanitizeFilename(file.name).indexOf(base) !== -1){
-                return targetPath;
-              }
-              return im;
-            });
-          });
-        }
-
-        // 2) Upload JSON file to recursos/libros-05.json
-        const jsonPath = 'recursos/libros-05.json';
-        const jsonStr = JSON.stringify(localItems, null, 2);
-        const jsonB64 = btoa(unescape(encodeURIComponent(jsonStr)));
-        await putFile(owner, repo, jsonPath, jsonB64, 'Update recursos: libros-05.json', branch, token);
-        log('Uploaded JSON: ' + jsonPath);
-        alert('Subida completada.');
-      } catch (e) {
-        console.error(e);
-        alert('Error durante la subida: ' + e.message);
-        log('Error: ' + e.message);
-      } finally {
-        uploadBtn.disabled = false;
-      }
-    });
+    const imgsInput=document.getElementById('images');
+    const thumbs=document.getElementById('thumbs');
+    const addBtn=document.getElementById('addBtn');
+    const uploadBtn=document.getElementById('uploadBtn');
+    const clearImgsBtn=document.getElementById('clearImgs');
+    const logEl=document.getElementById('log');
+    let localItems=[]; const imageMap={}; let stagedFiles=[];
+    function log(msg){logEl.textContent=(new Date()).toISOString()+" — "+msg+"\n"+logEl.textContent;}
+    function sanitizeFilename(name){const ext='.jpg'; const base=name.replace(/(\.[^.]+)$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();return(base||'img')+ext;}
+    function fileToJpegBase64(file,q=0.78,maxW=2000){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(maxW&&w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);c.toBlob(b=>{const rr=new FileReader();rr.onload=()=>{res(rr.result.split(',')[1]);};rr.readAsDataURL(b);},'image/jpeg',q);};img.src=r.result;};r.readAsDataURL(file);});}
+    async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();}
+    imgsInput.addEventListener('change',()=>{thumbs.innerHTML='';stagedFiles=Array.from(imgsInput.files||[]);stagedFiles.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);thumbs.appendChild(img);});});
+    clearImgsBtn.addEventListener('click',()=>{imgsInput.value='';stagedFiles=[];thumbs.innerHTML='';});
+    addBtn.addEventListener('click',()=>{const t=document.getElementById('title').value.trim();const st=document.getElementById('subtitle').value.trim();const d=document.getElementById('date').value.trim();const m=document.querySelector('input[name="mode"]:checked').value;let b='';if(m==='html'){b=document.getElementById('bodyHtml').innerHTML.trim();}else{b=document.getElementById('bodyText').value.trim();}if(!t||!b){alert('Completa título y texto');return;}const id=Date.now();const imgPaths=[];stagedFiles.forEach(f=>{const safe=sanitizeFilename(f.name).replace('.jpg','')+'-'+id+'.jpg';const full='assets/recursos/'+safe;imageMap[full]=f;imgPaths.push(full);});localItems.push({id,title:t,subtitle:st,date:d,body:b,images:imgPaths});document.getElementById('title').value='';document.getElementById('subtitle').value='';document.getElementById('date').value='';document.getElementById('bodyText').value='';document.getElementById('bodyHtml').innerHTML='';});
+    uploadBtn.addEventListener('click',async()=>{const o=document.getElementById('owner').value.trim();const r=document.getElementById('repo').value.trim();const b=document.getElementById('branch').value.trim()||'main';const t=document.getElementById('token').value.trim();if(!o||!r||!t){alert('Faltan credenciales');return;}for(const path of Object.keys(imageMap)){const file=imageMap[path];const b64=await fileToJpegBase64(file);await putFile(o,r,path,b64,'Upload '+path,b,t);log('Subida imagen '+path);}const jsonPath='recursos/libros-05.json';const jsonStr=JSON.stringify(localItems,null,2);const b64=btoa(unescape(encodeURIComponent(jsonStr)));await putFile(o,r,jsonPath,b64,'Update JSON libros-05',b,t);alert('Todo subido OK');});
+    document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',()=>{const v=document.querySelector('input[name="mode"]:checked').value;document.getElementById('bodyHtmlContainer').style.display=(v==='html')?'block':'none';document.getElementById('bodyText').style.display=(v==='html')?'none':'block';}));
   </script>
 </body>
 </html>
