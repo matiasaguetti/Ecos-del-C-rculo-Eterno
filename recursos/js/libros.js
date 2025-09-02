@@ -1,4 +1,4 @@
-// recursos/js/libros.js (versión modal — reemplaza todo el archivo con esto)
+// recursos/js/libros.js (corrección: rutas relativas, onerror seguro, debug)
 (async function(){
   const chapterCards = Array.from(document.querySelectorAll('.chapter-card'));
   const overlay = document.getElementById('scrollOverlay');
@@ -10,7 +10,9 @@
   const modalPrev = document.getElementById('modalPrev');
   const modalNext = document.getElementById('modalNext');
   const scrollTitle = document.getElementById('scrollTitle');
-  const PLACEHOLDER = '/assets/recursos/placeholder.jpg';
+
+  // Use rutas RELATIVAS (sin "/" inicial) para GitHub Pages en repositorios de proyecto.
+  const PLACEHOLDER = 'assets/recursos/placeholder.jpg';
   let posts = [], current = 0;
 
   chapterCards.forEach(c => c.addEventListener('click', async () => {
@@ -22,7 +24,9 @@
   async function openChapter(id){
     const path = `libros-${id}.json`;
     try {
-      const arr = await fetch(path, {cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('Not found'); return r.json() });
+      const res = await fetch(path, {cache:'no-store'});
+      if(!res.ok) throw new Error('No se encontró ' + path + ' (' + res.status + ')');
+      const arr = await res.json();
       if(!Array.isArray(arr) || arr.length===0){
         alert('No hay pergaminos registrados para el capítulo ' + id);
         return;
@@ -30,26 +34,25 @@
       posts = arr;
       current = 0;
       renderSlides();
-      // set title: use chapter title or first post's subtitle if available
-      const chapterLabel = `Capítulo ${id}`;
-      scrollTitle.textContent = chapterLabel;
+      scrollTitle.textContent = `Capítulo ${id}`;
       overlay.style.display = 'flex';
       document.body.style.overflow = 'hidden';
-      // show big modal nav buttons
       if(modalPrev && modalNext){ modalPrev.parentElement.style.display='block'; modalNext.parentElement.style.display='block'; }
     } catch (e) {
-      console.error(e);
+      console.error('openChapter error:', e);
       alert('Error cargando datos: ' + (e.message||e));
     }
   }
 
+  // Normaliza rutas: conserva rutas absolutas completas y quita "/" inicial para rutas locales.
   function normalizeImagePath(p) {
     if(!p) return PLACEHOLDER;
     p = String(p).trim();
-    if (/^data:/.test(p) || /^https?:\/\//i.test(p) || p.startsWith('/')) return p;
-    if (/^assets[\/\\]/i.test(p)) return '/' + p.replace(/^[\/\\]+/, '');
-    if (/^(\.\/|\.\.\/)/.test(p)) return p;
-    return '/assets/' + p.replace(/^[\/\\]+/, '');
+    if (/^data:/.test(p) || /^https?:\/\//i.test(p)) return p; // data URL o URL externa -> OK
+    // Si el autor puso una ruta con barra inicial "/assets/..." la convertimos a relativa "assets/..."
+    if (p.startsWith('/')) p = p.replace(/^\/+/, '');
+    // Si empieza por "assets/" la dejamos tal cual (ruta relativa desde la página)
+    return p;
   }
 
   function renderSlides(){
@@ -59,6 +62,7 @@
       const slideWrap = document.createElement('div');
       slideWrap.style.minWidth = '100%';
       slideWrap.style.boxSizing = 'border-box';
+
       const inner = document.createElement('div');
       inner.className = 'scroll-slide';
 
@@ -66,20 +70,26 @@
       img.className = 'scroll-image';
       img.src = imgSrc;
       img.alt = p.title || '';
-      img.onerror = function(){ console.warn('Imagen no cargada:', img.src); img.src = PLACEHOLDER; };
+      // onerror seguro: solo asigna placeholder si no es ya el placeholder
+      img.onerror = function(){
+        console.warn('Imagen no cargada (requested):', imgSrc);
+        // si ya es placeholder, no hacer nada más (evita bucle)
+        if (!img.src || img.src.indexOf(PLACEHOLDER) !== -1) {
+          console.warn('Placeholder también falló o ya está asignado:', img.src);
+          return;
+        }
+        img.src = PLACEHOLDER;
+      };
 
       const textWrap = document.createElement('div');
       textWrap.className = 'scroll-text';
-
       const h3 = document.createElement('h3'); h3.textContent = p.title || 'Sin título';
-      const subtitle = document.createElement('div');
-      if(p.subtitle) {
-        const em = document.createElement('div');
-        em.style.fontStyle = 'italic';
-        em.style.marginBottom = '8px';
-        em.textContent = p.subtitle;
-        subtitle.appendChild(em);
+
+      if(p.subtitle){
+        const em = document.createElement('div'); em.style.fontStyle='italic'; em.style.marginBottom='8px'; em.textContent = p.subtitle;
+        textWrap.appendChild(em);
       }
+
       const dateEl = document.createElement('div'); dateEl.className='date'; dateEl.style.color='#6b6b6b'; dateEl.style.marginBottom='8px'; dateEl.textContent = p.date || '';
 
       const bodyEl = document.createElement('div');
@@ -88,13 +98,11 @@
       if(looksLikeHTML){
         bodyEl.innerHTML = bodyStr;
       } else {
-        // preserve line breaks: convert \n to <p>
         const paragraphs = String(bodyStr).split(/\n{2,}/).map(s=>s.replace(/\n/g,'<br>'));
         bodyEl.innerHTML = paragraphs.map(t=>`<p>${t}</p>`).join('');
       }
 
       textWrap.appendChild(h3);
-      if(p.subtitle) textWrap.appendChild(subtitle);
       textWrap.appendChild(dateEl);
       textWrap.appendChild(bodyEl);
 
