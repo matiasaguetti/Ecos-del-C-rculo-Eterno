@@ -205,7 +205,7 @@
 .resource-icon {
   width: 120px;
   height: 80px;
-  object-fit: cover; /* o contain si prefieres mantener todo el icono visible */
+  object-fit: contain; /* o contain si prefieres mantener todo el icono visible */
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.04);
 }
