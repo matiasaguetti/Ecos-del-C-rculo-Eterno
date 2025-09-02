@@ -1,76 +1,46 @@
-// recursos/js/libros.js
-(async function(){
-  const chapterCards = Array.from(document.querySelectorAll('.chapter-card'));
-  const overlay = document.getElementById('scrollOverlay');
-  const modal = document.getElementById('scrollModal');
-  const closeBtn = document.getElementById('closeScroll');
-  const slidesEl = document.getElementById('librosSlides');
-  const prevBtn = document.getElementById('libPrev');
-  const nextBtn = document.getElementById('libNext');
-  let posts = [], current = 0;
+async function loadLibros() {
+  const res = await fetch("libros-05.json");
+  const data = await res.json();
 
-  chapterCards.forEach(c => c.addEventListener('click', async () => {
-    const id = c.dataset.id;
-    chapterCards.forEach(x=>x.classList.toggle('active', x===c));
-    await openChapter(id);
-  }));
+  const container = document.querySelector("#libros-container");
+  container.innerHTML = "";
 
-  async function openChapter(id){
-    const path = `libros-${id}.json`;
-    try {
-      const arr = await fetchJson(path);
-      if(!Array.isArray(arr) || arr.length===0){
-        alert('No hay pergaminos registrados para el capítulo ' + id);
-        return;
-      }
-      posts = arr;
-      current = 0;
-      renderSlides();
-      overlay.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    } catch (e) {
-      console.error(e);
-      alert('Error cargando datos: ' + (e.message||e));
+  data.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "libro-card";
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    if (item.subtitle) {
+      const sub = document.createElement("p");
+      sub.innerHTML = `<em>${item.subtitle}</em>`;
+      card.appendChild(sub);
     }
-  }
 
-  function renderSlides(){
-    slidesEl.innerHTML = '';
-    posts.forEach((p, i) => {
-      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/recursos/placeholder.jpg';
-      const slideWrap = document.createElement('div');
-      slideWrap.innerHTML = `
-        <div class="scroll-slide">
-          <img class="scroll-image" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.title||'')}" />
-          <div class="scroll-text">
-            <h3>${escapeHtml(p.title||'Sin título')}</h3>
-            <div class="date">${escapeHtml(p.date||'')}</div>
-            <div class="body-content">${escapeHtml(p.body||'')}</div>
-          </div>
-        </div>
-      `;
-      slidesEl.appendChild(slideWrap);
-    });
-    updatePosition();
-  }
+    if (item.date) {
+      const date = document.createElement("small");
+      date.textContent = item.date;
+      card.appendChild(date);
+    }
 
-  function updatePosition(){
-    slidesEl.style.transform = `translateX(${ - current * 100 }%)`;
-  }
+    // texto: si contiene etiquetas, lo renderizamos como HTML
+    const body = document.createElement("div");
+    if (/<[a-z][\s\S]*>/i.test(item.body)) {
+      body.innerHTML = item.body;
+    } else {
+      body.textContent = item.body;
+    }
+    card.appendChild(body);
 
-  nextBtn.addEventListener('click', ()=>{ if(current < posts.length-1) current++; updatePosition(); });
-  prevBtn.addEventListener('click', ()=>{ if(current > 0) current--; updatePosition(); });
+    if (item.images && item.images.length) {
+      const img = document.createElement("img");
+      img.src = item.images[0]; // primera imagen
+      card.appendChild(img);
+    }
 
-  closeBtn.addEventListener('click', closeOverlay);
-  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeOverlay(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeOverlay(); });
+    container.appendChild(card);
+  });
+}
 
-  function closeOverlay(){
-    overlay.style.display = 'none';
-    document.body.style.overflow = '';
-    posts = [];
-    slidesEl.innerHTML = '';
-  }
-
-  function escapeHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-})();
+document.addEventListener("DOMContentLoaded", loadLibros);
