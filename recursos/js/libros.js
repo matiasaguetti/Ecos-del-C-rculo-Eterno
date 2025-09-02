@@ -12,7 +12,7 @@
   const modalNext = document.getElementById('modalNext');
   const scrollTitle = document.getElementById('scrollTitle');
 
-  const PLACEHOLDER = 'assets/recursos/placeholder.jpg'; // ruta relativa a recursos/libros.html -> assets/recursos/.. (puede resolverse)
+  const PLACEHOLDER = '../assets/recursos/placeholder.jpg'; // ruta relativa a recursos/libros.html -> assets/recursos/.. (puede resolverse)
   let posts = [], current = 0;
 
   // listener para capítulos
