@@ -93,10 +93,66 @@
     function log(msg){logEl.textContent=(new Date()).toISOString()+" — "+msg+"\n"+logEl.textContent;}
     function sanitizeFilename(name){const ext='.jpg'; const base=name.replace(/(\.[^.]+)$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();return(base||'img')+ext;}
     function fileToJpegBase64(file,q=0.78,maxW=2000){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(maxW&&w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);c.toBlob(b=>{const rr=new FileReader();rr.onload=()=>{res(rr.result.split(',')[1]);};rr.readAsDataURL(b);},'image/jpeg',q);};img.src=r.result;};r.readAsDataURL(file);});}
-    async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();}
-    imgsInput.addEventListener('change',()=>{thumbs.innerHTML='';stagedFiles=Array.from(imgsInput.files||[]);stagedFiles.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);thumbs.appendChild(img);});});
-    clearImgsBtn.addEventListener('click',()=>{imgsInput.value='';stagedFiles=[];thumbs.innerHTML='';});
-    addBtn.addEventListener('click',()=>{const t=document.getElementById('title').value.trim();const st=document.getElementById('subtitle').value.trim();const d=document.getElementById('date').value.trim();const m=document.querySelector('input[name="mode"]:checked').value;let b='';if(m==='html'){b=document.getElementById('bodyHtml').innerHTML.trim();}else{b=document.getElementById('bodyText').value.trim();}if(!t||!b){alert('Completa título y texto');return;}const id=Date.now();const imgPaths=[];stagedFiles.forEach(f=>{const safe=sanitizeFilename(f.name).replace('.jpg','')+'-'+id+'.jpg';const full='assets/recursos/'+safe;imageMap[full]=f;imgPaths.push(full);});localItems.push({id,title:t,subtitle:st,date:d,body:b,images:imgPaths});document.getElementById('title').value='';document.getElementById('subtitle').value='';document.getElementById('date').value='';document.getElementById('bodyText').value='';document.getElementById('bodyHtml').innerHTML='';});
+    async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();} const imgsInput=document.getElementById('images');
+  const thumbs=document.getElementById('thumbs');
+  const addBtn=document.getElementById('addBtn');
+  const uploadBtn=document.getElementById('uploadBtn');
+  const clearImgsBtn=document.getElementById('clearImgs');
+  const logEl=document.getElementById('log');
+  let localItems=[]; const imageMap={}; let stagedFiles=[];
+  function log(msg){logEl.textContent=(new Date()).toISOString()+" — "+msg+"\n"+logEl.textContent;}
+  function sanitizeFilename(name){const ext='.jpg'; const base=name.replace(/(\.[^.]+)$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();return(base||'img')+ext;}
+  function fileToJpegBase64(file,q=0.78,maxW=2000){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(maxW&&w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);c.toBlob(b=>{const rr=new FileReader();rr.onload=()=>{res(rr.result.split(',')[1]);};rr.readAsDataURL(b);},'image/jpeg',q);};img.src=r.result;};r.readAsDataURL(file);});}
+  async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();}
+
+  imgsInput.addEventListener('change',()=>{thumbs.innerHTML='';stagedFiles=Array.from(imgsInput.files||[]);stagedFiles.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);thumbs.appendChild(img);});});
+  clearImgsBtn.addEventListener('click',()=>{imgsInput.value='';stagedFiles=[];thumbs.innerHTML='';});
+
+  // NUEVO: función de conversión a HTML según modo
+  function convertBodyToHTML(raw, mode){
+    if(mode==='html'){
+      return raw; // ya viene con <p> etc. tal cual
+    } else if(mode==='md'){
+      // si tienes marked.js cargado, úsalo aquí
+      return marked.parse(raw);
+    } else {
+      // texto plano -> envolver en párrafos
+      const trimmed = (raw||'').trim();
+      if(!trimmed) return '';
+      const paragraphs = trimmed.split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`);
+      return paragraphs.join('');
+    }
+  }
+
+  addBtn.addEventListener('click',()=>{
+    const t=document.getElementById('title').value.trim();
+    const st=document.getElementById('subtitle').value.trim();
+    const d=document.getElementById('date').value.trim();
+    const m=document.querySelector('input[name="mode"]:checked').value;
+    let raw='';
+    if(m==='html'){
+      raw=document.getElementById('bodyHtml').innerHTML.trim();
+    } else {
+      raw=document.getElementById('bodyText').value.trim();
+    }
+    if(!t||!raw){alert('Completa título y texto');return;}
+    const bodyHTML=convertBodyToHTML(raw,m);
+
+    const id=Date.now();
+    const imgPaths=[];
+    stagedFiles.forEach(f=>{
+      const safe=sanitizeFilename(f.name).replace('.jpg','')+'-'+id+'.jpg';
+      const full='assets/recursos/'+safe;
+      imageMap[full]=f;
+      imgPaths.push(full);
+    });
+    localItems.push({id,title:t,subtitle:st,date:d,body:bodyHTML,images:imgPaths});
+    document.getElementById('title').value='';
+    document.getElementById('subtitle').value='';
+    document.getElementById('date').value='';
+    document.getElementById('bodyText').value='';
+    document.getElementById('bodyHtml').innerHTML='';
+  });
     uploadBtn.addEventListener('click', async()=>{
   const o=document.getElementById('owner').value.trim();
   const r=document.getElementById('repo').value.trim();
