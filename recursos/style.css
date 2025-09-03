@@ -292,4 +292,42 @@
   .scroll-image { width:100%; max-width:100%; max-height: 40vh; }
   .scroll-text { width:100%; max-height: 45vh; }
 }
+/* --- Acordeón: lista de items por capítulo --- */
+.chapter-accordion { margin-top:12px; }
+.chapter-list { display:flex; flex-direction:column; gap:10px; }
+.chapter-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.03);
+}
+.item-meta { max-width:82%; }
+.item-title { font-weight:700; font-family:Cinzel,serif; margin-bottom:4px; color:var(--text-strong) }
+.item-sub { font-style:italic; color:var(--muted); font-size:13px; margin-bottom:4px; }
+.item-date { color:var(--muted); font-size:12px; }
+
+/* link "Leer" */
+.read-link {
+  display:inline-block; padding:8px 10px; background:var(--btn-bg); color:var(--btn-contrast);
+  border-radius:8px; text-decoration:none; font-weight:700;
+}
+
+/* Overlay (modal): reutiliza .scroll-modal/.scroll-body/.scroll-image si ya existen,
+   añadimos clase overlay para posicionado. */
+.overlay {
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background: rgba(7,7,8,0.56); z-index:2000; padding:20px;
+}
+
+/* Aseguramos que el body del modal tenga scroll y límite de altura */
+.scroll-body { max-height: 70vh; overflow:auto; }
+
+/* Móvil: acordeón compacto */
+@media (max-width:900px){
+  .chapter-item { flex-direction:column; align-items:flex-start; gap:8px; }
+  .item-meta { max-width:100%; }
+}
 
