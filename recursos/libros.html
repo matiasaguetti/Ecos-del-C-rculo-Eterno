@@ -4,74 +4,57 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Libros y Pergaminos — Recursos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* Styles pequeños específicos aquí (si ya tienes recurso/style.css, puedes borrar) */
-    .chapter-list { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0 18px 0; }
-    .chapter-card { background: rgba(0,0,0,0.04); padding:10px 12px; border-radius:8px; cursor:pointer; border:1px solid rgba(0,0,0,0.06); }
-    .chapter-card.active { border-color:var(--accent); box-shadow: 0 6px 18px rgba(138,91,58,0.08); }
-    .ctrl-btn{ background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
-    @media (max-width:900px){ .scroll-modal{ width: calc(100% - 24px); } }
-  </style>
+  <link rel="stylesheet" href="../style.css"> <!-- si tu style.css está en la raíz -->
+  <link rel="stylesheet" href="style.css">   <!-- y la hoja específica de recursos -->
 </head>
 <body>
-  <header class="banner">
+  <header style="padding:18px;display:flex;align-items:center;justify-content:space-between;background:transparent">
     <div>
-      <div class="camp-name">Ecos del Círculo eterno</div>
-      <div class="camp-sub">Libros y Pergaminos — Recursos</div>
+      <h1 style="margin:0;font-family:Cinzel,serif">Recursos — Libros y Pergaminos</h1>
+      <p style="margin:4px 0;color:#bfc7cb">Compendios, extractos y handouts leídos por los personajes</p>
     </div>
-    <nav aria-label="navegación principal">
-      <a class="navlink" href="/mapas.html">Mapas</a>
-      <a class="navlink" href="/lore.html">Lore</a>
-      <a class="navlink" href="/recursos/index.html">Recursos</a>
-      <a class="navlink" href="/notas.html">Notas</a>
+    <nav aria-label="navegación secundaria">
+      <a class="navlink" href="../index.html">Inicio</a>
+      <a class="navlink" href="../mapas.html">Mapas</a>
+      <a class="navlink" href="../recursos.html">Recursos</a>
+      <a class="navlink" href="../notas.html">Notas</a>
     </nav>
   </header>
 
-  <main class="wrap">
-    <h1 style="font-family:Cinzel,serif">Libros y Pergaminos</h1>
-    <p style="color:var(--muted)">Selecciona un capítulo para ver los libros y pergaminos leídos por los personajes.</p>
+  <main class="wrap" style="max-width:1100px;margin:20px auto;padding:0 18px;">
+    <section>
+      <h2 style="font-family:Cinzel,serif">Biblioteca por capítulos</h2>
+      <p style="color:var(--muted)">Selecciona un capítulo para desplegar sus libros y pergaminos. Haz clic en un título para leerlo en el visor.</p>
 
-    <div class="chapter-list" id="chapterList">
-      <div class="chapter-card" data-id="05">Capítulo 05 — El Templo del Círculo Eterno</div>
-    </div>
+      <!-- Lista de capítulos: el botón debe corresponder al archivo libros-<ID>.json en la carpeta recursos/ -->
+      <div class="chapters">
+        <button class="chapter-btn" data-id="05">Capítulo 05 — El Templo del Círculo Eterno</button>
+        <!-- Si en el futuro quieres añadir más capítulos, duplica el botón con otro data-id -->
+      </div>
 
-    <section id="chapterPreview" style="margin-top:12px;color:var(--muted)">
-      <p>Al pulsar sobre un capítulo se abrirá un pergamino modal con los libros y pergaminos (slideshow).</p>
-    </section>
-
-    <section style="margin-top:18px">
-      <a class="navlink" href="admin.html">Admin — editar Libros & Pergaminos</a>
+      <!-- Aquí se inyecta el acordeón (lista de items) -->
+      <div id="chapterAccordion" class="chapter-accordion" aria-live="polite"></div>
     </section>
   </main>
 
-  <!-- Modal pergamino -->
-  <div id="scrollOverlay" style="display:none; position:fixed; inset:0; background:rgba(2,2,2,0.65); align-items:center; justify-content:center; z-index:1200;">
-    <div class="scroll-modal" role="dialog" aria-modal="true" id="scrollModal">
-      <button id="closeScroll" style="position:absolute; right:18px; top:18px; background:#b66; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer">Cerrar</button>
-      <div class="scroll-header" id="scrollTitle">Capítulo —</div>
-      <div class="scroll-body" id="scrollBody">
-        <!-- Slideshow container -->
-        <div id="librosSlides" style="display:flex; gap:14px; overflow:hidden; transition:transform .4s ease"></div>
-        <div style="display:flex;justify-content:center;gap:8px;margin-top:10px;">
-          <button id="libPrev" class="ctrl-btn" aria-label="anterior">‹</button>
-          <button id="libNext" class="ctrl-btn" aria-label="siguiente">›</button>
-        </div>
+  <!-- Modal único reutilizable -->
+  <div id="readOverlay" class="overlay" style="display:none">
+    <div class="scroll-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 id="modalTitle" class="scroll-header" style="margin:0">Título</h3>
+        <button id="closeModal" class="ctrl-btn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="scroll-body" id="modalBody">
+        <img id="modalImage" class="scroll-image" src="" alt="" style="display:block;margin-bottom:14px"/>
+        <div id="modalText" class="scroll-text" style="background:transparent;padding:0;color:var(--paper-ink);box-shadow:none"></div>
       </div>
     </div>
   </div>
 
-  <!-- nav buttons outside modal (so they don't overlap content) -->
-  <div class="modal-nav left" style="display:none;">
-    <button id="modalPrev" class="ctrl-btn" aria-label="anterior grande">‹</button>
-  </div>
-  <div class="modal-nav right" style="display:none;">
-    <button id="modalNext" class="ctrl-btn" aria-label="siguiente grande">›</button>
-  </div>
+  <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Recursos / Libros</footer>
 
-  <script src="js/recursos.js"></script>
-  <script src="js/libros.js"></script>
+  <!-- scripts -->
+  <script src="js/recursos.js"></script>            <!-- tu helper q/qa/fetchJson (no tocar) -->
+  <script src="js/libros-accordion.js"></script>    <!-- NUEVO: comportamiento acordeón + modal -->
 </body>
 </html>
