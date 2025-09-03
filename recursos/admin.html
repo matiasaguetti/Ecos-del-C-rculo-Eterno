@@ -97,7 +97,58 @@
     imgsInput.addEventListener('change',()=>{thumbs.innerHTML='';stagedFiles=Array.from(imgsInput.files||[]);stagedFiles.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);thumbs.appendChild(img);});});
     clearImgsBtn.addEventListener('click',()=>{imgsInput.value='';stagedFiles=[];thumbs.innerHTML='';});
     addBtn.addEventListener('click',()=>{const t=document.getElementById('title').value.trim();const st=document.getElementById('subtitle').value.trim();const d=document.getElementById('date').value.trim();const m=document.querySelector('input[name="mode"]:checked').value;let b='';if(m==='html'){b=document.getElementById('bodyHtml').innerHTML.trim();}else{b=document.getElementById('bodyText').value.trim();}if(!t||!b){alert('Completa título y texto');return;}const id=Date.now();const imgPaths=[];stagedFiles.forEach(f=>{const safe=sanitizeFilename(f.name).replace('.jpg','')+'-'+id+'.jpg';const full='assets/recursos/'+safe;imageMap[full]=f;imgPaths.push(full);});localItems.push({id,title:t,subtitle:st,date:d,body:b,images:imgPaths});document.getElementById('title').value='';document.getElementById('subtitle').value='';document.getElementById('date').value='';document.getElementById('bodyText').value='';document.getElementById('bodyHtml').innerHTML='';});
-    uploadBtn.addEventListener('click',async()=>{const o=document.getElementById('owner').value.trim();const r=document.getElementById('repo').value.trim();const b=document.getElementById('branch').value.trim()||'main';const t=document.getElementById('token').value.trim();if(!o||!r||!t){alert('Faltan credenciales');return;}for(const path of Object.keys(imageMap)){const file=imageMap[path];const b64=await fileToJpegBase64(file);await putFile(o,r,path,b64,'Upload '+path,b,t);log('Subida imagen '+path);}const jsonPath='recursos/libros-05.json';const jsonStr=JSON.stringify(localItems,null,2);const b64=btoa(unescape(encodeURIComponent(jsonStr)));await putFile(o,r,jsonPath,b64,'Update JSON libros-05',b,t);alert('Todo subido OK');});
+    uploadBtn.addEventListener('click', async()=>{
+  const o=document.getElementById('owner').value.trim();
+  const r=document.getElementById('repo').value.trim();
+  const b=document.getElementById('branch').value.trim()||'main';
+  const t=document.getElementById('token').value.trim();
+  if(!o||!r||!t){alert('Faltan credenciales');return;}
+
+  // 1) subir imágenes (como ya hacías)
+  for(const path of Object.keys(imageMap)){
+    const file=imageMap[path];
+    const b64=await fileToJpegBase64(file);
+    await putFile(o,r,path,b64,'Upload '+path,b,t);
+    log('Subida imagen '+path);
+  }
+
+  // 2) determinar ruta JSON en repo
+  const jsonPath = 'recursos/libros-05.json';
+  // 3) intentar leer JSON existente desde la API de GitHub para fusionar
+  let existing = [];
+  try {
+    const apiUrl = `https://api.github.com/repos/${o}/${r}/contents/${encodeURIComponent(jsonPath)}?ref=${b}`;
+    const resp = await fetch(apiUrl, { headers: { Authorization: 'token '+t, Accept:'application/vnd.github+json' } });
+    if (resp.ok) {
+      const info = await resp.json();
+      if (info && info.content) {
+        try {
+          // content viene en base64
+          const decoded = decodeURIComponent(escape(atob(info.content)));
+          const parsed = JSON.parse(decoded);
+          if (Array.isArray(parsed)) existing = parsed;
+          log('Archivo existente leído ('+parsed.length+' items)');
+        } catch(e) {
+          console.warn('No se pudo parsear JSON existente:', e);
+        }
+      }
+    } else {
+      // 404 -> no existe, seguiremos con empty existing
+      log('No existía ' + jsonPath + ' en el repo (se creará).');
+    }
+  } catch(e){
+    console.warn('Lectura previa falló:', e);
+  }
+
+  // 4) fusionar (append) existing + localItems
+  const combined = existing.concat(localItems || []);
+  const jsonStr = JSON.stringify(combined, null, 2);
+  const b64json = btoa(unescape(encodeURIComponent(jsonStr)));
+  await putFile(o,r,jsonPath,b64json,'Update JSON libros-05 (append)',b,t);
+  alert('Todo subido OK (imágenes + JSON combinado)');
+  log('JSON subido: ' + jsonPath + ' (items totales: ' + combined.length + ')');
+});
+
     document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',()=>{const v=document.querySelector('input[name="mode"]:checked').value;document.getElementById('bodyHtmlContainer').style.display=(v==='html')?'block':'none';document.getElementById('bodyText').style.display=(v==='html')?'none':'block';}));
   </script>
 </body>
