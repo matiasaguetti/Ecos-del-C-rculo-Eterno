@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Libros y Pergaminos — Recursos</title>
   <link rel="stylesheet" href="../style.css"> <!-- si tu style.css está en la raíz -->
-  <link rel="stylesheet" href="style.css">   <!-- y la hoja específica de recursos -->
+  <link rel="stylesheet" href="style.css">   <!-- hoja específica de recursos -->
 </head>
 <body>
   <header style="padding:18px;display:flex;align-items:center;justify-content:space-between;background:transparent">
-    <div>
-      <h1 style="margin:0;font-family:Cinzel,serif">Recursos — Libros y Pergaminos</h1>
-      <p style="margin:4px 0;color:#bfc7cb">Compendios, extractos y handouts leídos por los personajes</p>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <!-- ICONO: ruta relativa desde recursos/libros.html -->
+      <img class="section-icon" src="../assets/recursos/ancient-scroll_1183815.png" alt="Icono Libros y Pergaminos" loading="lazy" width="56" height="56" />
+      <div>
+        <h1 style="margin:0;font-family:Cinzel,serif">Recursos — Libros y Pergaminos</h1>
+        <p style="margin:4px 0;color:#bfc7cb">Compendios, extractos y handouts leídos por los personajes</p>
+      </div>
     </div>
+
     <nav aria-label="navegación secundaria">
       <a class="navlink" href="../index.html">Inicio</a>
       <a class="navlink" href="../mapas.html">Mapas</a>
@@ -29,7 +34,7 @@
       <!-- Lista de capítulos: el botón debe corresponder al archivo libros-<ID>.json en la carpeta recursos/ -->
       <div class="chapters">
         <button class="chapter-btn" data-id="05">Capítulo 05 — El Templo del Círculo Eterno</button>
-        <!-- Si en el futuro quieres añadir más capítulos, duplica el botón con otro data-id -->
+        <!-- En el futuro duplica el botón con otro data-id -->
       </div>
 
       <!-- Aquí se inyecta el acordeón (lista de items) -->
@@ -45,6 +50,7 @@
         <button id="closeModal" class="ctrl-btn" aria-label="Cerrar">✕</button>
       </div>
       <div class="scroll-body" id="modalBody">
+        <!-- imagen primero (permite layout lado-por-lado con las reglas CSS que aplicamos) -->
         <img id="modalImage" class="scroll-image" src="" alt="" style="display:block;margin-bottom:14px"/>
         <div id="modalText" class="scroll-text" style="background:transparent;padding:0;color:var(--paper-ink);box-shadow:none"></div>
       </div>
@@ -54,7 +60,7 @@
   <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Recursos / Libros</footer>
 
   <!-- scripts -->
-  <script src="js/recursos.js"></script>            <!-- tu helper q/qa/fetchJson (no tocar) -->
-  <script src="js/libros-accordion.js"></script>    <!-- NUEVO: comportamiento acordeón + modal -->
+  <script src="js/recursos.js"></script>            <!-- helper q/qa/fetchJson -->
+  <script src="js/libros-accordion.js"></script>    <!-- acordeón + modal (ya creado) -->
 </body>
 </html>
