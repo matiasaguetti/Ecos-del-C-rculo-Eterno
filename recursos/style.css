@@ -330,4 +330,69 @@
   .chapter-item { flex-direction:column; align-items:flex-start; gap:8px; }
   .item-meta { max-width:100%; }
 }
+/* ---------- Modal: imagen al lado del texto (desktop) ---------- */
+/* Aplica a tu modal ya existente (.scroll-modal / .scroll-body / .scroll-image / .scroll-text) */
+
+/* Convertimos el cuerpo del modal en layout por columnas en desktop */
+.scroll-body {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  max-height: 70vh;    /* mantiene el modal dentro de la ventana */
+  overflow: hidden;    /* el scroll lo dejamos dentro de la caja de texto */
+  padding: 0;          /* el interior ya tiene padding en .scroll-modal */
+  box-sizing: border-box;
+}
+
+/* Imagen a la izquierda: ocupa ~40% del ancho, limitada en altura */
+.scroll-image {
+  flex: 0 0 40%;
+  width: 40%;
+  max-width: 360px;
+  height: auto;
+  max-height: 60vh;
+  object-fit: cover;   /* si prefieres ver todo: use 'contain' */
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  display: block;
+  margin: 0;           /* quitar márgenes verticales que empujan layout */
+}
+
+/* Texto a la derecha: ocupa el resto; scroll interno si es muy largo */
+.scroll-text {
+  flex: 1 1 60%;
+  width: 60%;
+  max-height: 60vh;
+  overflow: auto;      /* scroll solo en la zona de texto */
+  background: transparent;   /* si quieres que tenga pergamino: coloca aquí el fondo */
+  padding: 0;          /* si ya hay padding dentro del modal */
+  box-sizing: border-box;
+  color: var(--paper-ink);
+  line-height: 1.5;
+}
+
+/* Título en el modal: asegurar separación y tamaño */
+.scroll-header, .scroll-header + .scroll-body { /* si usas encabezado separado */
+  margin-bottom: 12px;
+}
+
+/* Responsive: en pantallas pequeñas volvemos a columna (imagen encima del texto) */
+@media (max-width:900px){
+  .scroll-body {
+    display: block; /* stack vertical */
+  }
+  .scroll-image {
+    width: 100%;
+    max-width: 100%;
+    max-height: 40vh;
+    margin-bottom: 12px;
+    flex: none;
+  }
+  .scroll-text {
+    width: 100%;
+    max-height: 45vh;
+    overflow: auto;
+  }
+}
 
