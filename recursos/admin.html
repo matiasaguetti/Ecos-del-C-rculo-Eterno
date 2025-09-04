@@ -82,130 +82,231 @@
     <pre id="log"></pre>
   </main>
 
-  <script>
-    const imgsInput=document.getElementById('images');
-    const thumbs=document.getElementById('thumbs');
-    const addBtn=document.getElementById('addBtn');
-    const uploadBtn=document.getElementById('uploadBtn');
-    const clearImgsBtn=document.getElementById('clearImgs');
-    const logEl=document.getElementById('log');
-    let localItems=[]; const imageMap={}; let stagedFiles=[];
-    function log(msg){logEl.textContent=(new Date()).toISOString()+" — "+msg+"\n"+logEl.textContent;}
-    function sanitizeFilename(name){const ext='.jpg'; const base=name.replace(/(\.[^.]+)$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();return(base||'img')+ext;}
-    function fileToJpegBase64(file,q=0.78,maxW=2000){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(maxW&&w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);c.toBlob(b=>{const rr=new FileReader();rr.onload=()=>{res(rr.result.split(',')[1]);};rr.readAsDataURL(b);},'image/jpeg',q);};img.src=r.result;};r.readAsDataURL(file);});}
-    async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();} const imgsInput=document.getElementById('images');
-  const thumbs=document.getElementById('thumbs');
-  const addBtn=document.getElementById('addBtn');
-  const uploadBtn=document.getElementById('uploadBtn');
-  const clearImgsBtn=document.getElementById('clearImgs');
-  const logEl=document.getElementById('log');
-  let localItems=[]; const imageMap={}; let stagedFiles=[];
-  function log(msg){logEl.textContent=(new Date()).toISOString()+" — "+msg+"\n"+logEl.textContent;}
-  function sanitizeFilename(name){const ext='.jpg'; const base=name.replace(/(\.[^.]+)$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();return(base||'img')+ext;}
-  function fileToJpegBase64(file,q=0.78,maxW=2000){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(maxW&&w>maxW){h=Math.round(h*(maxW/w));w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);c.toBlob(b=>{const rr=new FileReader();rr.onload=()=>{res(rr.result.split(',')[1]);};rr.readAsDataURL(b);},'image/jpeg',q);};img.src=r.result;};r.readAsDataURL(file);});}
-  async function putFile(owner,repo,path,content,message,branch,token){const api=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;let sha=null;const headers={Authorization:'token '+token,Accept:'application/vnd.github+json'};try{const g=await fetch(api+'?ref='+branch,{headers});if(g.ok){const info=await g.json();sha=info.sha||null;}}catch{}const body={message,content,branch};if(sha)body.sha=sha;const resp=await fetch(api,{method:'PUT',headers,body:JSON.stringify(body)});if(!resp.ok)throw new Error('PUT failed '+resp.status);return await resp.json();}
+<script>
+  const imgsInput = document.getElementById('images');
+  const thumbs = document.getElementById('thumbs');
+  const addBtn = document.getElementById('addBtn');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const clearImgsBtn = document.getElementById('clearImgs');
+  const logEl = document.getElementById('log');
 
-  imgsInput.addEventListener('change',()=>{thumbs.innerHTML='';stagedFiles=Array.from(imgsInput.files||[]);stagedFiles.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);thumbs.appendChild(img);});});
-  clearImgsBtn.addEventListener('click',()=>{imgsInput.value='';stagedFiles=[];thumbs.innerHTML='';});
+  let localItems = [];
+  const imageMap = {};
+  let stagedFiles = [];
 
-  // NUEVO: función de conversión a HTML según modo
+  function log(msg){
+    logEl.textContent = (new Date()).toISOString() + " — " + msg + "\n" + logEl.textContent;
+  }
+
+  function sanitizeFilename(name){
+    const ext = '.jpg';
+    const base = name.replace(/(\.[^.]+)$/,'')
+                     .normalize('NFD')
+                     .replace(/[\u0300-\u036f]/g,'')
+                     .replace(/[^a-zA-Z0-9\-_ ]/g,'')
+                     .trim()
+                     .replace(/\s+/g,'-')
+                     .toLowerCase();
+    return (base||'img') + ext;
+  }
+
+  function fileToJpegBase64(file, q=0.78, maxW=2000){
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (maxW && w > maxW) { h = Math.round(h * (maxW / w)); w = maxW; }
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#000';
+          ctx.fillRect(0,0,w,h);
+          ctx.drawImage(img,0,0,w,h);
+          c.toBlob(b => {
+            const rr = new FileReader();
+            rr.onload = () => { res(rr.result.split(',')[1]); };
+            rr.readAsDataURL(b);
+          }, 'image/jpeg', q);
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function putFile(owner, repo, path, contentB64, message, branch, token){
+    const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+    let sha = null;
+    const headers = { Authorization: 'token ' + token, Accept: 'application/vnd.github+json' };
+    try {
+      const g = await fetch(api + '?ref=' + branch, { headers });
+      if (g.ok) {
+        const info = await g.json();
+        sha = info.sha || null;
+      }
+    } catch(e) { /* ignore */ }
+    const body = { message, content: contentB64, branch };
+    if (sha) body.sha = sha;
+    const resp = await fetch(api, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!resp.ok) throw new Error('PUT failed ' + resp.status);
+    return await resp.json();
+  }
+
+  imgsInput.addEventListener('change', () => {
+    thumbs.innerHTML = '';
+    stagedFiles = Array.from(imgsInput.files || []);
+    stagedFiles.forEach(f => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(f);
+      thumbs.appendChild(img);
+    });
+  });
+
+  clearImgsBtn.addEventListener('click', () => {
+    imgsInput.value = '';
+    stagedFiles = [];
+    thumbs.innerHTML = '';
+  });
+
+  // Conversión segura del texto según modo (text / html / md)
   function convertBodyToHTML(raw, mode){
-    if(mode==='html'){
-      return raw; // ya viene con <p> etc. tal cual
-    } else if(mode==='md'){
-      // si tienes marked.js cargado, úsalo aquí
-      return marked.parse(raw);
+    if(mode === 'html'){
+      // asumimos que el usuario pega HTML válido (puedes sanitizar con DOMPurify si lo incluyes)
+      return raw;
+    } else if(mode === 'md'){
+      // Si marked no existe, caemos a texto plano para evitar errores
+      if (typeof marked !== 'undefined') {
+        return marked.parse(raw || '');
+      } else {
+        // fallback: tratar como texto plano
+        console.warn('marked no está disponible — usando texto plano en lugar de Markdown');
+        const trimmed = (raw||'').trim();
+        if(!trimmed) return '';
+        return trimmed.split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+      }
     } else {
-      // texto plano -> envolver en párrafos
+      // texto plano -> convertir a párrafos y <br>
       const trimmed = (raw||'').trim();
       if(!trimmed) return '';
-      const paragraphs = trimmed.split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`);
+      const paragraphs = trimmed.split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`);
       return paragraphs.join('');
     }
   }
 
-  addBtn.addEventListener('click',()=>{
-    const t=document.getElementById('title').value.trim();
-    const st=document.getElementById('subtitle').value.trim();
-    const d=document.getElementById('date').value.trim();
-    const m=document.querySelector('input[name="mode"]:checked').value;
-    let raw='';
-    if(m==='html'){
-      raw=document.getElementById('bodyHtml').innerHTML.trim();
-    } else {
-      raw=document.getElementById('bodyText').value.trim();
-    }
-    if(!t||!raw){alert('Completa título y texto');return;}
-    const bodyHTML=convertBodyToHTML(raw,m);
-
-    const id=Date.now();
-    const imgPaths=[];
-    stagedFiles.forEach(f=>{
-      const safe=sanitizeFilename(f.name).replace('.jpg','')+'-'+id+'.jpg';
-      const full='assets/recursos/'+safe;
-      imageMap[full]=f;
-      imgPaths.push(full);
-    });
-    localItems.push({id,title:t,subtitle:st,date:d,body:bodyHTML,images:imgPaths});
-    document.getElementById('title').value='';
-    document.getElementById('subtitle').value='';
-    document.getElementById('date').value='';
-    document.getElementById('bodyText').value='';
-    document.getElementById('bodyHtml').innerHTML='';
-  });
-    uploadBtn.addEventListener('click', async()=>{
-  const o=document.getElementById('owner').value.trim();
-  const r=document.getElementById('repo').value.trim();
-  const b=document.getElementById('branch').value.trim()||'main';
-  const t=document.getElementById('token').value.trim();
-  if(!o||!r||!t){alert('Faltan credenciales');return;}
-
-  // 1) subir imágenes (como ya hacías)
-  for(const path of Object.keys(imageMap)){
-    const file=imageMap[path];
-    const b64=await fileToJpegBase64(file);
-    await putFile(o,r,path,b64,'Upload '+path,b,t);
-    log('Subida imagen '+path);
-  }
-
-  // 2) determinar ruta JSON en repo
-  const jsonPath = 'recursos/libros-05.json';
-  // 3) intentar leer JSON existente desde la API de GitHub para fusionar
-  let existing = [];
-  try {
-    const apiUrl = `https://api.github.com/repos/${o}/${r}/contents/${encodeURIComponent(jsonPath)}?ref=${b}`;
-    const resp = await fetch(apiUrl, { headers: { Authorization: 'token '+t, Accept:'application/vnd.github+json' } });
-    if (resp.ok) {
-      const info = await resp.json();
-      if (info && info.content) {
-        try {
-          // content viene en base64
-          const decoded = decodeURIComponent(escape(atob(info.content)));
-          const parsed = JSON.parse(decoded);
-          if (Array.isArray(parsed)) existing = parsed;
-          log('Archivo existente leído ('+parsed.length+' items)');
-        } catch(e) {
-          console.warn('No se pudo parsear JSON existente:', e);
-        }
+  addBtn.addEventListener('click', () => {
+    try {
+      const t = document.getElementById('title').value.trim();
+      const st = document.getElementById('subtitle').value.trim();
+      const d = document.getElementById('date').value.trim();
+      const m = document.querySelector('input[name="mode"]:checked').value;
+      let raw = '';
+      if(m === 'html'){
+        raw = document.getElementById('bodyHtml').innerHTML.trim();
+      } else {
+        raw = document.getElementById('bodyText').value.trim();
       }
-    } else {
-      // 404 -> no existe, seguiremos con empty existing
-      log('No existía ' + jsonPath + ' en el repo (se creará).');
+      if(!t || !raw){ alert('Completa título y texto'); return; }
+
+      const bodyHTML = convertBodyToHTML(raw, m);
+
+      const id = Date.now();
+      const imgPaths = [];
+      stagedFiles.forEach(f => {
+        const safe = sanitizeFilename(f.name).replace('.jpg','') + '-' + id + '.jpg';
+        const full = 'assets/recursos/' + safe;
+        imageMap[full] = f;
+        imgPaths.push(full);
+      });
+
+      localItems.push({ id, title: t, subtitle: st, date: d, body: bodyHTML, images: imgPaths });
+      log('Entrada añadida a cola (id=' + id + ', imgs=' + imgPaths.length + ')');
+
+      // limpiar campos
+      document.getElementById('title').value = '';
+      document.getElementById('subtitle').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('bodyText').value = '';
+      document.getElementById('bodyHtml').innerHTML = '';
+      imgsInput.value = '';
+      stagedFiles = [];
+      thumbs.innerHTML = '';
+
+    } catch(err){
+      console.error('addBtn error', err);
+      alert('Error al añadir la entrada: ' + err.message);
     }
-  } catch(e){
-    console.warn('Lectura previa falló:', e);
-  }
+  });
 
-  // 4) fusionar (append) existing + localItems
-  const combined = existing.concat(localItems || []);
-  const jsonStr = JSON.stringify(combined, null, 2);
-  const b64json = btoa(unescape(encodeURIComponent(jsonStr)));
-  await putFile(o,r,jsonPath,b64json,'Update JSON libros-05 (append)',b,t);
-  alert('Todo subido OK (imágenes + JSON combinado)');
-  log('JSON subido: ' + jsonPath + ' (items totales: ' + combined.length + ')');
-});
+  uploadBtn.addEventListener('click', async () => {
+    try {
+      const o = document.getElementById('owner').value.trim();
+      const r = document.getElementById('repo').value.trim();
+      const b = document.getElementById('branch').value.trim() || 'main';
+      const tkn = document.getElementById('token').value.trim();
+      if(!o || !r || !tkn){ alert('Faltan credenciales'); return; }
 
-    document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',()=>{const v=document.querySelector('input[name="mode"]:checked').value;document.getElementById('bodyHtmlContainer').style.display=(v==='html')?'block':'none';document.getElementById('bodyText').style.display=(v==='html')?'none':'block';}));
-  </script>
+      // subir imágenes
+      for(const path of Object.keys(imageMap)){
+        const file = imageMap[path];
+        const b64 = await fileToJpegBase64(file);
+        await putFile(o, r, path, b64, 'Upload ' + path, b, tkn);
+        log('Subida imagen ' + path);
+      }
+
+      // ruta JSON en repo
+      const jsonPath = 'recursos/libros-05.json';
+
+      // leer JSON existente
+      let existing = [];
+      try {
+        const apiUrl = `https://api.github.com/repos/${o}/${r}/contents/${encodeURIComponent(jsonPath)}?ref=${b}`;
+        const resp = await fetch(apiUrl, { headers: { Authorization: 'token ' + tkn, Accept: 'application/vnd.github+json' } });
+        if (resp.ok) {
+          const info = await resp.json();
+          if (info && info.content) {
+            try {
+              const decoded = decodeURIComponent(escape(atob(info.content)));
+              const parsed = JSON.parse(decoded);
+              if (Array.isArray(parsed)) existing = parsed;
+              log('Archivo existente leído (' + parsed.length + ' items)');
+            } catch(e) {
+              console.warn('No se pudo parsear JSON existente:', e);
+            }
+          }
+        } else {
+          log('No existía ' + jsonPath + ' en el repo (se creará).');
+        }
+      } catch(e){
+        console.warn('Lectura previa falló:', e);
+      }
+
+      // fusionar y subir JSON
+      const combined = existing.concat(localItems || []);
+      const jsonStr = JSON.stringify(combined, null, 2);
+      const b64json = btoa(unescape(encodeURIComponent(jsonStr)));
+      await putFile(o, r, jsonPath, b64json, 'Update JSON libros-05 (append)', b, tkn);
+
+      alert('Todo subido OK (imágenes + JSON combinado)');
+      log('JSON subido: ' + jsonPath + ' (items totales: ' + combined.length + ')');
+
+      // limpiar cola local
+      localItems = [];
+      Object.keys(imageMap).forEach(k => delete imageMap[k]);
+
+    } catch(err){
+      console.error('upload error', err);
+      alert('Error al subir: ' + err.message);
+    }
+  });
+
+  // mostrar / ocultar editor HTML según modo
+  document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', () => {
+    const v = document.querySelector('input[name="mode"]:checked').value;
+    document.getElementById('bodyHtmlContainer').style.display = (v === 'html') ? 'block' : 'none';
+    document.getElementById('bodyText').style.display = (v === 'html') ? 'none' : 'block';
+  }));
+</script>
 </body>
 </html>
