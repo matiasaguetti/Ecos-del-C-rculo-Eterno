@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Los Aventureros de Valverde — Recursos</title>
+  <meta name="description" content="Fichas, retratos y notas públicas de los jugadores de Valverde." />
+  <!-- tus hojas de estilo (misma estructura que en libros.html / index). -->
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header style="padding:18px;display:flex;align-items:center;justify-content:space-between;background:transparent">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <img class="section-icon" src="../assets/recursos/aventureros-de-valverde.png" alt="Icono Aventureros" loading="lazy" width="56" height="56" />
+      <div>
+        <h1 style="margin:0;font-family:Cinzel,serif">Los Aventureros de Valverde</h1>
+        <p style="margin:4px 0;color:#bfc7cb">Retratos, biografías y el espacio para que los jugadores suban sus notas.</p>
+      </div>
+    </div>
+
+    <nav aria-label="navegación secundaria">
+      <a class="navlink" href="../index.html">Inicio</a>
+      <a class="navlink" href="../recursos/index.html">Recursos</a>
+      <a class="navlink" href="../mapas.html">Mapas</a>
+      <a class="navlink" href="../notas.html">Notas</a>
+      <!-- enlace a la admin que vas a crear -->
+      <a class="navlink" href="../admin/">Admin — Recursos</a>
+    </nav>
+  </header>
+
+  <main class="wrap" style="max-width:1100px;margin:20px auto;padding:0 18px;">
+    <p style="color:var(--muted)">
+      Aquí se muestran los retratos y pequeñas biografías de los jugadores. Haz clic en <strong>Seguir leyendo</strong> para abrir la ficha completa (modal). Si tienes permisos, puedes subir materiales desde el panel de administración.
+    </p>
+
+    <section class="resource-grid" aria-live="polite">
+      <!-- Cada tarjeta representa un aventurero. Cambia src a tus imágenes en assets/aventureros/ -->
+      <article class="resource-card">
+        <div class="icon-wrap">
+          <img class="resource-icon" src="../assets/aventureros/adler.jpg" alt="Adler — retrato completo" loading="lazy" />
+        </div>
+        <div>
+          <h3>Adler</h3>
+          <p style="margin:6px 0 10px 0;color:var(--muted)">Veterano de la comarca, líder natural con una mirada que no falla...</p>
+          <p style="margin:0">
+            <a class="read-link" href="#" data-slug="adler">Seguir leyendo</a>
+            <a class="navlink" href="adler.html">Ver ficha →</a>
+          </p>
+        </div>
+      </article>
+
+      <article class="resource-card">
+        <div class="icon-wrap">
+          <img class="resource-icon" src="../assets/aventureros/delerion.jpg" alt="Delerion — retrato completo" loading="lazy" />
+        </div>
+        <div>
+          <h3>Delerion</h3>
+          <p style="margin:6px 0 10px 0;color:var(--muted)">Mago errante, coleccionista de curiosidades y malas decisiones audaces.</p>
+          <p style="margin:0">
+            <a class="read-link" href="#" data-slug="delerion">Seguir leyendo</a>
+            <a class="navlink" href="delerion.html">Ver ficha →</a>
+          </p>
+        </div>
+      </article>
+
+      <article class="resource-card">
+        <div class="icon-wrap">
+          <img class="resource-icon" src="../assets/aventureros/stix-ernesto.jpg" alt="Stix Ernesto — retrato completo" loading="lazy" />
+        </div>
+        <div>
+          <h3>Stix Ernesto</h3>
+          <p style="margin:6px 0 10px 0;color:var(--muted)">Cazador y bromista; sus trucos salvan más que dañan... a veces.</p>
+          <p style="margin:0">
+            <a class="read-link" href="#" data-slug="stix-ernesto">Seguir leyendo</a>
+            <a class="navlink" href="stix-ernesto.html">Ver ficha →</a>
+          </p>
+        </div>
+      </article>
+
+      <article class="resource-card">
+        <div class="icon-wrap">
+          <img class="resource-icon" src="../assets/aventureros/varka.jpg" alt="Varka — retrato completo" loading="lazy" />
+        </div>
+        <div>
+          <h3>Varka</h3>
+          <p style="margin:6px 0 10px 0;color:var(--muted)">Guerrera taciturna con secretos que pesan más que su espada.</p>
+          <p style="margin:0">
+            <a class="read-link" href="#" data-slug="varka">Seguir leyendo</a>
+            <a class="navlink" href="varka.html">Ver ficha →</a>
+          </p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Modal reutilizable similar al de libros.html -->
+  <div id="readOverlay" class="overlay" style="display:none" aria-hidden="true">
+    <div class="scroll-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 id="modalTitle" class="scroll-header" style="margin:0">Título</h3>
+        <button id="closeModal" class="ctrl-btn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="scroll-body" id="modalBody">
+        <img id="modalImage" class="scroll-image" src="" alt="" style="display:block;margin-bottom:14px"/>
+        <div id="modalText" class="scroll-text" style="background:transparent;padding:0;color:var(--paper-ink);box-shadow:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Los Aventureros</footer>
+
+  <!-- Script: aquí se cargan las biografías y se controla el modal -->
+  <script>
+    // Datos iniciales: corta biografía + biografía larga (puedes editar aquí o cargar desde /content/).
+    const CHARACTERS = {
+      "adler": {
+        name: "Adler",
+        image: "../assets/aventureros/adler.jpg",
+        title: "Adler — El Caminante del Río",
+        short: "Veterano de la comarca, líder natural...",
+        longHTML: `<p><strong>Adler</strong> es conocido por su temple y por... (biografía larga aquí).</p>
+                   <p>Historia: Nació en una granja ...</p>`
+      },
+      "delerion": {
+        name: "Delerion",
+        image: "../assets/aventureros/delerion.jpg",
+        title: "Delerion — El Errante",
+        short: "Mago errante, coleccionista de curiosidades...",
+        longHTML: `<p><strong>Delerion</strong> estudió en la Torre de Lunas ...</p>
+                   <p>Notas: Lleva siempre un diario con símbolos extraños.</p>`
+      },
+      "stix-ernesto": {
+        name: "Stix Ernesto",
+        image: "../assets/aventureros/stix-ernesto.jpg",
+        title: "Stix Ernesto — Trampero",
+        short: "Cazador y bromista; sus trucos salvan más que dañan...",
+        longHTML: `<p><strong>Stix Ernesto</strong> aprendió a moverse en la maleza desde niño...</p>`
+      },
+      "varka": {
+        name: "Varka",
+        image: "../assets/aventureros/varka.jpg",
+        title: "Varka — La Lanza Silente",
+        short: "Guerrera taciturna con secretos que pesan más que su espada.",
+        longHTML: `<p><strong>Varka</strong> guarda silencio sobre su pasado en la capital ...</p>`
+      }
+    };
+
+    // Modal logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('readOverlay');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalImage = document.getElementById('modalImage');
+      const modalText = document.getElementById('modalText');
+      const closeModalBtn = document.getElementById('closeModal');
+
+      function openModal(slug){
+        const ch = CHARACTERS[slug];
+        if(!ch) return;
+        modalTitle.textContent = ch.title;
+        modalImage.src = ch.image;
+        modalImage.alt = ch.name + " — retrato";
+        modalText.innerHTML = ch.longHTML;
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden','false');
+        // foco accesible
+        closeModalBtn.focus();
+      }
+
+      function closeModal(){
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+
+      // enlazar botones
+      document.querySelectorAll('.read-link').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          e.preventDefault();
+          const slug = btn.dataset.slug;
+          openModal(slug);
+        });
+      });
+
+      closeModalBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => {
+        if(e.target === overlay) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeModal();
+      });
+    });
+  </script>
+</body>
+</html>
