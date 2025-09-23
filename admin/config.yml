@@ -1,0 +1,21 @@
+backend:
+  name: git-gateway
+  branch: main   # reemplaza por tu rama principal si es otra
+
+local_backend: false
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "aventureros"
+    label: "Aventureros"
+    folder: "content/aventureros"
+    create: true
+    slug: "{{slug}}/index"
+    fields:
+      - {label: "Nombre", name: "title", widget: "string"}
+      - {label: "Slug", name: "slug", widget: "string"}
+      - {label: "Imagen", name: "image", widget: "image"}
+      - {label: "Resumen", name: "summary", widget: "text"}
+      - {label: "Biografía (Markdown)", name: "body", widget: "markdown"}
