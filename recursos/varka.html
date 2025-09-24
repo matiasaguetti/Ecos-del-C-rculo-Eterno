@@ -1,1 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Varka — Los Aventureros de Valverde</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="aventureros.html">← Volver a Aventureros</a>
+    <a href="../admin/" style="float:right">Admin</a>
+  </header>
 
+  <main class="wrap" style="max-width:900px;margin:20px auto;padding:0 18px;">
+    <article class="profile" style="display:flex;gap:18px;align-items:flex-start;">
+      <img src="../assets/aventureros/varka.jpg" alt="Varka — retrato completo" style="max-width:300px;width:40%;border-radius:8px"/>
+      <div style="flex:1">
+        <h1>Varka</h1>
+        <div id="bio">Cargando biografía...</div>
+        <hr>
+        <h3>Contribuciones y notas</h3>
+        <div id="posts">
+          <p style="color:var(--muted)">Aquí aparecerán las notas subidas desde Admin.</p>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Varka</footer>
+
+  <script>
+    (async function(){
+      const slug = 'varka';
+      try {
+        const res = await fetch(`/content/aventureros/${slug}/index.md`);
+        if(res.ok){
+          const md = await res.text();
+          document.getElementById('bio').innerHTML = marked.parse(md);
+        } else {
+          document.getElementById('bio').innerHTML = `<p><strong>Varka</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
+        }
+      } catch(e){
+        console.warn(e);
+        document.getElementById('bio').innerHTML = `<p><strong>Varka</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
+      }
+    })();
+  </script>
+</body>
+</html>
