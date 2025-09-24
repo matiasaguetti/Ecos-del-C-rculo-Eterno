@@ -1,11 +1,19 @@
+# admin/config.yml
 backend:
   name: github
-  branch: main   # reemplaza por tu rama principal si es otra
+  repo: matiasaguetti/Ecos-del-C-rculo-Eterno   # <--- tu repo (ya puesto)
+  branch: main                                  # <--- cambia si tu rama principal no es 'main'
+  auth_scope: repo
 
 local_backend: false
 
-media_folder: "assets/uploads"
-public_folder: "/assets/uploads"
+media_folder: "assets/uploads"   # ruta en el repo donde se guardan las imágenes subidas
+public_folder: "/assets/uploads" # ruta pública usada por el sitio
+
+publish_mode: "editorial_workflow" # opcional: crea PRs en vez de commits directos (recomendado)
+
+# Si creas la GitHub OAuth App, pon aquí el client_id (sustituir el value)
+# client_id: "YOUR_GITHUB_CLIENT_ID"
 
 collections:
   - name: "aventureros"
@@ -13,9 +21,10 @@ collections:
     folder: "content/aventureros"
     create: true
     slug: "{{slug}}/index"
+    sortable_fields: ["title", "date"]
     fields:
-      - {label: "Nombre", name: "title", widget: "string"}
-      - {label: "Slug", name: "slug", widget: "string"}
-      - {label: "Imagen", name: "image", widget: "image"}
-      - {label: "Resumen", name: "summary", widget: "text"}
-      - {label: "Biografía (Markdown)", name: "body", widget: "markdown"}
+      - { label: "Nombre", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Imagen", name: "image", widget: "image" }
+      - { label: "Resumen", name: "summary", widget: "text" }
+      - { label: "Biografía (Markdown)", name: "body", widget: "markdown" }
