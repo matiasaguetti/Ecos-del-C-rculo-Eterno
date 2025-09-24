@@ -6,33 +6,24 @@
   <title>Adler — Los Aventureros de Valverde</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="style.css">
-  <!-- marked.js para renderizar markdown (opcional) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <header style="padding:18px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:14px;">
-      <img class="section-icon" src="../assets/recursos/personajes.png" alt="Personajes" width="56" height="56" />
-      <div>
-        <h1 style="margin:0;font-family:Cinzel,serif">Adler</h1>
-        <p style="margin:4px 0;color:#bfc7cb">Ficha y contribuciones</p>
-      </div>
-    </div>
-    <nav aria-label="navegación secundaria">
-      <a class="navlink" href="aventureros.html">← Volver a Aventureros</a>
-      <a class="navlink" href="../admin/">Admin</a>
-    </nav>
+  <header class="site-header">
+    <a href="aventureros.html">← Volver a Aventureros</a>
+    <a href="../admin/" style="float:right">Admin</a>
   </header>
 
   <main class="wrap" style="max-width:900px;margin:20px auto;padding:0 18px;">
-    <article style="display:flex;gap:18px;align-items:flex-start;">
+    <article class="profile" style="display:flex;gap:18px;align-items:flex-start;">
       <img src="../assets/aventureros/adler.jpg" alt="Adler — retrato completo" style="max-width:300px;width:40%;border-radius:8px"/>
       <div style="flex:1">
+        <h1>Adler</h1>
         <div id="bio">Cargando biografía...</div>
-        <hr style="margin:18px 0">
+        <hr>
         <h3>Contribuciones y notas</h3>
         <div id="posts">
-          <p style="color:var(--muted)">Aquí aparecerán las notas y contenidos que suban desde Admin.</p>
+          <p style="color:var(--muted)">Aquí aparecerán las notas subidas desde Admin.</p>
         </div>
       </div>
     </article>
@@ -41,21 +32,18 @@
   <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Adler</footer>
 
   <script>
-    // Intentamos cargar un markdown generado por el admin: /content/aventureros/adler/index.md
     (async function(){
       const slug = 'adler';
       try {
         const res = await fetch(`/content/aventureros/${slug}/index.md`);
         if(res.ok){
           const md = await res.text();
-          // marked.js (importado arriba) convierte markdown a html en navegador
           document.getElementById('bio').innerHTML = marked.parse(md);
         } else {
-          // fallback: biografía embebida
           document.getElementById('bio').innerHTML = `<p><strong>Adler</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
         }
       } catch(e){
-        console.warn('No se pudo cargar la biografía:', e);
+        console.warn(e);
         document.getElementById('bio').innerHTML = `<p><strong>Adler</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
       }
     })();
