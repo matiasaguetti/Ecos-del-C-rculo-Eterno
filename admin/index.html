@@ -1,12 +1,25 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Admin — Ecos del Círculo Eterno</title>
-  </head>
-  <body>
-    <!-- Netlify CMS -->
-    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Ecos del Círculo Eterno</title>
+  <meta name="description" content="Panel de administración para contenidos - Ecos del Círculo Eterno" />
+  <style>
+    /* Estilos mínimos para que la página de login no sea fea antes de cargar Netlify CMS */
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    .center{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+    a{color:var(--link,#2f7be6)}
+  </style>
+</head>
+<body>
+  <div class="center">
+    <h1>Panel de administración</h1>
+    <p>Si ves esto es porque Netlify CMS todavía no ha cargado. En breve aparecerá la interfaz de login.</p>
+    <small>Si no aparece el CMS revisa la configuración de <code>admin/config.yml</code> y del OAuth en GitHub.</small>
+  </div>
+
+  <!-- Netlify CMS desde CDN -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+</body>
 </html>
