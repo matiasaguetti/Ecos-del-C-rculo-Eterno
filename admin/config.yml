@@ -1,5 +1,5 @@
 backend:
-  name: git-gateway
+  name: github
   branch: main   # reemplaza por tu rama principal si es otra
 
 local_backend: false
