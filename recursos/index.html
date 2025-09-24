@@ -3,88 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Recursos — Ecos del Círculo eterno</title>
-  <meta name="description" content="Recursos de la campaña: personajes, handouts, libros y curiosidades.">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Adler — Los Aventureros de Valverde</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <header class="banner">
-    <div>
-      <div class="camp-name">Ecos del Círculo eterno</div>
-      <div class="camp-sub">Recursos de la campaña</div>
-    </div>
-    <nav aria-label="navegación principal">
-      <a class="navlink" href="/mapas.html">Mapas</a>
-      <a class="navlink" href="/lore.html">Lore</a>
-      <a class="navlink" href="../recursos/index.html">Recursos</a>
-      <a class="navlink" href="/notas.html">Notas</a>
-    </nav>
+  <header class="site-header">
+    <a href="aventureros.html">← Volver a Aventureros</a>
+    <a href="../admin/" style="float:right">Admin</a>
   </header>
 
-  <main class="wrap">
-    <!-- Cabecera de la página con icono a la izquierda -->
-    <div class="page-header" style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-      <img class="section-icon" src="../assets/recursos/resources.png" alt="Icono Libros y Pergaminos" loading="lazy" width="56" height="56" />
-      <h1 style="font-family:Cinzel,serif;margin:0">Recursos</h1>
-    </div>
-
-    <p style="color:var(--muted);margin-bottom:18px">
-      En esta sección vas a encontrar a todos los personajes que los aventureros van conociendo durante la campaña, objetos curiosos y extraños que vayan encontrando en calabozos y hogares ajenos, y un compendio en expansión de todos los libros y pergaminos que vayan leyendo durante sus aventuras. Además, vas a encontrar una biografía detallada de cada uno de los protagonistas de esta historia.
-    </p>
-
-    <section class="resource-grid">
-      <article class="resource-card">
-          <div class="icon-wrap">
-        <img class="resource-icon" src="../assets/recursos/personajes.png" alt="Personajes" loading="lazy" />
-          </div>
-        <div>
-          <h3>Personajes de la Campaña</h3>
-          <p>Fichas, retratos y notas de PNJs y personajes importantes.</p>
-          <p><a class="navlink" href="personajes.html">Ir a Personajes</a></p>
+  <main class="wrap" style="max-width:900px;margin:20px auto;padding:0 18px;">
+    <article class="profile" style="display:flex;gap:18px;align-items:flex-start;">
+      <img src="../assets/aventureros/adler.jpg" alt="Adler — retrato completo" style="max-width:300px;width:40%;border-radius:8px"/>
+      <div style="flex:1">
+        <h1>Adler</h1>
+        <div id="bio">Cargando biografía...</div>
+        <hr>
+        <h3>Contribuciones y notas</h3>
+        <div id="posts">
+          <p style="color:var(--muted)">Aquí aparecerán las notas subidas desde Admin.</p>
         </div>
-      </article>
-
-      <article class="resource-card">
-         <div class="icon-wrap">
-        <img class="resource-icon" src="../assets/recursos/aventureros-de-valverde.png" alt="Aventureros de Valverde" loading="lazy" />
-         </div>
-        <div>
-          <h3>Los Aventureros de Valverde</h3>
-          <p>La banda que se cruzó con Adler: fichas y recursos de la partida.</p>
-          <p><a class="navlink" href="aventureros.html">Ir a Los Aventureros</a></p>
-        </div>
-      </article>
-
-      <article class="resource-card">
-  <div class="icon-wrap">
-    <img class="resource-icon" src="../assets/recursos/ancient-scroll_1183815.png" alt="Libros y Pergaminos" loading="lazy" />
-  </div>
-  <div>
-    <h3>Libros y Pergaminos</h3>
-    <p>Compendio de libros, notas y handouts leídos por los personajes.</p>
-    <p><a class="navlink" href="libros.html">Ir a Libros y Pergaminos →</a></p>
-  </div>
-</article>
-
-      <article class="resource-card">
-          <div class="icon-wrap">
-        <img class="resource-icon" src="../assets/recursos/curiosidades.png" alt="Curiosidades" loading="lazy" />
-          </div>
-        <div>
-          <h3>Curiosidades, Arcana y Más</h3>
-          <p>Pequeñas notas, extraños artefactos y curiosidades encontradas en la campaña.</p>
-          <p><a class="navlink" href="curiosidades.html">Ir a Curiosidades</a></p>
-        </div>
-      </article>
-    </section>
-
-    <section style="margin-top:24px;color:var(--muted)">
-      <p>Administración: si tienes permisos, puedes añadir materiales desde <a href="admin.html" class="navlink">Admin — Recursos</a>.</p>
-    </section>
+      </div>
+    </article>
   </main>
 
-  <footer style="margin:40px 0 80px;text-align:center;color:var(--muted)">Ecos del Círculo eterno — Recursos</footer>
+  <footer style="text-align:center;margin:40px 0;color:var(--muted)">Ecos del Círculo eterno — Adler</footer>
+
+  <script>
+    (async function(){
+      const slug = 'adler';
+      try {
+        const res = await fetch(`/content/aventureros/${slug}/index.md`);
+        if(res.ok){
+          const md = await res.text();
+          document.getElementById('bio').innerHTML = marked.parse(md);
+        } else {
+          document.getElementById('bio').innerHTML = `<p><strong>Adler</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
+        }
+      } catch(e){
+        console.warn(e);
+        document.getElementById('bio').innerHTML = `<p><strong>Adler</strong>: biografía inicial (editar con Admin para sustituir).</p>`;
+      }
+    })();
+  </script>
 </body>
 </html>
