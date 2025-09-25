@@ -1,5 +1,6 @@
 # admin/config.yml
 backend:
+  client_id: "Ov23lia6OkV75jppl3Mo"
   name: github
   repo: matiasaguetti/Ecos-del-C-rculo-Eterno   # <--- tu repo (ya puesto)
   branch: main                                  # <--- cambia si tu rama principal no es 'main'
