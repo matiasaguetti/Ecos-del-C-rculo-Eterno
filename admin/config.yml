@@ -1,21 +1,18 @@
 # admin/config.yml
 backend:
   name: github
-  repo: matiasaguetti/Ecos-del-C-rculo-Eterno   # <--- tu repo (ya puesto)
+  repo: matiasaguetti/Ecos-del-C-rculo-Eterno   # <--- tu repo
   branch: main                                  # <--- cambia si tu rama principal no es 'main'
   auth_scope: repo
+  client_id: "Ov23lia6OkV75jppl3Mo"             # <--- tu Client ID insertado
 
 local_backend: false
 
 media_folder: "assets/uploads"   # ruta en el repo donde se guardan las imágenes subidas
 public_folder: "/assets/uploads" # ruta pública usada por el sitio
 
-publish_mode: "editorial_workflow" # opcional: crea PRs en vez de commits directos (recomendado)
+publish_mode: "editorial_workflow" # crea PRs en vez de commits directos (recomendado)
 
-# Si creas la GitHub OAuth App, pon aquí el client_id (sustituir el value)
-# client_id: "YOUR_GITHUB_CLIENT_ID"
-client_id: "Ov23lia6OkV75jppl3Mo"
-  
 collections:
   - name: "aventureros"
     label: "Aventureros"
