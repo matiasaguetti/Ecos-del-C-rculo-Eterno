@@ -6,13 +6,12 @@
   <title>Los Aventureros de Valverde — Recursos</title>
   <meta name="description" content="Fichas, retratos y notas públicas de los jugadores de Valverde." />
   <!-- tus hojas de estilo (misma estructura que en libros.html / index). -->
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../../../assets/style.css">
 </head>
 <body>
   <header style="padding:18px;display:flex;align-items:center;justify-content:space-between;background:transparent">
     <div style="display:flex;align-items:center;gap:14px;">
-      <img class="section-icon" src="../assets/recursos/aventureros-de-valverde.png" alt="Icono Aventureros" loading="lazy" width="56" height="56" />
+      <img class="section-icon" src="../assets/aventureros-de-valverde.png" alt="Icono portraits" loading="lazy" width="56" height="56" />
       <div>
         <h1 style="margin:0;font-family:Cinzel,serif">Los Aventureros de Valverde</h1>
         <p style="margin:4px 0;color:#bfc7cb">Retratos, biografías y el espacio para que los jugadores suban sus notas.</p>
@@ -21,7 +20,7 @@
 
     <nav aria-label="navegación secundaria">
       <a class="navlink" href="../index.html">Inicio</a>
-      <a class="navlink" href="../recursos/index.html">Recursos</a>
+      <a class="navlink" href="../../recursos.html">Recursos</a>
       <a class="navlink" href="../mapas.html">Mapas</a>
       <a class="navlink" href="../notas.html">Notas</a>
       <!-- enlace a la admin que vas a crear -->
@@ -35,10 +34,10 @@
     </p>
 
     <section class="resource-grid" aria-live="polite">
-      <!-- Cada tarjeta representa un aventurero. Cambia src a tus imágenes en assets/aventureros/ -->
+      <!-- Cada tarjeta representa un aventurero. Cambia src a tus imágenes en assets/portraits/ -->
       <article class="resource-card">
         <div class="icon-wrap">
-          <img class="resource-icon" src="../assets/aventureros/adler.jpg" alt="Adler — retrato completo" loading="lazy" />
+          <img class="resource-icon" src="../assets/portraits/adler.jpg" alt="Adler — retrato completo" loading="lazy" />
         </div>
         <div>
           <h3>Adler</h3>
@@ -52,7 +51,7 @@
 
       <article class="resource-card">
         <div class="icon-wrap">
-          <img class="resource-icon" src="../assets/aventureros/delerion.jpg" alt="Delerion — retrato completo" loading="lazy" />
+          <img class="resource-icon" src="../assets/portraits/delerion.jpg" alt="Delerion — retrato completo" loading="lazy" />
         </div>
         <div>
           <h3>Delerion</h3>
@@ -66,7 +65,7 @@
 
       <article class="resource-card">
         <div class="icon-wrap">
-          <img class="resource-icon" src="../assets/aventureros/stix-ernesto.jpg" alt="Stix Ernesto — retrato completo" loading="lazy" />
+          <img class="resource-icon" src="../assets/portraits/stix-ernesto.jpg" alt="Stix Ernesto — retrato completo" loading="lazy" />
         </div>
         <div>
           <h3>Stix Ernesto</h3>
@@ -80,7 +79,7 @@
 
       <article class="resource-card">
         <div class="icon-wrap">
-          <img class="resource-icon" src="../assets/aventureros/varka.jpg" alt="Varka — retrato completo" loading="lazy" />
+          <img class="resource-icon" src="../assets/portraits/varka.jpg" alt="Varka — retrato completo" loading="lazy" />
         </div>
         <div>
           <h3>Varka</h3>
@@ -116,7 +115,7 @@
     const CHARACTERS = {
       "adler": {
         name: "Adler",
-        image: "../assets/aventureros/adler.jpg",
+        image: "../assets/portraits/adler.jpg",
         title: "Adler — El Caminante del Río",
         short: "Veterano de la comarca, líder natural...",
         longHTML: `<p><strong>Adler</strong> es conocido por su temple y por... (biografía larga aquí).</p>
@@ -124,7 +123,7 @@
       },
       "delerion": {
         name: "Delerion",
-        image: "../assets/aventureros/delerion.jpg",
+        image: "../assets/portraits/delerion.jpg",
         title: "Delerion — El Errante",
         short: "Mago errante, coleccionista de curiosidades...",
         longHTML: `<p><strong>Delerion</strong> estudió en la Torre de Lunas ...</p>
@@ -132,14 +131,14 @@
       },
       "stix-ernesto": {
         name: "Stix Ernesto",
-        image: "../assets/aventureros/stix-ernesto.jpg",
+        image: "../assets/portraits/stix-ernesto.jpg",
         title: "Stix Ernesto — Trampero",
         short: "Cazador y bromista; sus trucos salvan más que dañan...",
         longHTML: `<p><strong>Stix Ernesto</strong> aprendió a moverse en la maleza desde niño...</p>`
       },
       "varka": {
         name: "Varka",
-        image: "../assets/aventureros/varka.jpg",
+        image: "../assets/portraits/varka.jpg",
         title: "Varka — La Lanza Silente",
         short: "Guerrera taciturna con secretos que pesan más que su espada.",
         longHTML: `<p><strong>Varka</strong> guarda silencio sobre su pasado en la capital ...</p>`
